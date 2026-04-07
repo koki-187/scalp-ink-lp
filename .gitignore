@@ -1,0 +1,33 @@
+# Sensitive
+api-key.txt
+*.env
+.env*
+
+# Windows metadata
+desktop.ini
+Thumbs.db
+
+# Google Drive / OS artifacts
+.DS_Store
+*.gslides
+
+# Claude / IDE
+.claude/
+*.jsonl
+CLAUDE_CODE_HANDOVER.md
+
+# Large personal media (add individually if needed)
+IMG_*.JPG
+IMG_*.MOV
+IMG_*.jpg
+*.MOV
+ba_preview.jpg
+fan_transparent_HQ.png
+sculp-ink-lp-FINAL.html
+assets/ba/
+ビフォーアフター用写真/
+ロゴ入り扇子/
+安心材料/
+挿入用動画/
+AIシミュレーター/
+B9D7780C-B9C0-4D8A-B611-CEC75EDD452C.png
