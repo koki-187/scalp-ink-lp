@@ -12,6 +12,10 @@
 <meta property="og:title" content="THE SCALP INK | Scalp Ink by CIMA">
 <meta property="og:description" content="Korean-origin SMP technology. Transparent pricing: 1 dot = ¥1. Trial session ¥3,000. Full-head plans from ¥30,000.">
 <meta property="og:type" content="website">
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -153,6 +157,24 @@ section{position:relative;z-index:1;}
 .fc-n{font-family:"Bebas Neue",sans-serif;font-size:2rem;color:rgba(201,168,76,.17);line-height:1;margin-bottom:4px;}
 .fc-t{font-size:.85rem;font-weight:500;color:var(--gd);margin-bottom:4px;}
 .fc-d{font-size:.76rem;color:rgba(245,245,240,.5);line-height:1.7;}
+
+/* PROCESS VIDEOS */
+#process-vids{background:var(--bk);border-top:1px solid rgba(201,168,76,.08);}
+.pvid-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:680px;margin:0 auto;}
+.pvid-card{position:relative;border-radius:4px;overflow:hidden;border:1px solid rgba(201,168,76,.13);
+  background:var(--dp);transition:border-color .3s;}
+.pvid-card:hover{border-color:rgba(201,168,76,.4);}
+.pvid-card video{width:100%;display:block;aspect-ratio:9/16;object-fit:cover;filter:brightness(0.85);}
+.pvid-label{position:absolute;bottom:0;left:0;right:0;padding:14px 16px;
+  background:linear-gradient(transparent,rgba(8,8,8,.92));
+  font-size:.72rem;letter-spacing:.08em;color:rgba(245,245,240,.7);}
+.pvid-label span{display:block;font-family:"Cormorant Garamond",serif;font-size:1rem;
+  color:var(--gd);letter-spacing:.14em;margin-bottom:2px;}
+@media(max-width:600px){
+  .pvid-grid{grid-template-columns:1fr 1fr;gap:12px;}
+  .pvid-label{padding:10px 12px;font-size:.65rem;}
+  .pvid-label span{font-size:.82rem;}
+}
 
 /* TARGET */
 #target{background:var(--bk);}
@@ -583,6 +605,29 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <div class="fc rv d1"><div class="fc-n">01</div><div class="fc-t">Safety-Certified Pigment</div><div class="fc-d">All pigments meet human safety standards, ensuring a safe and worry-free procedure.</div></div>
         <div class="fc rv d2"><div class="fc-n">02</div><div class="fc-t">30,000–50,000 Precision Dots per Session</div><div class="fc-d">The machine auto-counts every dot applied. 1 dot = ¥1, fully transparent billing.</div></div>
         <div class="fc rv d3"><div class="fc-n">03</div><div class="fc-t">World-Class Recognition</div><div class="fc-d">Highly acclaimed at international SMP competitions. Experience world-standard results.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS VIDEOS -->
+<section id="process-vids">
+  <div class="s-in" style="text-align:center;">
+    <span class="s-lbl">Process</span>
+    <h2 class="s-ttl">Treatment Process</h2>
+    <div class="g-line" style="margin:16px auto 36px;"></div>
+    <div class="pvid-grid">
+      <div class="pvid-card rv">
+        <video autoplay muted loop playsinline preload="metadata">
+          <source src="../assets/video-portrait-1.mp4" type="video/mp4">
+        </video>
+        <div class="pvid-label"><span>Process 01</span>Dot application process</div>
+      </div>
+      <div class="pvid-card rv">
+        <video autoplay muted loop playsinline preload="metadata">
+          <source src="../assets/video-portrait-2.mp4" type="video/mp4">
+        </video>
+        <div class="pvid-label"><span>Process 02</span>Finished result</div>
       </div>
     </div>
   </div>
