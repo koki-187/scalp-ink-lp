@@ -22,6 +22,7 @@ IMG_*.MOV
 IMG_*.jpg
 *.MOV
 *.mp4
+!assets/hero.mp4
 make_report.py
 kaiinnsyou\ .jpg
 成分表.jpg
