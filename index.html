@@ -42,6 +42,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:15px 44px;
 .nav-cta:hover{background:var(--gd);color:var(--bk);}
 .nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none;}
 .nav-ham span{width:22px;height:1px;background:var(--gd);display:block;}
+.lang-sw{display:flex;gap:2px;margin-left:12px;align-items:center;}
+.lang-sw a{font-size:.58rem;letter-spacing:.06em;padding:4px 8px;text-decoration:none;color:rgba(245,245,240,.4);border:1px solid rgba(201,168,76,.15);transition:all .3s;}
+.lang-sw a:hover{color:var(--gd);border-color:var(--gd);}
+.lang-sw a.active{color:var(--bk);background:var(--gd);border-color:var(--gd);font-weight:500;}
 
 /* HERO */
 #hero{
@@ -500,6 +504,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#artist">Artist</a></li>
   </ul>
+  <div class="lang-sw"><a href="index.html" class="active">JP</a><a href="en/index.html">EN</a></div>
   <a href="#booking" class="nav-cta">無料相談を予約</a>
   <button class="nav-ham" onclick="toggleMenu()" aria-label="メニュー">
     <span></span><span></span><span></span>

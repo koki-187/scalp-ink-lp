@@ -29,6 +29,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:15px 44px;
 .nav-back{color:rgba(245,245,240,.5);text-decoration:none;font-size:.72rem;letter-spacing:.08em;transition:color .3s;display:flex;align-items:center;gap:6px;}
 .nav-back:hover{color:var(--gd);}
 .nav-back::before{content:"\2190";font-size:1rem;}
+.lang-sw{display:flex;gap:2px;align-items:center;}
+.lang-sw a{font-size:.58rem;letter-spacing:.06em;padding:4px 8px;text-decoration:none;color:rgba(245,245,240,.4);border:1px solid rgba(201,168,76,.15);transition:all .3s;}
+.lang-sw a:hover{color:var(--gd);border-color:var(--gd);}
+.lang-sw a.active{color:var(--bk);background:var(--gd);border-color:var(--gd);font-weight:500;}
 
 /* MAIN */
 .page-header{padding:120px 0 48px;text-align:center;border-bottom:1px solid rgba(201,168,76,.08);}
@@ -67,7 +71,10 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 
 <nav>
   <a href="index.html" class="nav-logo">THE SCALP INK<small>Scalp Micro Pigmentation by CIMA</small></a>
-  <a href="index.html" class="nav-back">TOPに戻る</a>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="lang-sw"><a href="privacy-policy.html" class="active">JP</a><a href="en/privacy-policy.html">EN</a></div>
+    <a href="index.html" class="nav-back">TOPに戻る</a>
+  </div>
 </nav>
 
 <div class="page-header">
