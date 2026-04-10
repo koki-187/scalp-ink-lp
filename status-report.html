@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE SCALP INK - プロジェクト進捗レポート</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans JP',sans-serif;background:#f8f8f6;color:#1a1a1a;line-height:1.8;}
+@media print{
+  body{background:#fff;font-size:11pt;}
+  .no-print{display:none!important;}
+  .page-break{page-break-before:always;}
+  section{page-break-inside:avoid;}
+}
+.container{max-width:900px;margin:0 auto;padding:40px 32px;}
+header{text-align:center;padding:40px 0 30px;border-bottom:3px solid #C9A84C;}
+header h1{font-size:1.6rem;font-weight:700;letter-spacing:.15em;color:#1a1a1a;}
+header h1 span{color:#C9A84C;}
+header p.subtitle{font-size:.82rem;color:#888;margin-top:6px;letter-spacing:.08em;}
+header .date{font-size:.78rem;color:#666;margin-top:12px;background:#f0ede5;display:inline-block;padding:4px 16px;border-radius:3px;}
+.summary-bar{display:flex;gap:16px;margin:30px 0;flex-wrap:wrap;}
+.summary-card{flex:1;min-width:140px;background:#fff;border:1px solid #e8e4d8;border-radius:8px;padding:20px;text-align:center;}
+.summary-card .num{font-size:2rem;font-weight:700;color:#C9A84C;}
+.summary-card .label{font-size:.72rem;color:#888;letter-spacing:.06em;margin-top:4px;}
+h2{font-size:1.1rem;font-weight:700;letter-spacing:.1em;margin:36px 0 16px;padding-bottom:8px;border-bottom:2px solid #C9A84C;color:#1a1a1a;}
+h2 .badge{font-size:.65rem;font-weight:500;background:#C9A84C;color:#fff;padding:2px 10px;border-radius:12px;margin-left:8px;vertical-align:middle;}
+.task-list{list-style:none;padding:0;}
+.task-item{background:#fff;border:1px solid #e8e4d8;border-radius:6px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
+.task-item.done{opacity:0.75;}
+.task-item .icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;margin-top:2px;}
+.task-item.done .icon{background:#4CAF50;color:#fff;}
+.task-item.todo .icon{background:#FF9800;color:#fff;}
+.task-item.pending .icon{background:#2196F3;color:#fff;}
+.task-item .content{flex:1;}
+.task-item .title{font-size:.88rem;font-weight:500;}
+.task-item .desc{font-size:.74rem;color:#777;margin-top:3px;line-height:1.6;}
+.task-item .tag{display:inline-block;font-size:.6rem;padding:1px 8px;border-radius:10px;margin-top:4px;margin-right:4px;}
+.tag-feature{background:#e3f2fd;color:#1565C0;}
+.tag-fix{background:#fce4ec;color:#c62828;}
+.tag-design{background:#f3e5f5;color:#7b1fa2;}
+.tag-critical{background:#fff3e0;color:#e65100;}
+.tag-api{background:#e8f5e9;color:#2e7d32;}
+.tag-content{background:#fff8e1;color:#f57f17;}
+.gh-link{text-align:center;margin:40px 0 20px;}
+.gh-link a{display:inline-block;padding:12px 32px;background:#1a1a1a;color:#C9A84C;text-decoration:none;border-radius:6px;font-size:.82rem;letter-spacing:.08em;transition:all .3s;}
+.gh-link a:hover{background:#C9A84C;color:#1a1a1a;}
+footer{text-align:center;padding:30px 0;font-size:.68rem;color:#aaa;border-top:1px solid #e8e4d8;margin-top:40px;}
+.print-btn{position:fixed;bottom:24px;right:24px;padding:12px 24px;background:#C9A84C;color:#fff;border:none;border-radius:6px;font-size:.82rem;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:100;font-family:'Noto Sans JP',sans-serif;}
+.print-btn:hover{background:#b8973f;}
+</style>
+</head>
+<body>
+<button class="print-btn no-print" onclick="window.print()">PDF保存 / 印刷</button>
+<div class="container">
+<header>
+  <h1>THE <span>SCALP INK</span> by CIMA</h1>
+  <p class="subtitle">LP制作プロジェクト 進捗レポート</p>
+  <div class="date">報告日: 2026年4月10日</div>
+</header>
+
+<div class="summary-bar">
+  <div class="summary-card"><div class="num">14</div><div class="label">完了タスク</div></div>
+  <div class="summary-card"><div class="num">10</div><div class="label">残タスク</div></div>
+  <div class="summary-card"><div class="num">58%</div><div class="label">進捗率</div></div>
+</div>
+
+<h2>完了した作業タスク <span class="badge">14件</span></h2>
+<ul class="task-list">
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">LP全体のデザイン・コーディング（JP版）</div>
+      <div class="desc">ヒーロー、ABOUT、施術事例B/A、AIシミュレーター、安全性、料金、アーティスト、予約セクション</div>
+      <span class="tag tag-design">デザイン</span><span class="tag tag-feature">機能</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">英語版LP（EN版）の完全構築</div>
+      <div class="desc">JP版と同一構成・デザインの英語版。JP/EN言語切替機能付き</div>
+      <span class="tag tag-feature">機能</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">ヒーロー背景動画の実装</div>
+      <div class="desc">hero-original + 施術動画1,2を16:9フルスクリーンクロップで結合。CSS数学的フルカバー</div>
+      <span class="tag tag-design">デザイン</span><span class="tag tag-fix">修正</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">AIシミュレーター基本機能</div>
+      <div class="desc">カメラ撮影/画像アップロード → Claude Opus API解析 → B/Aフレーム結果表示</div>
+      <span class="tag tag-feature">機能</span><span class="tag tag-api">API</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">AI解析レポートのMarkdown→HTML変換</div>
+      <div class="desc">renderMarkdown()関数で表・見出し・リストをスタイル付きHTMLに変換</div>
+      <span class="tag tag-feature">機能</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">SMPシミュレーションv3（ピクセルブレンド方式）</div>
+      <div class="desc">実際のSMP施術ロジックに基づく再設計。肌色→髪色ブレンド、condition別閾値、ガウシアンぼかし</div>
+      <span class="tag tag-feature">機能</span><span class="tag tag-fix">修正</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">スコアバーのcondition別ラベル・値</div>
+      <div class="desc">Norwood/Ludwigスケール検出、thinning/scar/hairline/patch別の動的ラベル</div>
+      <span class="tag tag-feature">機能</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">ドットカウント抽出ロジック強化</div>
+      <div class="desc">合計パターン優先→個別エリア合算→condition別フォールバックの3段階ロジック</div>
+      <span class="tag tag-feature">機能</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">重複レポート・ファン画像の削除</div>
+      <div class="desc">resArea重複表示とfan-overlay画像を削除、adviceBoxに一本化</div>
+      <span class="tag tag-fix">修正</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">B/Aチェッカーボードエラー修正</div>
+      <div class="desc">before側の背景を#0a0a0aに設定、透過アーティファクト解消</div>
+      <span class="tag tag-fix">修正</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">AI解析中の処理時間インジケーター</div>
+      <div class="desc">「AI解析中... 約30〜60秒お待ちください」メッセージ追加</div>
+      <span class="tag tag-design">UX</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">OGP画像・ファビコン設定</div>
+      <div class="desc">SNS共有用OGP画像、CIMA公式ファビコン各サイズ</div>
+      <span class="tag tag-design">デザイン</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">パフォーマンス最適化</div>
+      <div class="desc">Intersection Observer遅延読込、CSS/JSの圧縮、動画遅延ロード</div>
+      <span class="tag tag-feature">最適化</span>
+    </div>
+  </li>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">GitHubリポジトリ管理・プッシュ</div>
+      <div class="desc">koki-187/scalp-ink-lp にmaster管理、全コミット履歴保持</div>
+      <span class="tag tag-feature">インフラ</span>
+    </div>
+  </li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>残タスク一覧 <span class="badge">10件</span></h2>
+<ul class="task-list">
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">AIシミュレーターの精度向上</div>
+      <div class="desc">SMP施術シミュレーションの精度改善。施術エリア判定の精度向上、ブレンドパラメータのチューニング、各症例タイプ別の最適化、リアルな仕上がり品質の検証</div>
+      <span class="tag tag-critical">重要</span><span class="tag tag-feature">機能</span>
+    </div>
+  </li>
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">Gemini APIキーの設定</div>
+      <div class="desc">本番用APIキーの取得・設定（現在はテスト用）</div>
+      <span class="tag tag-critical">重要</span><span class="tag tag-api">API</span>
+    </div>
+  </li>
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">特定商取引法に基づく表記の完成</div>
+      <div class="desc">事業者名、所在地、電話番号、メールアドレス等の正式情報入力</div>
+      <span class="tag tag-critical">重要</span><span class="tag tag-content">コンテンツ</span>
+    </div>
+  </li>
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">電話番号・連絡先の設定</div>
+      <div class="desc">LP内のtel:リンク、お問い合わせ用電話番号の正式設定</div>
+      <span class="tag tag-content">コンテンツ</span>
+    </div>
+  </li>
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">LINE公式アカウントURL設定</div>
+      <div class="desc">LINE友達追加リンクの正式URL設定、プロフィール画像アップ</div>
+      <span class="tag tag-content">コンテンツ</span>
+    </div>
+  </li>
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">実際のB/A施術写真の差し替え</div>
+      <div class="desc">現在はプレースホルダー。実際の施術前後写真に差し替え</div>
+      <span class="tag tag-content">コンテンツ</span>
+    </div>
+  </li>
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">ホスティング・ドメイン設定</div>
+      <div class="desc">独自ドメイン取得、本番サーバーへのデプロイ（Vercel/Netlify/独自サーバー）</div>
+      <span class="tag tag-feature">インフラ</span>
+    </div>
+  </li>
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">Google Analytics設定</div>
+      <div class="desc">GA4トラッキングコードの埋め込み、コンバージョン計測設定</div>
+      <span class="tag tag-feature">分析</span>
+    </div>
+  </li>
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">お問い合わせフォーム連携</div>
+      <div class="desc">フォーム送信のバックエンド連携（メール通知、LINE通知等）</div>
+      <span class="tag tag-feature">機能</span>
+    </div>
+  </li>
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">SSL証明書・セキュリティ設定</div>
+      <div class="desc">HTTPS強制、セキュリティヘッダー設定</div>
+      <span class="tag tag-feature">インフラ</span>
+    </div>
+  </li>
+</ul>
+
+<div class="gh-link no-print">
+  <a href="https://koki-187.github.io/scalp-ink-lp/" target="_blank">GitHub Pages でLPを確認する &#8594;</a>
+</div>
+
+<footer>
+  <p>THE SCALP INK by CIMA &mdash; LP制作プロジェクト進捗レポート</p>
+  <p>GitHub: github.com/koki-187/scalp-ink-lp | 生成日: 2026年4月10日</p>
+</footer>
+</div>
+</body>
+</html>
