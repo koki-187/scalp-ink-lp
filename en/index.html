@@ -287,6 +287,8 @@ section{position:relative;z-index:1;}
 .ss-lbl{font-size:.63rem;letter-spacing:.1em;color:rgba(255,255,255,.42);}
 .ss-con{width:50px;height:1px;background:rgba(201,168,76,.2);margin-bottom:26px;}
 .sim-box{max-width:750px;margin:0 auto;border:1px solid rgba(201,168,76,.18);padding:36px;}
+.api-key-area{margin-bottom:20px;padding:14px 16px;border:1px solid rgba(201,168,76,.12);background:rgba(201,168,76,.02);}
+.api-key-area.key-ok{border-color:rgba(76,175,80,.25);background:rgba(76,175,80,.03);}
 .cam-area{width:100%;aspect-ratio:4/3;background:#090909;position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;
   border:1px solid rgba(201,168,76,.1);}
@@ -804,6 +806,27 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
       <div class="ss-item"><div class="ss-num" id="st3">3</div><div class="ss-lbl">Results</div></div>
     </div>
     <div class="sim-box rv">
+
+      <!-- API Key Settings -->
+      <div class="api-key-area" id="apiKeyArea">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="font-size:.65rem;letter-spacing:.1em;color:var(--gd);">&#128273; API Settings</span>
+          <button class="btn-o" style="font-size:.55rem;padding:4px 10px;margin-left:auto;" onclick="toggleApiKey()">Open Settings</button>
+        </div>
+        <div id="apiKeyPanel" style="display:none;">
+          <div style="font-size:.58rem;color:rgba(245,245,240,.4);margin-bottom:8px;line-height:1.7;">
+            An Anthropic API key is required to use the AI Simulator.<br>
+            <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" style="color:var(--gd);text-decoration:underline;">Get API Key →</a>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="password" id="apiKeyInput" placeholder="sk-ant-..."
+              style="flex:1;background:#111;border:1px solid rgba(201,168,76,.25);color:var(--wh);padding:8px 12px;font-size:.7rem;font-family:monospace;border-radius:0;outline:none;"
+              value="">
+            <button class="btn-p" style="font-size:.6rem;padding:7px 14px;white-space:nowrap;" onclick="saveApiKey()">Save</button>
+          </div>
+          <div id="apiKeyStatus" style="font-size:.55rem;margin-top:6px;color:rgba(245,245,240,.35);"></div>
+        </div>
+      </div>
 
       <!-- 撮影ガイド -->
       <div class="photo-guide" id="photoGuide">
@@ -1933,12 +1956,53 @@ function setStep(n) {
   }
 }
 
-var _SIM_KEY = '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';
+// API Key Management
+function getSimApiKey() {
+  try { return localStorage.getItem('scalp_ink_api_key') || ''; } catch(e) { return ''; }
+}
+function toggleApiKey() {
+  var panel = document.getElementById('apiKeyPanel');
+  if (!panel) return;
+  var isHidden = panel.style.display === 'none';
+  panel.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) {
+    var inp = document.getElementById('apiKeyInput');
+    var saved = getSimApiKey();
+    if (inp && saved) inp.value = saved;
+  }
+}
+function saveApiKey() {
+  var inp = document.getElementById('apiKeyInput');
+  var key = inp ? inp.value.trim() : '';
+  var status = document.getElementById('apiKeyStatus');
+  if (!key || !key.startsWith('sk-')) {
+    if (status) { status.style.color = '#ff6b6b'; status.textContent = '⚠ Please enter a valid API key (starts with sk-)'; }
+    return;
+  }
+  try { localStorage.setItem('scalp_ink_api_key', key); } catch(e) {}
+  if (status) { status.style.color = '#4caf50'; status.textContent = '✓ API key saved'; }
+  var area = document.getElementById('apiKeyArea');
+  if (area) area.classList.add('key-ok');
+  setTimeout(function() {
+    var panel = document.getElementById('apiKeyPanel');
+    if (panel) panel.style.display = 'none';
+  }, 1500);
+}
+(function() {
+  var saved = getSimApiKey();
+  if (saved) {
+    var area = document.getElementById('apiKeyArea');
+    if (area) area.classList.add('key-ok');
+  }
+})();
 
 function analyze() {
-  var keyEl = document.getElementById('apiKey');
-  var key = (keyEl ? keyEl.value.trim() : '') || _SIM_KEY;
-  if (!key) { alert('API key is not set.'); return; }
+  var key = getSimApiKey();
+  if (!key) {
+    alert('API key is not set.\nPlease enter your Anthropic API key in "🔑 API Settings" → "Open Settings".');
+    toggleApiKey();
+    return;
+  }
   var capCv = document.getElementById('capCv');
   if (!capCv || !capCv.width) { alert('Please upload a photo first.'); return; }
 
@@ -2014,7 +2078,7 @@ function analyze() {
       'anthropic-version':'2023-06-01',
       'anthropic-dangerous-direct-browser-access':'true'
     },
-    body:JSON.stringify({model:'claude-opus-4-5',max_tokens:2000,
+    body:JSON.stringify({model:'claude-sonnet-4-5-20250514',max_tokens:2000,
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
         {type:'text',text:prompt}
@@ -2034,13 +2098,19 @@ function analyze() {
   })
   .catch(function(err){
     var msg = err && err.message ? err.message : 'A network error occurred.';
+    var isAuthErr = /authentication|unauthorized|invalid.*key|401/i.test(msg);
+    var displayMsg = isAuthErr
+      ? '⚠ Invalid API key. Please enter a valid Anthropic API key in "🔑 API Settings".'
+      : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>Please check your network connection and API key.';
     var advBox = document.getElementById('adviceBox');
     var claudeEl = document.getElementById('claudeAdvice');
-    if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">&#9888; '+msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<br>Please check your API key and network connection.</span>';
+    if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
     if (advBox) advBox.style.display='block';
     var frame = document.getElementById('baResultFrame');
     if (frame) frame.style.display='block';
+    if (isAuthErr) toggleApiKey();
     setStep(3);
+    if (capBtn) capBtn.style.display='inline-block';
     if (ldDots) ldDots.classList.remove('on');
   });
 }
