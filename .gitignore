@@ -1,42 +1,10 @@
-# Sensitive
-api-key.txt
+# Environment variables (API keys, credentials)
+.env
 *.env
-.env*
+CIMA.env
 
-# Windows metadata
-desktop.ini
-Thumbs.db
-
-# Google Drive / OS artifacts
+# Temporary files
+tmp_frames/
+*.tmp
 .DS_Store
-*.gslides
-
-# Claude / IDE
-.claude/
-*.jsonl
-CLAUDE_CODE_HANDOVER.md
-
-# Large personal media (add individually if needed)
-IMG_*.JPG
-IMG_*.MOV
-IMG_*.jpg
-*.MOV
-*.mp4
-!assets/hero.mp4
-!assets/video-portrait-1.mp4
-!assets/video-portrait-2.mp4
-make_report.py
-kaiinnsyou\ .jpg
-成分表.jpg
-ヒーローセクション挿入用動画/
-ba_preview.jpg
-fan_transparent_HQ.png
-sculp-ink-lp-FINAL.html
-assets/ba/
-ビフォーアフター用写真/
-ロゴ入り扇子/
-安心材料/
-挿入用動画/
-AIシミュレーター/
-B9D7780C-B9C0-4D8A-B611-CEC75EDD452C.png
-CIMAアイコン一式/
+Thumbs.db
