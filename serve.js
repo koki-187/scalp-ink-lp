@@ -1,4 +1,4 @@
-// Simple static server with Range request support for video streaming
+// Static server with robust Range request support for video streaming
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -15,11 +15,19 @@ const MIME = {
   '.js': 'application/javascript',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
+  '.webp': 'image/webp',
+  '.svg': 'image/svg+xml',
 };
 
 http.createServer((req, res) => {
-  let filePath = path.join(ROOT, req.url === '/' ? '/index.html' : decodeURIComponent(req.url));
-  if (!fs.existsSync(filePath)) { res.writeHead(404); return res.end('Not found'); }
+  const urlPath = req.url.split('?')[0];
+  let filePath = path.join(ROOT, urlPath === '/' ? '/index.html' : decodeURIComponent(urlPath));
+
+  console.log(`[${req.method}] ${urlPath} range:${req.headers.range||'none'}`);
+  if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+    res.writeHead(404);
+    return res.end('Not found');
+  }
 
   const ext = path.extname(filePath).toLowerCase();
   const mime = MIME[ext] || 'application/octet-stream';
@@ -27,24 +35,39 @@ http.createServer((req, res) => {
   const total = stat.size;
   const range = req.headers.range;
 
+  // Common headers
+  const headers = {
+    'Content-Type': mime,
+    'Accept-Ranges': 'bytes',
+    'Cache-Control': 'no-cache',
+  };
+
   if (range) {
-    const [, start, end] = /bytes=(\d+)-(\d*)/.exec(range) || [];
-    const s = parseInt(start, 10);
-    const e = end ? parseInt(end, 10) : Math.min(s + 1024 * 1024, total - 1);
-    const chunkSize = (e - s) + 1;
-    res.writeHead(206, {
-      'Content-Range': `bytes ${s}-${e}/${total}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': chunkSize,
-      'Content-Type': mime,
-    });
-    fs.createReadStream(filePath, { start: s, end: e }).pipe(res);
+    const match = /bytes=(\d+)-(\d*)/.exec(range);
+    if (!match) {
+      res.writeHead(416, { 'Content-Range': `bytes */${total}` });
+      return res.end();
+    }
+    const start = parseInt(match[1], 10);
+    // If no end specified, serve the rest of the file (Chrome video expects this)
+    const end = match[2] ? Math.min(parseInt(match[2], 10), total - 1) : total - 1;
+
+    if (start >= total || end >= total || start > end) {
+      res.writeHead(416, { 'Content-Range': `bytes */${total}` });
+      return res.end();
+    }
+
+    headers['Content-Range'] = `bytes ${start}-${end}/${total}`;
+    headers['Content-Length'] = end - start + 1;
+    res.writeHead(206, headers);
+
+    if (req.method === 'HEAD') return res.end();
+    fs.createReadStream(filePath, { start, end }).pipe(res);
   } else {
-    res.writeHead(200, {
-      'Content-Length': total,
-      'Content-Type': mime,
-      'Accept-Ranges': 'bytes',
-    });
+    headers['Content-Length'] = total;
+    res.writeHead(200, headers);
+
+    if (req.method === 'HEAD') return res.end();
     fs.createReadStream(filePath).pipe(res);
   }
-}).listen(PORT, () => console.log(`Serving ${ROOT} at http://localhost:${PORT}`));
+}).listen(PORT, () => console.log(`Serving on http://localhost:${PORT}`));

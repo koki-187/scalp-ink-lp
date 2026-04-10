@@ -56,38 +56,40 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:15px 44px;
 .lang-sw a:hover{color:var(--gd);border-color:var(--gd);}
 .lang-sw a.active{color:var(--bk);background:var(--gd);border-color:var(--gd);font-weight:500;}
 
-/* HERO */
+/* HERO — multi-OS compatible (iOS Safari / Android Chrome / Windows / macOS) */
 #hero{
   position:relative;
   height:100vh;
-  /* iOS Safari: svh = small viewport height (excludes collapsible toolbar) */
-  height:100svh;
+  height:100svh; /* iOS Safari: excludes collapsible toolbar */
+  height:100dvh; /* Android Chrome: dynamic viewport height */
   min-height:500px;
   display:flex;align-items:flex-end;overflow:hidden;
 }
 .hero-bg{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;}
 .hero-bg video{
-  /* Full-cover video: mathematical 16:9 fill — works on all OS/browsers */
+  /* 数学的フルカバー: ビューポートの幅・高さどちらが大きくても完全にカバー */
   position:absolute;
   top:50%;left:50%;
-  /* 16:9 math: width=100vw → height=56.25vw | height=100vh → width=177.78vh */
-  width:100vw;
-  height:56.25vw;
-  min-height:100%;
-  min-width:177.78vh;
+  width:100vw;height:56.25vw;   /* 16:9: width=100vw → height=56.25vw */
+  min-height:100%;min-width:177.78vh; /* height=100vh → width=177.78vh */
   transform:translate(-50%,-50%);
   -webkit-transform:translate(-50%,-50%);
   object-fit:cover;
-  object-position:center center;
   filter:brightness(0.45);
+  -webkit-filter:brightness(0.45);
+  z-index:0;
 }
-.hero-bg-img{position:absolute;inset:0;
+.hero-bg-img{
+  position:absolute;inset:0;
   background-image:url("assets/hero-fallback.jpg");
-  background-size:cover;background-position:center 20%;filter:brightness(0.5);}
+  background-size:cover;background-position:center 20%;
+  filter:brightness(0.5);-webkit-filter:brightness(0.5);
+  z-index:0;
+}
 .hero-bg::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(110deg,rgba(8,8,8,.88) 0%,rgba(8,8,8,.45) 60%,rgba(8,8,8,.2) 100%);}
+  background:linear-gradient(110deg,rgba(8,8,8,.88) 0%,rgba(8,8,8,.45) 60%,rgba(8,8,8,.2) 100%);z-index:1;}
 .hero-bg::before{content:"";position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(8,8,8,0) 30%,rgba(8,8,8,.97) 100%);z-index:1;}
+  background:linear-gradient(180deg,rgba(8,8,8,0) 30%,rgba(8,8,8,.97) 100%);z-index:2;}
 #dot-c{position:absolute;inset:0;opacity:.15;z-index:2;pointer-events:none;}
 .hero-body{position:relative;z-index:3;padding:0 52px 88px;max-width:720px;}
 .hero-tag{display:inline-flex;align-items:center;gap:10px;margin-bottom:20px;
@@ -163,24 +165,6 @@ section{position:relative;z-index:1;}
 .fc-t{font-size:.85rem;font-weight:500;color:var(--gd);margin-bottom:4px;}
 .fc-d{font-size:.76rem;color:rgba(245,245,240,.5);line-height:1.7;}
 
-/* PROCESS VIDEOS */
-#process-vids{background:var(--bk);border-top:1px solid rgba(201,168,76,.08);}
-.pvid-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:680px;margin:0 auto;}
-.pvid-card{position:relative;border-radius:4px;overflow:hidden;border:1px solid rgba(201,168,76,.13);
-  background:var(--dp);transition:border-color .3s;}
-.pvid-card:hover{border-color:rgba(201,168,76,.4);}
-.pvid-card video{width:100%;display:block;aspect-ratio:9/16;object-fit:cover;filter:brightness(0.85);}
-.pvid-label{position:absolute;bottom:0;left:0;right:0;padding:14px 16px;
-  background:linear-gradient(transparent,rgba(8,8,8,.92));
-  font-size:.72rem;letter-spacing:.08em;color:rgba(245,245,240,.7);}
-.pvid-label span{display:block;font-family:"Cormorant Garamond",serif;font-size:1rem;
-  color:var(--gd);letter-spacing:.14em;margin-bottom:2px;}
-@media(max-width:600px){
-  .pvid-grid{grid-template-columns:1fr 1fr;gap:12px;}
-  .pvid-label{padding:10px 12px;font-size:.65rem;}
-  .pvid-label span{font-size:.82rem;}
-}
-
 /* TARGET */
 #target{background:var(--bk);}
 .tgt-hd{text-align:center;margin-bottom:40px;}
@@ -211,13 +195,10 @@ section{position:relative;z-index:1;}
 .ba-lbl{font-family:"Bebas Neue",sans-serif;font-size:1.4rem;
   letter-spacing:.18em;color:var(--wh);}
 .ba-imgs{display:grid;grid-template-columns:1fr 1fr;gap:0;}
-.ba-side{position:relative;overflow:hidden;aspect-ratio:1/1;}
+.ba-side{position:relative;overflow:hidden;aspect-ratio:1/1;background:#0a0a0a;}
 .ba-side img.ba-img{width:100%;height:100%;object-fit:cover;display:block;}
 .ba-sep{position:absolute;top:0;bottom:0;left:50%;width:2px;
   background:var(--gd);z-index:5;transform:translateX(-50%);}
-.fan-wrap{position:absolute;bottom:-6%;left:50%;transform:translateX(-50%);
-  z-index:4;pointer-events:none;width:86%;}
-.fan-wrap img{width:100%;height:auto;display:block;opacity:.97;}
 .ba-footer{background:#000;padding:12px 20px;
   display:flex;justify-content:space-between;align-items:center;
   border-top:1px solid rgba(201,168,76,.3);}
@@ -350,15 +331,26 @@ section{position:relative;z-index:1;}
 .cam-ph-ic{font-size:2.6rem;opacity:.12;position:relative;z-index:1;}
 .cam-ph-tx{font-size:.72rem;letter-spacing:.13em;color:rgba(255,255,255,.26);text-align:center;position:relative;z-index:1;}
 .sim-ctrls{display:flex;gap:11px;margin-top:18px;justify-content:center;flex-wrap:wrap;}
-.ld-dots{display:none;justify-content:center;gap:7px;padding:32px;}
+.ld-dots{display:none;justify-content:center;gap:7px;padding:32px;flex-wrap:wrap;}
 .ld-dots.on{display:flex;}
 .ld-d{width:7px;height:7px;border-radius:50%;background:var(--gd);animation:dp 1.4s infinite;}
 .ld-d:nth-child(2){animation-delay:.2s;}.ld-d:nth-child(3){animation-delay:.4s;}
-.res-area{margin-top:22px;display:none;}
-.res-area.on{display:block;}
 .res-box{border:1px solid rgba(201,168,76,.18);padding:24px;background:rgba(201,168,76,.03);}
 .res-lbl{font-size:.6rem;letter-spacing:.28em;color:var(--gd);text-transform:uppercase;margin-bottom:9px;}
 .res-txt{font-size:.82rem;color:rgba(245,245,240,.7);line-height:1.92;}
+.rpt-h2{font-size:.95rem;color:var(--gd);letter-spacing:.08em;margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid rgba(201,168,76,.15);}
+.rpt-h3{font-size:.82rem;color:rgba(245,245,240,.88);letter-spacing:.06em;margin:14px 0 6px;}
+.rpt-h3 .emoji{margin-right:4px;}
+.rpt-hr{border:none;border-top:1px solid rgba(201,168,76,.12);margin:14px 0;}
+.rpt-tbl{width:100%;border-collapse:collapse;margin:10px 0;font-size:.72rem;}
+.rpt-tbl th,.rpt-tbl td{border:1px solid rgba(201,168,76,.18);padding:6px 10px;text-align:left;}
+.rpt-tbl th{background:rgba(201,168,76,.08);color:var(--gd);font-weight:600;font-size:.62rem;letter-spacing:.08em;}
+.rpt-tbl td{color:rgba(245,245,240,.7);}
+.rpt-ul{margin:6px 0;padding-left:16px;list-style:none;}
+.rpt-ul li{position:relative;padding-left:12px;margin-bottom:4px;font-size:.78rem;color:rgba(245,245,240,.68);line-height:1.7;}
+.rpt-ul li::before{content:'';position:absolute;left:0;top:.6em;width:4px;height:4px;border-radius:50%;background:var(--gd);}
+.rpt-code{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.1);padding:10px 14px;margin:8px 0;font-size:.74rem;line-height:1.6;color:rgba(245,245,240,.72);}
+.ld-msg{width:100%;text-align:center;font-size:.68rem;color:rgba(201,168,76,.5);letter-spacing:.12em;margin-top:8px;}
 
 
 /* TRUST */
@@ -546,11 +538,19 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 <!-- HERO（動画対応・フォールバック画像あり）-->
 <section id="hero">
   <div class="hero-bg">
-    <video id="heroVid" autoplay muted loop playsinline preload="metadata" style="opacity:0;transition:opacity 1.2s ease;">
-      <source src="assets/hero.mp4" type="video/mp4">
-    </video>
-    <!-- 動画なし時のフォールバック画像 -->
+    <!-- 動画なし時 / ロード中のフォールバック画像（常に背面に表示） -->
     <div class="hero-bg-img"></div>
+    <!-- Multi-OS対応: src直指定, poster, webkit-playsinline(旧iOS), playsinline(新iOS/Android) -->
+    <video id="heroVid"
+      src="assets/hero.mp4"
+      poster="assets/hero-fallback.jpg"
+      autoplay muted loop playsinline
+      webkit-playsinline
+      preload="auto"
+      disablepictureinpicture
+      disableremoteplayback
+      style="opacity:0;transition:opacity 1.2s ease;"
+    ></video>
   </div>
   <canvas id="dot-c"></canvas>
   <div class="hero-body">
@@ -613,29 +613,6 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <div class="fc rv d1"><div class="fc-n">01</div><div class="fc-t">人体安全基準クリア済み液体</div><div class="fc-d">使用する液体はすべて人体安全基準をクリア。安心・安全な施術を提供します。</div></div>
         <div class="fc rv d2"><div class="fc-n">02</div><div class="fc-t">1回3〜5万発の精密ドット</div><div class="fc-d">機械が打ったドット数を自動カウント。1ドット＝1円の完全明朗会計。</div></div>
         <div class="fc rv d3"><div class="fc-n">03</div><div class="fc-t">世界的大会でも高評価</div><div class="fc-d">国際的なSMP大会において高い技術評価を獲得。世界基準の仕上がりをご体感ください。</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROCESS VIDEOS -->
-<section id="process-vids">
-  <div class="s-in" style="text-align:center;">
-    <span class="s-lbl">Process</span>
-    <h2 class="s-ttl">施術の様子</h2>
-    <div class="g-line" style="margin:16px auto 36px;"></div>
-    <div class="pvid-grid">
-      <div class="pvid-card rv">
-        <video autoplay muted loop playsinline preload="metadata">
-          <source src="assets/video-portrait-1.mp4" type="video/mp4">
-        </video>
-        <div class="pvid-label"><span>Process 01</span>ドット施術の様子</div>
-      </div>
-      <div class="pvid-card rv">
-        <video autoplay muted loop playsinline preload="metadata">
-          <source src="assets/video-portrait-2.mp4" type="video/mp4">
-        </video>
-        <div class="pvid-label"><span>Process 02</span>仕上がりイメージ</div>
       </div>
     </div>
   </div>
@@ -969,14 +946,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
       </div>
       <div class="ld-dots" id="ldDots">
         <div class="ld-d"></div><div class="ld-d"></div><div class="ld-d"></div>
-      </div>
-
-      <!-- テキスト結果 -->
-      <div class="res-area" id="resArea">
-        <div class="res-box">
-          <div class="res-lbl">AI 施術提案レポート</div>
-          <div class="res-txt" id="resTxt"></div>
-        </div>
+        <div class="ld-msg">AI解析中... 約30〜60秒お待ちください</div>
       </div>
 
       <!-- BAフレーム結果表示 -->
@@ -988,10 +958,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           </div>
           <div class="ba-imgs" style="position:relative;">
             <div class="ba-side">
-              <img id="baBeforeImg" class="ba-img" src="" alt="撮影画像">
-              <div class="fan-wrap">
-                <img src="assets/fan-overlay.png" alt="扇子">
-              </div>
+              <img id="baBeforeImg" class="ba-img" src="" alt="撮影画像" style="background:#0a0a0a;">
             </div>
             <div class="ba-side" style="background:#0a0a0a;overflow:hidden;">
               <div class="smp-sim-wrap" id="smpSimWrap" style="width:100%;height:100%;aspect-ratio:unset;">
@@ -1010,17 +977,17 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <!-- スコアバー -->
         <div class="sim-score-row" id="simScoreRow" style="display:none;">
           <div class="sim-score">
-            <div class="sim-score-lbl">密度改善効果</div>
+            <div class="sim-score-lbl" id="sLbl1">密度改善効果</div>
             <div class="sim-score-bar"><div class="sim-score-fill" id="sFill1"></div></div>
             <div class="sim-score-val" id="sVal1">—</div>
           </div>
           <div class="sim-score">
-            <div class="sim-score-lbl">自然な仕上がり</div>
+            <div class="sim-score-lbl" id="sLbl2">自然な仕上がり</div>
             <div class="sim-score-bar"><div class="sim-score-fill" id="sFill2"></div></div>
             <div class="sim-score-val" id="sVal2">—</div>
           </div>
           <div class="sim-score">
-            <div class="sim-score-lbl">若返り指数</div>
+            <div class="sim-score-lbl" id="sLbl3">若返り指数</div>
             <div class="sim-score-bar"><div class="sim-score-fill" id="sFill3"></div></div>
             <div class="sim-score-val" id="sVal3">—</div>
           </div>
@@ -1399,22 +1366,181 @@ function swTab(btn) {
   });
 }
 
+// ===== MARKDOWN RENDERER =====
+function renderMarkdown(text) {
+  // Escape HTML entities for safety
+  var s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // Code blocks ``` ... ```
+  s = s.replace(/```[\s\S]*?```/g, function(m) {
+    var code = m.replace(/^```\w*\n?/,'').replace(/\n?```$/,'');
+    return '\n<div class="rpt-code">' + code + '</div>\n';
+  });
+
+  var lines = s.split('\n');
+  var out = [];
+  var inTable = false;
+  var inList = false;
+  var headerRowDone = false;
+
+  for (var i = 0; i < lines.length; i++) {
+    var ln = lines[i];
+    var trimmed = ln.trim();
+
+    // Separator line in table (|---|---|)
+    if (/^\|[\s\-:]+\|/.test(trimmed) && !/[a-zA-Z0-9\u3000-\u9fff]/.test(trimmed)) {
+      headerRowDone = true;
+      continue;
+    }
+
+    // Table row
+    if (/^\|(.+)\|$/.test(trimmed)) {
+      if (!inTable) {
+        if (inList) { out.push('</ul>'); inList = false; }
+        out.push('<table class="rpt-tbl">');
+        inTable = true;
+        headerRowDone = false;
+      }
+      var cells = trimmed.replace(/^\||\|$/g,'').split('|');
+      var tag = (!headerRowDone) ? 'th' : 'td';
+      var row = '<tr>';
+      for (var c = 0; c < cells.length; c++) {
+        row += '<' + tag + '>' + cells[c].trim() + '</' + tag + '>';
+      }
+      row += '</tr>';
+      out.push(row);
+      if (!headerRowDone) headerRowDone = true;
+      continue;
+    } else if (inTable) {
+      out.push('</table>');
+      inTable = false;
+      headerRowDone = false;
+    }
+
+    // Horizontal rule
+    if (/^(-{3,}|_{3,})$/.test(trimmed)) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<hr class="rpt-hr">');
+      continue;
+    }
+
+    // Headings
+    if (/^### (.+)$/.test(trimmed)) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<h4 class="rpt-h3">' + trimmed.replace(/^### /,'') + '</h4>');
+      continue;
+    }
+    if (/^## (.+)$/.test(trimmed)) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<h3 class="rpt-h2">' + trimmed.replace(/^## /,'') + '</h3>');
+      continue;
+    }
+
+    // List items (- item or * item)
+    if (/^[-*]\s+(.+)$/.test(trimmed)) {
+      if (!inList) {
+        out.push('<ul class="rpt-ul">');
+        inList = true;
+      }
+      out.push('<li>' + trimmed.replace(/^[-*]\s+/,'') + '</li>');
+      continue;
+    } else if (inList && trimmed === '') {
+      out.push('</ul>');
+      inList = false;
+    }
+
+    // Empty lines
+    if (trimmed === '') {
+      if (!inList) out.push('<br>');
+      continue;
+    }
+
+    // Normal text
+    if (inList) { out.push('</ul>'); inList = false; }
+    out.push(ln + '<br>');
+  }
+
+  if (inTable) out.push('</table>');
+  if (inList) out.push('</ul>');
+
+  var result = out.join('\n');
+
+  // Inline formatting: bold then italic
+  result = result.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  result = result.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  return result;
+}
+
+// ===== CONDITION TYPE DETECTION =====
+function detectConditionType(text) {
+  var hasScar = /傷跡|瘢痕|手術跡|外傷|移植痕|scar/i.test(text);
+  var hasHairline = /ヘアライン|生え際|M字|後退|hairline/i.test(text);
+  var hasThinning = /薄毛|びまん|頭頂部|AGA|密度不足|全体型/i.test(text);
+  var hasPatch = /円形脱毛|パッチ|局所|脱毛パッチ/i.test(text);
+
+  var count = (hasScar?1:0) + (hasHairline?1:0) + (hasThinning?1:0) + (hasPatch?1:0);
+  if (count >= 2) return 'combined';
+  if (hasScar) return 'scar';
+  if (hasHairline) return 'hairline';
+  if (hasPatch) return 'patch';
+  return 'thinning';
+}
+
 // ===== BA FRAME: ドットカウント抽出 =====
 function extractDotCount(text) {
-  var patterns = [
-    /約([0-9,０-９万]+)\s*ドット/,
-    /([0-9,０-９]+)\s*万発/,
-    /([0-9,０-９]+)\s*万ドット/
+  // 1. Try to find total dot count patterns
+  var totalPatterns = [
+    /推定総ドット数[：:]?\s*約?([0-9,０-９]+)\s*万/,
+    /総ドット数[：:]?\s*約?([0-9,０-９]+)\s*万/,
+    /合計[：:]?\s*約?([0-9,０-９]+)\s*万/
   ];
-  for (var i=0;i<patterns.length;i++) {
-    var m = text.match(patterns[i]);
-    if (m) return m[0];
+  for (var i = 0; i < totalPatterns.length; i++) {
+    var m = text.match(totalPatterns[i]);
+    if (m) {
+      var num = m[1].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); });
+      return '約' + num + '万ドット（推定）';
+    }
   }
-  return '約3万ドット（推定）';
+  // 2. Sum up individual area dot counts
+  var dotNums = [];
+  var areaPattern = /約?([0-9,０-９]+)[,、〜~～\-ー]*([0-9,０-９]*)\s*ドット/g;
+  var match;
+  while ((match = areaPattern.exec(text)) !== null) {
+    var n1 = match[1].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/,/g, '');
+    var n2 = match[2] ? match[2].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/,/g, '') : '';
+    var val = n2 ? parseInt(n2) : parseInt(n1);
+    if (!isNaN(val) && val > 100) dotNums.push(val);
+  }
+  if (dotNums.length > 0) {
+    var total = dotNums.reduce(function(a, b) { return a + b; }, 0);
+    if (total >= 10000) return '約' + Math.round(total / 10000) + '万ドット（推定）';
+    return '約' + total.toLocaleString() + 'ドット（推定）';
+  }
+  // 3. Fallback: condition-based estimate
+  var condType = detectConditionType(text);
+  var defaultDots = { thinning: '約3万ドット（推定）', scar: '約1万ドット（推定）', hairline: '約2万ドット（推定）', patch: '約1.5万ドット（推定）', combined: '約3万ドット（推定）' };
+  return defaultDots[condType] || '約3万ドット（推定）';
 }
 
 // ===== BA FRAME: 結果フレーム表示 =====
-function drawSMPSimulation(beforeDataURL) {
+function drawSMPSimulation(beforeDataURL, conditionType) {
+  /*
+   * SMP（スカルプマイクロピグメンテーション）シミュレーション v3
+   * ─────────────────────────────────────────────────
+   * 実際のSMP施術：0.001mm程度の極小ドットを数千～数万回打つ。
+   * 個々のドットは肉眼では見えないが、集積により肌色（頭皮露出部分）が
+   * 徐々に暗くなり、髪の毛があるように見える。
+   *
+   * アルゴリズム：
+   * 1. 施術エリア（肌色＝明るいピクセル）を検出
+   * 2. 周辺の髪色をサンプリング
+   * 3. 各ピクセルの明るさに応じて、肌色→髪色へ自然にブレンド
+   *    （明るい＝頭皮露出が多い → より強くブレンド）
+   * 4. ガウシアンぼかしで境界を自然に
+   * 結果：薄毛部分の肌色が自然に消え、髪があるように見える
+   */
+  conditionType = conditionType || 'thinning';
   var cv = document.getElementById('smpSimCanvas');
   if (!cv) return;
   var img = new Image();
@@ -1422,94 +1548,133 @@ function drawSMPSimulation(beforeDataURL) {
     var w = img.width, h = img.height;
     cv.width = w; cv.height = h;
     var ctx = cv.getContext('2d');
+
+    // 1. 元画像をそのまま描画
     ctx.drawImage(img, 0, 0, w, h);
 
-    // --- 頭皮エリア（上部70%）にSMPドットをオーバーレイ ---
-    var scalpH = h * 0.68;
+    // 2. 元画像のピクセルデータを取得
+    var imgData = ctx.getImageData(0, 0, w, h);
+    var px = imgData.data;
+    // 元データのコピーを保持（読み取り専用）
+    var orig = new Uint8ClampedArray(px);
 
-    // 1. 軽いコントラスト強化（頭皮を引き締める）
-    ctx.save();
-    ctx.globalCompositeOperation = 'multiply';
-    ctx.globalAlpha = 0.18;
-    ctx.fillStyle = '#1a1510';
-    ctx.fillRect(0, 0, w, scalpH);
-    ctx.restore();
-
-    // 2. 生え際ライン — グラデーションシャドウ
-    ctx.save();
-    var lineGrad = ctx.createLinearGradient(0, scalpH * 0.12, 0, scalpH * 0.28);
-    lineGrad.addColorStop(0, 'rgba(25,20,18,0.55)');
-    lineGrad.addColorStop(1, 'rgba(25,20,18,0)');
-    ctx.fillStyle = lineGrad;
-    ctx.fillRect(w * 0.08, scalpH * 0.12, w * 0.84, scalpH * 0.2);
-    ctx.restore();
-
-    // 3. マイクロドット描画
-    ctx.save();
-    var seed = 42;
-    function seededRand() {
-      seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-      return (seed >>> 0) / 0xffffffff;
+    // 3. 髪色をサンプリング：画像内の暗いピクセル（＝既存の髪）の平均色
+    var hR = 0, hG = 0, hB = 0, hCnt = 0;
+    var step = 3; // サンプリング間隔
+    for (var sy = 0; sy < h; sy += step) {
+      for (var sx = 0; sx < w; sx += step) {
+        var si = (sy * w + sx) * 4;
+        var sB = (orig[si] * 0.299 + orig[si+1] * 0.587 + orig[si+2] * 0.114) / 255;
+        // 暗いピクセル = 髪の毛（極端に暗い＝背景は除外）
+        if (sB > 0.04 && sB < 0.20) {
+          hR += orig[si]; hG += orig[si+1]; hB += orig[si+2];
+          hCnt++;
+        }
+      }
+    }
+    if (hCnt > 0) {
+      hR = Math.floor(hR / hCnt);
+      hG = Math.floor(hG / hCnt);
+      hB = Math.floor(hB / hCnt);
+    } else {
+      // フォールバック：黒髪
+      hR = 30; hG = 26; hB = 24;
     }
 
-    var spacing = Math.min(w, h) * 0.034;
-    var dotR    = spacing * 0.13;
+    // 4. condition別の閾値設定
+    //    brightLow: これ以下は髪がある（施術不要）
+    //    brightHigh: これ以上は完全に頭皮露出（最大ブレンド）
+    //    maxBlend: 最大ブレンド率（0〜1、自然に見える上限）
+    var brightLow, brightHigh, maxBlend;
+    if (conditionType === 'scar') {
+      brightLow = 0.28; brightHigh = 0.65; maxBlend = 0.70;
+    } else if (conditionType === 'hairline') {
+      brightLow = 0.22; brightHigh = 0.55; maxBlend = 0.72;
+    } else if (conditionType === 'patch') {
+      brightLow = 0.22; brightHigh = 0.60; maxBlend = 0.75;
+    } else {
+      // thinning（デフォルト）
+      brightLow = 0.20; brightHigh = 0.55; maxBlend = 0.68;
+    }
 
-    // Single getImageData call for entire canvas (performance: 1 GPU readback instead of ~560)
-    var allPixData = ctx.getImageData(0, 0, w, Math.ceil(scalpH)).data;
+    // 5. ピクセル単位のSMPブレンド処理
+    //    明るいピクセル（肌色＝頭皮露出）を髪色に向かって徐々にブレンド
+    //    数万のドットが集積した結果を直接シミュレート
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var i = (y * w + x) * 4;
+        var r = orig[i], g = orig[i+1], b = orig[i+2];
+        var brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
 
-    for (var row = 0; row * spacing < scalpH; row++) {
-      var y0 = row * spacing * 0.82;
-      var rowOffset = (row % 2) * spacing * 0.5;
-      for (var col = 0; col * spacing < w + spacing; col++) {
-        var x0 = col * spacing + rowOffset;
+        // 暗いピクセル（既に髪がある）はスキップ
+        if (brightness <= brightLow) continue;
 
-        // 端は密度を下げる（自然なフェード）
-        var ex = Math.abs(x0 - w * 0.5) / (w * 0.5);
-        // 下部ほど密度を下げる
-        var ey = y0 / scalpH;
-        // 生え際ライン付近（上部15-30%）は最高密度
-        var frontBoost = (ey > 0.15 && ey < 0.32) ? 0.18 : 0;
-        var density = 0.55 + frontBoost - ex * 0.25 - ey * 0.22;
-        if (density < 0.05) continue;
-        if (seededRand() > density) continue;
+        // ブレンド率：明るいほど強く（肌色が多い＝より多くのドットが必要）
+        var t = (brightness - brightLow) / (brightHigh - brightLow);
+        t = Math.max(0, Math.min(1, t));
+        // イージング：緩やかに立ち上げてエッジをソフトに
+        t = t * t * (3 - 2 * t); // smoothstep
+        var blend = t * maxBlend;
 
-        var jx = (seededRand() - 0.5) * spacing * 0.5;
-        var jy = (seededRand() - 0.5) * spacing * 0.5;
-        var px = x0 + jx, py = y0 + jy;
-        if (px < 0 || px > w || py < 0 || py > scalpH) continue;
+        // ターゲット色：髪色に微妙なバリエーション（元の色味を少し残す）
+        // 完全な塗りつぶしではなく、元の肌色と髪色の自然な中間
+        var tR = hR * 0.85 + r * 0.15;
+        var tG = hG * 0.85 + g * 0.15;
+        var tB = hB * 0.85 + b * 0.15;
 
-        // ドット色：既存の頭皮色より少し暗く（自然なマッチング）
-        var pIdx = (Math.floor(py) * w + Math.floor(px)) * 4;
-        var baseL = (allPixData[pIdx] * 0.299 + allPixData[pIdx+1] * 0.587 + allPixData[pIdx+2] * 0.114);
-        var dotAlpha = 0.62 + seededRand() * 0.22;
-        var dotColor = Math.max(0, Math.min(40, Math.floor(baseL * 0.22)));
-
-        ctx.save();
-        ctx.globalAlpha = dotAlpha;
-        ctx.fillStyle = 'rgb('+dotColor+','+dotColor+','+Math.floor(dotColor*0.9)+')';
-        ctx.beginPath();
-        // ドットを微妙に楕円にして自然に見せる
-        ctx.ellipse(px, py, dotR, dotR * (0.85 + seededRand()*0.3), seededRand()*Math.PI, 0, Math.PI*2);
-        ctx.fill();
-        ctx.restore();
+        // ブレンド実行：元の色 → ターゲット色
+        px[i]   = Math.round(r + (tR - r) * blend);
+        px[i+1] = Math.round(g + (tG - g) * blend);
+        px[i+2] = Math.round(b + (tB - b) * blend);
+        // アルファは変更しない
       }
     }
 
-    // 4. 生え際エッジ：ソフトグラデーションで境界をぼかす
-    ctx.save();
-    var edgeGrad = ctx.createLinearGradient(0, scalpH * 0.78, 0, scalpH);
-    edgeGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    edgeGrad.addColorStop(1, 'rgba(0,0,0,0.4)');
-    ctx.fillStyle = edgeGrad;
-    ctx.fillRect(0, scalpH * 0.78, w, scalpH * 0.22);
-    ctx.restore();
+    // 6. ブレンド結果を書き戻し
+    ctx.putImageData(imgData, 0, 0);
+
+    // 7. 境界をなめらかにするためのソフトぼかしパス
+    //    StackBlur的な簡易ガウシアン（施術エリア境界の自然化）
+    //    小さなカーネルでエッジだけぼかす
+    var blurRadius = Math.max(1, Math.round(Math.min(w, h) * 0.004));
+    // Canvas native blur (supported in modern browsers)
+    ctx.filter = 'blur(' + blurRadius + 'px)';
+    ctx.globalAlpha = 0.35; // 軽くブレンド
+    ctx.drawImage(cv, 0, 0);
+    ctx.filter = 'none';
+    ctx.globalAlpha = 1.0;
+
+    // 8. 元画像の髪部分を復元（ぼかしで髪のディテールが失われないように）
+    //    暗い部分は元画像からそのまま上書き
+    var finalData = ctx.getImageData(0, 0, w, h);
+    var fd = finalData.data;
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var i = (y * w + x) * 4;
+        var origBright = (orig[i] * 0.299 + orig[i+1] * 0.587 + orig[i+2] * 0.114) / 255;
+        // 髪のある部分（暗いピクセル）は元画像を優先して復元
+        if (origBright < brightLow + 0.05) {
+          fd[i] = orig[i];
+          fd[i+1] = orig[i+1];
+          fd[i+2] = orig[i+2];
+        } else if (origBright < brightLow + 0.12) {
+          // 境界部分はソフトにブレンド
+          var restore = 1 - (origBright - brightLow - 0.05) / 0.07;
+          restore = Math.max(0, Math.min(1, restore));
+          fd[i]   = Math.round(fd[i]   * (1-restore) + orig[i]   * restore);
+          fd[i+1] = Math.round(fd[i+1] * (1-restore) + orig[i+1] * restore);
+          fd[i+2] = Math.round(fd[i+2] * (1-restore) + orig[i+2] * restore);
+        }
+      }
+    }
+    ctx.putImageData(finalData, 0, 0);
   };
   img.src = beforeDataURL;
 }
 
 function showBAResult(beforeDataURL, claudeText) {
   var dotCount = extractDotCount(claudeText);
+  var condType = detectConditionType(claudeText);
   var frame = document.getElementById('baResultFrame');
   var beforeImg = document.getElementById('baBeforeImg');
   var dotCountEl = document.getElementById('baDotCount');
@@ -1519,23 +1684,25 @@ function showBAResult(beforeDataURL, claudeText) {
 
   if (beforeImg) beforeImg.src = beforeDataURL;
   if (dotCountEl) dotCountEl.textContent = dotCount ? dotCount + ' dots' : '';
-  if (claudeTextEl) claudeTextEl.innerHTML = claudeText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  if (claudeTextEl) claudeTextEl.innerHTML = renderMarkdown(claudeText);
   if (adviceBox) adviceBox.style.display = 'block';
   if (frame) frame.style.display = 'block';
 
-  // SMP canvas シミュレーション描画
-  drawSMPSimulation(beforeDataURL);
+  // SMP canvas シミュレーション描画（condition-aware）
+  drawSMPSimulation(beforeDataURL, condType);
 
-  // スコアバー表示（AIテキストから数値を推定）
+  // スコアバー表示（condition-aware labels and scores）
   if (scoreRow) {
     scoreRow.style.display = 'flex';
-    var scores = estimateScores(claudeText);
+    var scoreData = estimateScores(claudeText, condType);
     ['1','2','3'].forEach(function(n, i) {
       var fill = document.getElementById('sFill'+n);
       var val  = document.getElementById('sVal'+n);
-      var pct  = scores[i];
+      var lbl  = document.getElementById('sLbl'+n);
+      var pct  = scoreData.values[i];
       if (fill) setTimeout(function(f,p){f.style.width=p+'%';}, 200, fill, pct);
       if (val)  val.textContent = pct + '%';
+      if (lbl)  lbl.textContent = scoreData.labels[i];
     });
   }
 
@@ -1543,15 +1710,79 @@ function showBAResult(beforeDataURL, claudeText) {
   if (frame) frame.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
-function estimateScores(text) {
-  // テキスト内容からスコアを推定（前向きキーワードほど高スコア）
-  var density = 72, natural = 85, youth = 78;
-  if (/全体|広範囲|全頭|全域/.test(text)) density = Math.min(95, density + 15);
-  if (/ヘアライン|生え際|フロント/.test(text)) natural = Math.min(96, natural + 8);
-  if (/若|若々|年齢|印象/.test(text)) youth = Math.min(97, youth + 12);
-  if (/薄毛|脱毛|目立|気になる/.test(text)) density = Math.max(65, density + 8);
-  // 揺らぎを加える
-  return [density, natural, youth].map(function(s){ return Math.min(98, s + Math.floor(Math.random()*7)); });
+function estimateScores(text, condType) {
+  condType = condType || detectConditionType(text);
+  var labels, s1, s2, s3;
+
+  function randRange(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1));
+  }
+
+  // Detect Norwood/Ludwig scale from text for severity-adjusted scoring
+  var scaleMatch = text.match(/(?:Norwood|Hamilton|ノーウッド|ハミルトン)[^IV0-9]*([IV]+[〜~\-]*[IV]*|[0-9]+)/i);
+  var ludwigMatch = text.match(/(?:Ludwig|ルードウィグ|ルートヴィヒ)[^IV0-9]*([IV]+|[0-9]+)/i);
+  var severity = 'moderate'; // default
+  if (scaleMatch) {
+    var nw = scaleMatch[1].replace(/[IV]/gi, function(c) { return {I:'1',V:'5',i:'1',v:'5'}[c]||c; });
+    var nwNum = parseInt(nw) || 4;
+    if (nwNum <= 2) severity = 'mild';
+    else if (nwNum <= 4) severity = 'moderate';
+    else severity = 'severe';
+  } else if (ludwigMatch) {
+    var lw = ludwigMatch[1];
+    if (/I[^IV]|1/.test(lw)) severity = 'mild';
+    else if (/II|2/.test(lw)) severity = 'moderate';
+    else severity = 'severe';
+  }
+
+  if (condType === 'scar') {
+    labels = ['傷跡カバー率', '自然な仕上がり', '目立ちにくさ'];
+    // Scars: smaller area but harder to achieve perfect results
+    s1 = randRange(85, 95);   // Cover rate
+    s2 = randRange(78, 90);   // Natural look (scar tissue harder)
+    s3 = randRange(82, 94);   // Invisibility
+    // Scar type modifiers
+    if (/FUT|FUE|移植|植毛/.test(text)) { s1 += 3; s2 += 2; } // transplant scars respond well
+    if (/火傷|やけど|ケロイド/.test(text)) { s1 -= 5; s2 -= 5; } // burns harder to treat
+  } else if (condType === 'hairline') {
+    labels = ['ライン改善度', '自然な仕上がり', '若返り指数'];
+    s1 = randRange(90, 97);   // Line improvement
+    s2 = randRange(88, 96);   // Natural
+    s3 = severity === 'mild' ? randRange(90, 97) : randRange(85, 93); // Youth
+  } else if (condType === 'patch') {
+    labels = ['カバー率', '自然な仕上がり', '均一性'];
+    s1 = randRange(88, 96);   // Coverage
+    s2 = randRange(85, 94);   // Natural
+    s3 = randRange(86, 95);   // Uniformity
+    if (/円形脱毛/.test(text)) s2 += 3; // alopecia areata responds well
+  } else {
+    // thinning or combined - severity-adjusted
+    labels = ['密度改善効果', '自然な仕上がり', '若返り指数'];
+    if (severity === 'mild') {
+      s1 = randRange(92, 98);  // High improvement for early stage
+      s2 = randRange(93, 98);  // Very natural with existing hair
+      s3 = randRange(90, 97);  // Significant youth boost
+    } else if (severity === 'moderate') {
+      s1 = randRange(88, 95);
+      s2 = randRange(90, 96);
+      s3 = randRange(85, 93);
+    } else { // severe
+      s1 = randRange(82, 92);  // Still good but more coverage needed
+      s2 = randRange(85, 93);
+      s3 = randRange(80, 90);
+    }
+  }
+
+  // Text-based modifiers
+  if (/全体|広範囲|全頭/.test(text)) s1 = Math.min(98, s1 + 2);
+  if (/自然|グラデーション|4D/.test(text)) s2 = Math.min(98, s2 + 2);
+  if (/若|印象|改善/.test(text)) s3 = Math.min(98, s3 + 2);
+  if (/既存毛|残存/.test(text)) s2 = Math.min(98, s2 + 3); // existing hair = more natural
+
+  // Cap at 98
+  s1 = Math.min(98, s1); s2 = Math.min(98, s2); s3 = Math.min(98, s3);
+
+  return { labels: labels, values: [s1, s2, s3] };
 }
 
 // ===== SIMULATOR =====
@@ -1738,11 +1969,10 @@ function analyze() {
   if (!capCv || !capCv.width) { alert('先に写真をアップロードしてください'); return; }
 
   var capBtn=document.getElementById('capBtn'),rstBtn=document.getElementById('rstBtn');
-  var ldDots=document.getElementById('ldDots'),resArea=document.getElementById('resArea');
+  var ldDots=document.getElementById('ldDots');
   if (capBtn) capBtn.style.display='none';
   if (rstBtn) rstBtn.style.display='inline-block';
   if (ldDots) ldDots.classList.add('on');
-  if (resArea) resArea.classList.remove('on');
   setStep(2);
 
   var srcCanvas = resizeForAPI(capCv, 1280);
@@ -1779,20 +2009,28 @@ function analyze() {
 '【STEP 3: SMP施術プランの提案】\n' +
 '- 最適アプローチ（全体カバー／ヘアライン特化／傷跡・パッチ特化／複合プラン）\n' +
 '- 傷跡・パッチがある場合：患部への特別アプローチ（専用色調マッチング・段階的密度設計）\n' +
-'- 施術エリアの優先順位と施術シーケンス\n' +
-'- 推奨ドット数の目安（例：傷跡部約○千ドット＋全体約○万ドット）\n' +
-'- 推奨セッション数と間隔\n\n' +
+'- 施術エリアの優先順位と推奨ドット数をテーブルで明示\n' +
+'- ★重要★ 推定総ドット数を「約○万ドット × ○回」の形式で必ず明記（例：約3万ドット × 3回 = 約9万ドット）\n' +
+'  - 部分的な薄毛の場合：1回あたり約2〜3万ドット × 2〜3回\n' +
+'  - スキンヘッドに近い場合：1回あたり約4〜6万ドット × 3〜4回\n' +
+'  - 傷跡カバーの場合：1回あたり約0.5〜2万ドット × 2〜3回\n' +
+'  - 上記はあくまで目安。画像から推定した状態に合わせて具体的に記載すること\n' +
+'- 推奨セッション数と間隔のテーブル\n\n' +
 
 '【STEP 4: 施術後のビジュアルイメージ】\n' +
 '- 傷跡・パッチが目立たなくなる仕上がり（該当する場合は必ず記載）\n' +
-'- 密度感・自然さの変化（ビフォーアフターのイメージ）\n' +
+'- 密度感・自然さの変化（ビフォーアフターのイメージ）テーブル形式\n' +
 '- 第一印象・年齢印象の変化\n' +
-'- 1ドット＝1円の透明会計：予想総ドット数と参考価格帯\n\n' +
+'- 1ドット＝1円の透明会計：推定総ドット数（全セッション合計）と参考価格帯\n\n' +
 
 '【STEP 5: CIMAの4Dテクニックの強み】\n' +
 '傷跡・特殊部位への対応を含む、自然なランダム配置・グラデーション・個人最適色調マッチングについて。\n\n' +
 
-'温かく専門的なトーンで、具体的・前向きに。傷跡・患部がある方には特に丁寧な希望を持てるアドバイスをお願いします。';
+'★出力フォーマット指示★\n' +
+'- Markdown形式で出力（## 見出し、### 小見出し、| テーブル |、- リスト、**太字** を使用）\n' +
+'- 温かく専門的なトーンで、具体的・前向きに\n' +
+'- 傷跡・患部がある方には特に丁寧な希望を持てるアドバイスを\n' +
+'- テーブルはヘッダー行 + セパレーター行 + データ行の正しい形式で';
 
   fetch('https://api.anthropic.com/v1/messages', {
     method:'POST',
@@ -1802,7 +2040,7 @@ function analyze() {
       'anthropic-version':'2023-06-01',
       'anthropic-dangerous-direct-browser-access':'true'
     },
-    body:JSON.stringify({model:'claude-opus-4-5',max_tokens:1200,
+    body:JSON.stringify({model:'claude-opus-4-5',max_tokens:2000,
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
         {type:'text',text:prompt}
@@ -1816,22 +2054,20 @@ function analyze() {
   .then(function(data){
     if (data.error) throw new Error(data.error.message||'API error');
     var txt=(data.content&&data.content[0]&&data.content[0].text)?data.content[0].text:'AIからの応答を取得できませんでした。';
-    // Sanitize: escape HTML then restore safe line breaks
-    var safe = txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-    var resTxt=document.getElementById('resTxt');
-    if (resTxt) resTxt.innerHTML=safe;
     showBAResult(beforeDataURL, txt);
     setStep(3);
     if (ldDots) ldDots.classList.remove('on');
-    if (resArea) resArea.classList.add('on');
   })
   .catch(function(err){
     var msg = err && err.message ? err.message : 'ネットワークエラーが発生しました';
-    var resTxt=document.getElementById('resTxt');
-    if (resTxt) resTxt.innerHTML='<span style="color:#ff6b6b;">⚠ '+msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<br>APIキー・ネットワーク接続をご確認ください。</span>';
+    var advBox = document.getElementById('adviceBox');
+    var claudeEl = document.getElementById('claudeAdvice');
+    if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">&#9888; '+msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<br>APIキー・ネットワーク接続をご確認ください。</span>';
+    if (advBox) advBox.style.display='block';
+    var frame = document.getElementById('baResultFrame');
+    if (frame) frame.style.display='block';
     setStep(3);
     if (ldDots) ldDots.classList.remove('on');
-    if (resArea) resArea.classList.add('on');
   });
 }
 
@@ -1843,7 +2079,6 @@ function resetSim() {
   var zone     = document.getElementById('camArea');
   var capBtn   = document.getElementById('capBtn');
   var rstBtn   = document.getElementById('rstBtn');
-  var resArea  = document.getElementById('resArea');
   var baFrame  = document.getElementById('baResultFrame');
   var imgUp    = document.getElementById('imgUp');
   var camCap   = document.getElementById('camCapture');
@@ -1852,7 +2087,6 @@ function resetSim() {
   if (zone)    zone.classList.remove('has-image','drag-over','camera-active');
   if (capBtn)  capBtn.style.display='none';
   if (rstBtn)  rstBtn.style.display='none';
-  if (resArea) resArea.classList.remove('on');
   if (baFrame) baFrame.style.display='none';
   if (imgUp)   imgUp.value='';
   if (camCap)  camCap.value='';
@@ -1865,25 +2099,56 @@ function resetSim() {
   setStep(1);
 }
 
-// Hero動画: フェードイン表示
+// Hero動画: マルチOS対応フェードイン (iOS Safari / Android Chrome / Win / macOS)
 (function() {
   var vid = document.getElementById('heroVid');
   var bgImg = document.querySelector('.hero-bg-img');
   if (!vid) return;
+  var shown = false;
   function showVideo() {
+    if (shown) return;
+    shown = true;
     vid.style.opacity = '1';
     if (bgImg) { bgImg.style.transition = 'opacity 1.2s ease'; bgImg.style.opacity = '0'; }
   }
+  // 全ブラウザ共通イベント
   vid.addEventListener('canplay', showVideo);
   vid.addEventListener('playing', showVideo);
-  vid.addEventListener('error', function() { vid.style.display = 'none'; });
-  // iOS / Safari対策: loadeddata でもフェードイン
+  vid.addEventListener('loadedmetadata', showVideo);
   vid.addEventListener('loadeddata', function() { if (vid.readyState >= 2) showVideo(); });
-  // 強制再生トリガー（iOS Safari対策）
-  document.addEventListener('touchstart', function _touch() {
+  vid.addEventListener('timeupdate', function() { if (vid.currentTime > 0) showVideo(); });
+  // エラー時はフォールバック画像のまま（グレースフルデグラデーション）
+  vid.addEventListener('error', function() { vid.style.display = 'none'; });
+  // 即座に再生可能なら表示（ブラウザキャッシュ対応）
+  if (vid.readyState >= 2) showVideo();
+  // 自動再生トリガー（全OS共通）
+  var playPromise = vid.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(function() {
+      // autoplayブロック時: muted確認後リトライ
+      vid.muted = true;
+      vid.play().catch(function(){});
+    });
+  }
+  // iOS Safari / Android: タッチで再生開始（低電力モード対策）
+  function touchPlay() {
     vid.play().catch(function(){});
-    document.removeEventListener('touchstart', _touch);
-  }, {once:true});
+    document.removeEventListener('touchstart', touchPlay);
+    document.removeEventListener('click', touchPlay);
+  }
+  document.addEventListener('touchstart', touchPlay, {once:true, passive:true});
+  document.addEventListener('click', touchPlay, {once:true});
+  // フォールバック: 4秒後に動画が少しでもロードされていれば表示
+  setTimeout(function() {
+    if (!shown && vid.readyState >= 1) showVideo();
+    // 8秒後: 何も起きなければ動画を諦めてフォールバック画像を確実表示
+    setTimeout(function() {
+      if (!shown && vid.readyState < 1) {
+        vid.style.display = 'none';
+        if (bgImg) bgImg.style.opacity = '1';
+      }
+    }, 4000);
+  }, 4000);
 })();
 </script>
 </body>

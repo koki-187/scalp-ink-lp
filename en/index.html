@@ -56,38 +56,39 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:15px 44px;
 .lang-sw a:hover{color:var(--gd);border-color:var(--gd);}
 .lang-sw a.active{color:var(--bk);background:var(--gd);border-color:var(--gd);font-weight:500;}
 
-/* HERO */
+/* HERO — multi-OS compatible (iOS Safari / Android Chrome / Windows / macOS) */
 #hero{
   position:relative;
   height:100vh;
-  /* iOS Safari: svh = small viewport height (excludes collapsible toolbar) */
-  height:100svh;
+  height:100svh; /* iOS Safari: excludes collapsible toolbar */
+  height:100dvh; /* Android Chrome: dynamic viewport height */
   min-height:500px;
   display:flex;align-items:flex-end;overflow:hidden;
 }
 .hero-bg{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;}
 .hero-bg video{
-  /* Full-cover video: mathematical 16:9 fill — works on all OS/browsers */
   position:absolute;
   top:50%;left:50%;
-  /* 16:9 math: width=100vw → height=56.25vw | height=100vh → width=177.78vh */
-  width:100vw;
-  height:56.25vw;
-  min-height:100%;
-  min-width:177.78vh;
+  width:100vw;height:56.25vw;
+  min-height:100%;min-width:177.78vh;
   transform:translate(-50%,-50%);
   -webkit-transform:translate(-50%,-50%);
   object-fit:cover;
-  object-position:center center;
   filter:brightness(0.45);
+  -webkit-filter:brightness(0.45);
+  z-index:0;
 }
-.hero-bg-img{position:absolute;inset:0;
+.hero-bg-img{
+  position:absolute;inset:0;
   background-image:url("../assets/hero-fallback.jpg");
-  background-size:cover;background-position:center 20%;filter:brightness(0.5);}
+  background-size:cover;background-position:center 20%;
+  filter:brightness(0.5);-webkit-filter:brightness(0.5);
+  z-index:0;
+}
 .hero-bg::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(110deg,rgba(8,8,8,.88) 0%,rgba(8,8,8,.45) 60%,rgba(8,8,8,.2) 100%);}
+  background:linear-gradient(110deg,rgba(8,8,8,.88) 0%,rgba(8,8,8,.45) 60%,rgba(8,8,8,.2) 100%);z-index:1;}
 .hero-bg::before{content:"";position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(8,8,8,0) 30%,rgba(8,8,8,.97) 100%);z-index:1;}
+  background:linear-gradient(180deg,rgba(8,8,8,0) 30%,rgba(8,8,8,.97) 100%);z-index:2;}
 #dot-c{position:absolute;inset:0;opacity:.15;z-index:2;pointer-events:none;}
 .hero-body{position:relative;z-index:3;padding:0 52px 88px;max-width:720px;}
 .hero-tag{display:inline-flex;align-items:center;gap:10px;margin-bottom:20px;
@@ -163,24 +164,6 @@ section{position:relative;z-index:1;}
 .fc-t{font-size:.85rem;font-weight:500;color:var(--gd);margin-bottom:4px;}
 .fc-d{font-size:.76rem;color:rgba(245,245,240,.5);line-height:1.7;}
 
-/* PROCESS VIDEOS */
-#process-vids{background:var(--bk);border-top:1px solid rgba(201,168,76,.08);}
-.pvid-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:680px;margin:0 auto;}
-.pvid-card{position:relative;border-radius:4px;overflow:hidden;border:1px solid rgba(201,168,76,.13);
-  background:var(--dp);transition:border-color .3s;}
-.pvid-card:hover{border-color:rgba(201,168,76,.4);}
-.pvid-card video{width:100%;display:block;aspect-ratio:9/16;object-fit:cover;filter:brightness(0.85);}
-.pvid-label{position:absolute;bottom:0;left:0;right:0;padding:14px 16px;
-  background:linear-gradient(transparent,rgba(8,8,8,.92));
-  font-size:.72rem;letter-spacing:.08em;color:rgba(245,245,240,.7);}
-.pvid-label span{display:block;font-family:"Cormorant Garamond",serif;font-size:1rem;
-  color:var(--gd);letter-spacing:.14em;margin-bottom:2px;}
-@media(max-width:600px){
-  .pvid-grid{grid-template-columns:1fr 1fr;gap:12px;}
-  .pvid-label{padding:10px 12px;font-size:.65rem;}
-  .pvid-label span{font-size:.82rem;}
-}
-
 /* TARGET */
 #target{background:var(--bk);}
 .tgt-hd{text-align:center;margin-bottom:40px;}
@@ -215,9 +198,6 @@ section{position:relative;z-index:1;}
 .ba-side img.ba-img{width:100%;height:100%;object-fit:cover;display:block;}
 .ba-sep{position:absolute;top:0;bottom:0;left:50%;width:2px;
   background:var(--gd);z-index:5;transform:translateX(-50%);}
-.fan-wrap{position:absolute;bottom:-6%;left:50%;transform:translateX(-50%);
-  z-index:4;pointer-events:none;width:86%;}
-.fan-wrap img{width:100%;height:auto;display:block;opacity:.97;}
 .ba-footer{background:#000;padding:12px 20px;
   display:flex;justify-content:space-between;align-items:center;
   border-top:1px solid rgba(201,168,76,.3);}
@@ -354,11 +334,22 @@ section{position:relative;z-index:1;}
 .ld-dots.on{display:flex;}
 .ld-d{width:7px;height:7px;border-radius:50%;background:var(--gd);animation:dp 1.4s infinite;}
 .ld-d:nth-child(2){animation-delay:.2s;}.ld-d:nth-child(3){animation-delay:.4s;}
-.res-area{margin-top:22px;display:none;}
-.res-area.on{display:block;}
 .res-box{border:1px solid rgba(201,168,76,.18);padding:24px;background:rgba(201,168,76,.03);}
 .res-lbl{font-size:.6rem;letter-spacing:.28em;color:var(--gd);text-transform:uppercase;margin-bottom:9px;}
 .res-txt{font-size:.82rem;color:rgba(245,245,240,.7);line-height:1.92;}
+.rpt-h2{font-size:.95rem;color:var(--gd);letter-spacing:.08em;margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid rgba(201,168,76,.15);}
+.rpt-h3{font-size:.82rem;color:rgba(245,245,240,.88);letter-spacing:.06em;margin:14px 0 6px;}
+.rpt-h3 .emoji{margin-right:4px;}
+.rpt-hr{border:none;border-top:1px solid rgba(201,168,76,.12);margin:14px 0;}
+.rpt-tbl{width:100%;border-collapse:collapse;margin:10px 0;font-size:.72rem;}
+.rpt-tbl th,.rpt-tbl td{border:1px solid rgba(201,168,76,.18);padding:6px 10px;text-align:left;}
+.rpt-tbl th{background:rgba(201,168,76,.08);color:var(--gd);font-weight:600;font-size:.62rem;letter-spacing:.08em;}
+.rpt-tbl td{color:rgba(245,245,240,.7);}
+.rpt-ul{margin:6px 0;padding-left:16px;list-style:none;}
+.rpt-ul li{position:relative;padding-left:12px;margin-bottom:4px;font-size:.78rem;color:rgba(245,245,240,.68);line-height:1.7;}
+.rpt-ul li::before{content:'';position:absolute;left:0;top:.6em;width:4px;height:4px;border-radius:50%;background:var(--gd);}
+.rpt-code{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.1);padding:10px 14px;margin:8px 0;font-size:.74rem;line-height:1.6;color:rgba(245,245,240,.72);}
+.ld-msg{width:100%;text-align:center;font-size:.68rem;color:rgba(201,168,76,.5);letter-spacing:.12em;margin-top:8px;}
 
 
 /* TRUST */
@@ -543,11 +534,19 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 <!-- HERO（動画対応・フォールバック画像あり）-->
 <section id="hero">
   <div class="hero-bg">
-    <video id="heroVid" autoplay muted loop playsinline preload="metadata" style="opacity:0;transition:opacity 1.2s ease;">
-      <source src="../assets/hero.mp4" type="video/mp4">
-    </video>
-    <!-- 動画なし時のフォールバック画像 -->
+    <!-- 動画なし時 / ロード中のフォールバック画像（常に背面に表示） -->
     <div class="hero-bg-img"></div>
+    <!-- Multi-OS対応: src直指定, poster, webkit-playsinline(旧iOS), playsinline(新iOS/Android) -->
+    <video id="heroVid"
+      src="../assets/hero.mp4"
+      poster="../assets/hero-fallback.jpg"
+      autoplay muted loop playsinline
+      webkit-playsinline
+      preload="auto"
+      disablepictureinpicture
+      disableremoteplayback
+      style="opacity:0;transition:opacity 1.2s ease;"
+    ></video>
   </div>
   <canvas id="dot-c"></canvas>
   <div class="hero-body">
@@ -610,29 +609,6 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <div class="fc rv d1"><div class="fc-n">01</div><div class="fc-t">Safety-Certified Pigment</div><div class="fc-d">All pigments meet human safety standards, ensuring a safe and worry-free procedure.</div></div>
         <div class="fc rv d2"><div class="fc-n">02</div><div class="fc-t">30,000–50,000 Precision Dots per Session</div><div class="fc-d">The machine auto-counts every dot applied. 1 dot = ¥1, fully transparent billing.</div></div>
         <div class="fc rv d3"><div class="fc-n">03</div><div class="fc-t">World-Class Recognition</div><div class="fc-d">Highly acclaimed at international SMP competitions. Experience world-standard results.</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROCESS VIDEOS -->
-<section id="process-vids">
-  <div class="s-in" style="text-align:center;">
-    <span class="s-lbl">Process</span>
-    <h2 class="s-ttl">Treatment Process</h2>
-    <div class="g-line" style="margin:16px auto 36px;"></div>
-    <div class="pvid-grid">
-      <div class="pvid-card rv">
-        <video autoplay muted loop playsinline preload="metadata">
-          <source src="../assets/video-portrait-1.mp4" type="video/mp4">
-        </video>
-        <div class="pvid-label"><span>Process 01</span>Dot application process</div>
-      </div>
-      <div class="pvid-card rv">
-        <video autoplay muted loop playsinline preload="metadata">
-          <source src="../assets/video-portrait-2.mp4" type="video/mp4">
-        </video>
-        <div class="pvid-label"><span>Process 02</span>Finished result</div>
       </div>
     </div>
   </div>
@@ -966,14 +942,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
       </div>
       <div class="ld-dots" id="ldDots">
         <div class="ld-d"></div><div class="ld-d"></div><div class="ld-d"></div>
-      </div>
-
-      <!-- テキスト結果 -->
-      <div class="res-area" id="resArea">
-        <div class="res-box">
-          <div class="res-lbl">AI Treatment Proposal Report</div>
-          <div class="res-txt" id="resTxt"></div>
-        </div>
+        <div class="ld-msg">AI analyzing... approx. 30-60 seconds</div>
       </div>
 
       <!-- BAフレーム結果表示 -->
@@ -985,10 +954,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           </div>
           <div class="ba-imgs" style="position:relative;">
             <div class="ba-side">
-              <img id="baBeforeImg" class="ba-img" src="" alt="Photo Taken">
-              <div class="fan-wrap">
-                <img src="../assets/fan-overlay.png" alt="fan">
-              </div>
+              <img id="baBeforeImg" class="ba-img" src="" alt="Photo Taken" style="background:#0a0a0a;">
             </div>
             <div class="ba-side" style="background:#0a0a0a;overflow:hidden;">
               <div class="smp-sim-wrap" id="smpSimWrap" style="width:100%;height:100%;aspect-ratio:unset;">
@@ -1007,17 +973,17 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <!-- スコアバー -->
         <div class="sim-score-row" id="simScoreRow" style="display:none;">
           <div class="sim-score">
-            <div class="sim-score-lbl">Density Improvement</div>
+            <div class="sim-score-lbl" id="sLbl1">Density Improvement</div>
             <div class="sim-score-bar"><div class="sim-score-fill" id="sFill1"></div></div>
             <div class="sim-score-val" id="sVal1">—</div>
           </div>
           <div class="sim-score">
-            <div class="sim-score-lbl">Natural Finish</div>
+            <div class="sim-score-lbl" id="sLbl2">Natural Finish</div>
             <div class="sim-score-bar"><div class="sim-score-fill" id="sFill2"></div></div>
             <div class="sim-score-val" id="sVal2">—</div>
           </div>
           <div class="sim-score">
-            <div class="sim-score-lbl">Rejuvenation Index</div>
+            <div class="sim-score-lbl" id="sLbl3">Rejuvenation Index</div>
             <div class="sim-score-bar"><div class="sim-score-fill" id="sFill3"></div></div>
             <div class="sim-score-val" id="sVal3">—</div>
           </div>
@@ -1398,21 +1364,185 @@ function swTab(btn) {
 }
 
 // ===== BA FRAME: extract dot count =====
-function extractDotCount(text) {
-  var patterns = [
-    /approx[.\s]?([0-9,]+)\s*dots?/i,
-    /([0-9,]+)\s*[kK]\s*dots?/i,
-    /([0-9,]+)\s*[kK]\s*dot/i
-  ];
-  for (var i=0;i<patterns.length;i++) {
-    var m = text.match(patterns[i]);
-    if (m) return m[0];
+function renderMarkdown(text) {
+  // Escape HTML entities for safety
+  var s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // Code blocks ``` ... ```
+  s = s.replace(/```[\s\S]*?```/g, function(m) {
+    var code = m.replace(/^```\w*\n?/,'').replace(/\n?```$/,'');
+    return '\n<div class="rpt-code">' + code + '</div>\n';
+  });
+
+  var lines = s.split('\n');
+  var out = [];
+  var inTable = false;
+  var inList = false;
+  var headerRowDone = false;
+
+  for (var i = 0; i < lines.length; i++) {
+    var ln = lines[i];
+    var trimmed = ln.trim();
+
+    // Separator line in table (|---|---|)
+    if (/^\|[\s\-:]+\|/.test(trimmed) && !/[a-zA-Z0-9\u3000-\u9fff]/.test(trimmed)) {
+      headerRowDone = true;
+      continue;
+    }
+
+    // Table row
+    if (/^\|(.+)\|$/.test(trimmed)) {
+      if (!inTable) {
+        if (inList) { out.push('</ul>'); inList = false; }
+        out.push('<table class="rpt-tbl">');
+        inTable = true;
+        headerRowDone = false;
+      }
+      var cells = trimmed.replace(/^\||\|$/g,'').split('|');
+      var tag = (!headerRowDone) ? 'th' : 'td';
+      var row = '<tr>';
+      for (var c = 0; c < cells.length; c++) {
+        row += '<' + tag + '>' + cells[c].trim() + '</' + tag + '>';
+      }
+      row += '</tr>';
+      out.push(row);
+      if (!headerRowDone) headerRowDone = true;
+      continue;
+    } else if (inTable) {
+      out.push('</table>');
+      inTable = false;
+      headerRowDone = false;
+    }
+
+    // Horizontal rule
+    if (/^(-{3,}|_{3,})$/.test(trimmed)) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<hr class="rpt-hr">');
+      continue;
+    }
+
+    // Headings
+    if (/^### (.+)$/.test(trimmed)) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<h4 class="rpt-h3">' + trimmed.replace(/^### /,'') + '</h4>');
+      continue;
+    }
+    if (/^## (.+)$/.test(trimmed)) {
+      if (inList) { out.push('</ul>'); inList = false; }
+      out.push('<h3 class="rpt-h2">' + trimmed.replace(/^## /,'') + '</h3>');
+      continue;
+    }
+
+    // List items (- item or * item)
+    if (/^[-*]\s+(.+)$/.test(trimmed)) {
+      if (!inList) {
+        out.push('<ul class="rpt-ul">');
+        inList = true;
+      }
+      out.push('<li>' + trimmed.replace(/^[-*]\s+/,'') + '</li>');
+      continue;
+    } else if (inList && trimmed === '') {
+      out.push('</ul>');
+      inList = false;
+    }
+
+    // Empty lines
+    if (trimmed === '') {
+      if (!inList) out.push('<br>');
+      continue;
+    }
+
+    // Normal text
+    if (inList) { out.push('</ul>'); inList = false; }
+    out.push(ln + '<br>');
   }
-  return 'Approx. 30,000 dots (est.)';
+
+  if (inTable) out.push('</table>');
+  if (inList) out.push('</ul>');
+
+  var result = out.join('\n');
+
+  // Inline formatting: bold then italic
+  result = result.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  result = result.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  return result;
+}
+
+// ===== CONDITION TYPE DETECTION =====
+function detectConditionType(text) {
+  var hasScar = /傷跡|瘢痕|手術跡|外傷|移植痕|scar/i.test(text);
+  var hasHairline = /ヘアライン|生え際|M字|後退|hairline/i.test(text);
+  var hasThinning = /薄毛|びまん|頭頂部|AGA|密度不足|全体型/i.test(text);
+  var hasPatch = /円形脱毛|パッチ|局所|脱毛パッチ/i.test(text);
+
+  var count = (hasScar?1:0) + (hasHairline?1:0) + (hasThinning?1:0) + (hasPatch?1:0);
+  if (count >= 2) return 'combined';
+  if (hasScar) return 'scar';
+  if (hasHairline) return 'hairline';
+  if (hasPatch) return 'patch';
+  return 'thinning';
+}
+
+// ===== BA FRAME: dot count extraction =====
+function extractDotCount(text) {
+  // 1. Try to find total dot count patterns (English)
+  var totalPatterns = [
+    /total[^0-9]*approx(?:imately)?\.?\s*([0-9,]+)\s*dots?/i,
+    /estimated\s+total[^0-9]*([0-9,]+)\s*dots?/i,
+    /approx(?:imately)?\.?\s*([0-9,]+)\s*dots?\s*(?:total|overall|in total)/i
+  ];
+  for (var i = 0; i < totalPatterns.length; i++) {
+    var m = text.match(totalPatterns[i]);
+    if (m) {
+      var num = parseInt(m[1].replace(/,/g, ''));
+      return 'Approx. ' + num.toLocaleString() + ' dots (est.)';
+    }
+  }
+  // 2. Sum up individual area dot counts
+  var dotNums = [];
+  var areaPattern = /approx(?:imately)?\.?\s*([0-9,]+)\s*(?:to|-)\s*([0-9,]+)\s*dots?|approx(?:imately)?\.?\s*([0-9,]+)\s*dots?/gi;
+  var match;
+  while ((match = areaPattern.exec(text)) !== null) {
+    var val;
+    if (match[2]) {
+      val = parseInt(match[2].replace(/,/g, ''));
+    } else if (match[3]) {
+      val = parseInt(match[3].replace(/,/g, ''));
+    } else {
+      val = parseInt(match[1].replace(/,/g, ''));
+    }
+    if (!isNaN(val) && val > 100) dotNums.push(val);
+  }
+  if (dotNums.length > 0) {
+    var total = dotNums.reduce(function(a, b) { return a + b; }, 0);
+    return 'Approx. ' + total.toLocaleString() + ' dots (est.)';
+  }
+  // 3. Fallback: condition-based estimate
+  var condType = detectConditionType(text);
+  var defaultDots = { thinning: 'Approx. 30,000 dots (est.)', scar: 'Approx. 10,000 dots (est.)', hairline: 'Approx. 20,000 dots (est.)', patch: 'Approx. 15,000 dots (est.)', combined: 'Approx. 30,000 dots (est.)' };
+  return defaultDots[condType] || 'Approx. 30,000 dots (est.)';
 }
 
 // ===== BA FRAME: show result frame =====
-function drawSMPSimulation(beforeDataURL) {
+function drawSMPSimulation(beforeDataURL, conditionType) {
+  /*
+   * SMP (Scalp Micropigmentation) Simulation v3
+   * ─────────────────────────────────────────────
+   * Real SMP: ~0.001mm micro-dots applied thousands to tens of thousands of times.
+   * Individual dots are invisible to the naked eye, but their accumulation
+   * gradually darkens skin-colored areas (exposed scalp), creating the
+   * appearance of hair.
+   *
+   * Algorithm:
+   * 1. Detect treatment area (skin-colored = bright pixels = exposed scalp)
+   * 2. Sample surrounding hair color
+   * 3. Blend each pixel from skin color toward hair color based on brightness
+   *    (brighter = more scalp exposure = stronger blend)
+   * 4. Soft gaussian blur for natural boundary transitions
+   * Result: thinning areas naturally darken, appearing as if hair is present
+   */
+  conditionType = conditionType || 'thinning';
   var cv = document.getElementById('smpSimCanvas');
   if (!cv) return;
   var img = new Image();
@@ -1420,94 +1550,105 @@ function drawSMPSimulation(beforeDataURL) {
     var w = img.width, h = img.height;
     cv.width = w; cv.height = h;
     var ctx = cv.getContext('2d');
+
+    // 1. Draw original image as-is
     ctx.drawImage(img, 0, 0, w, h);
 
-    // --- Overlay SMP dots on scalp area (top 70%) ---
-    var scalpH = h * 0.68;
+    // 2. Get pixel data
+    var imgData = ctx.getImageData(0, 0, w, h);
+    var px = imgData.data;
+    var orig = new Uint8ClampedArray(px);
 
-    // 1. Slight contrast boost (tighten the scalp)
-    ctx.save();
-    ctx.globalCompositeOperation = 'multiply';
-    ctx.globalAlpha = 0.18;
-    ctx.fillStyle = '#1a1510';
-    ctx.fillRect(0, 0, w, scalpH);
-    ctx.restore();
-
-    // 2. Hairline — gradient shadow
-    ctx.save();
-    var lineGrad = ctx.createLinearGradient(0, scalpH * 0.12, 0, scalpH * 0.28);
-    lineGrad.addColorStop(0, 'rgba(25,20,18,0.55)');
-    lineGrad.addColorStop(1, 'rgba(25,20,18,0)');
-    ctx.fillStyle = lineGrad;
-    ctx.fillRect(w * 0.08, scalpH * 0.12, w * 0.84, scalpH * 0.2);
-    ctx.restore();
-
-    // 3. Draw micro-dots
-    ctx.save();
-    var seed = 42;
-    function seededRand() {
-      seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-      return (seed >>> 0) / 0xffffffff;
+    // 3. Sample hair color from dark pixels
+    var hR = 0, hG = 0, hB = 0, hCnt = 0;
+    var step = 3;
+    for (var sy = 0; sy < h; sy += step) {
+      for (var sx = 0; sx < w; sx += step) {
+        var si = (sy * w + sx) * 4;
+        var sB = (orig[si] * 0.299 + orig[si+1] * 0.587 + orig[si+2] * 0.114) / 255;
+        if (sB > 0.04 && sB < 0.20) {
+          hR += orig[si]; hG += orig[si+1]; hB += orig[si+2];
+          hCnt++;
+        }
+      }
+    }
+    if (hCnt > 0) {
+      hR = Math.floor(hR / hCnt);
+      hG = Math.floor(hG / hCnt);
+      hB = Math.floor(hB / hCnt);
+    } else {
+      hR = 30; hG = 26; hB = 24;
     }
 
-    var spacing = Math.min(w, h) * 0.034;
-    var dotR    = spacing * 0.13;
+    // 4. Condition-specific thresholds
+    var brightLow, brightHigh, maxBlend;
+    if (conditionType === 'scar') {
+      brightLow = 0.28; brightHigh = 0.65; maxBlend = 0.70;
+    } else if (conditionType === 'hairline') {
+      brightLow = 0.22; brightHigh = 0.55; maxBlend = 0.72;
+    } else if (conditionType === 'patch') {
+      brightLow = 0.22; brightHigh = 0.60; maxBlend = 0.75;
+    } else {
+      brightLow = 0.20; brightHigh = 0.55; maxBlend = 0.68;
+    }
 
-    // Single getImageData call for entire canvas (performance: 1 GPU readback instead of ~560)
-    var allPixData = ctx.getImageData(0, 0, w, Math.ceil(scalpH)).data;
-
-    for (var row = 0; row * spacing < scalpH; row++) {
-      var y0 = row * spacing * 0.82;
-      var rowOffset = (row % 2) * spacing * 0.5;
-      for (var col = 0; col * spacing < w + spacing; col++) {
-        var x0 = col * spacing + rowOffset;
-
-        // Reduce density at edges (natural fade)
-        var ex = Math.abs(x0 - w * 0.5) / (w * 0.5);
-        // Reduce density toward the bottom
-        var ey = y0 / scalpH;
-        // Highest density near the hairline (top 15-30%)
-        var frontBoost = (ey > 0.15 && ey < 0.32) ? 0.18 : 0;
-        var density = 0.55 + frontBoost - ex * 0.25 - ey * 0.22;
-        if (density < 0.05) continue;
-        if (seededRand() > density) continue;
-
-        var jx = (seededRand() - 0.5) * spacing * 0.5;
-        var jy = (seededRand() - 0.5) * spacing * 0.5;
-        var px = x0 + jx, py = y0 + jy;
-        if (px < 0 || px > w || py < 0 || py > scalpH) continue;
-
-        // Dot color: slightly darker than existing scalp tone (natural match)
-        var pIdx = (Math.floor(py) * w + Math.floor(px)) * 4;
-        var baseL = (allPixData[pIdx] * 0.299 + allPixData[pIdx+1] * 0.587 + allPixData[pIdx+2] * 0.114);
-        var dotAlpha = 0.62 + seededRand() * 0.22;
-        var dotColor = Math.max(0, Math.min(40, Math.floor(baseL * 0.22)));
-
-        ctx.save();
-        ctx.globalAlpha = dotAlpha;
-        ctx.fillStyle = 'rgb('+dotColor+','+dotColor+','+Math.floor(dotColor*0.9)+')';
-        ctx.beginPath();
-        // Slightly elliptical dots for a natural look
-        ctx.ellipse(px, py, dotR, dotR * (0.85 + seededRand()*0.3), seededRand()*Math.PI, 0, Math.PI*2);
-        ctx.fill();
-        ctx.restore();
+    // 5. Per-pixel SMP blend
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var i = (y * w + x) * 4;
+        var r = orig[i], g = orig[i+1], b = orig[i+2];
+        var brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+        if (brightness <= brightLow) continue;
+        var t = (brightness - brightLow) / (brightHigh - brightLow);
+        t = Math.max(0, Math.min(1, t));
+        t = t * t * (3 - 2 * t);
+        var blend = t * maxBlend;
+        var tR = hR * 0.85 + r * 0.15;
+        var tG = hG * 0.85 + g * 0.15;
+        var tB = hB * 0.85 + b * 0.15;
+        px[i]   = Math.round(r + (tR - r) * blend);
+        px[i+1] = Math.round(g + (tG - g) * blend);
+        px[i+2] = Math.round(b + (tB - b) * blend);
       }
     }
 
-    // 4. Hairline edge: soft gradient to blur the boundary
-    ctx.save();
-    var edgeGrad = ctx.createLinearGradient(0, scalpH * 0.78, 0, scalpH);
-    edgeGrad.addColorStop(0, 'rgba(0,0,0,0)');
-    edgeGrad.addColorStop(1, 'rgba(0,0,0,0.4)');
-    ctx.fillStyle = edgeGrad;
-    ctx.fillRect(0, scalpH * 0.78, w, scalpH * 0.22);
-    ctx.restore();
+    // 6. Write back blended result
+    ctx.putImageData(imgData, 0, 0);
+
+    // 7. Soft blur pass for natural boundary
+    var blurRadius = Math.max(1, Math.round(Math.min(w, h) * 0.004));
+    ctx.filter = 'blur(' + blurRadius + 'px)';
+    ctx.globalAlpha = 0.35;
+    ctx.drawImage(cv, 0, 0);
+    ctx.filter = 'none';
+    ctx.globalAlpha = 1.0;
+
+    // 8. Restore original hair detail
+    var finalData = ctx.getImageData(0, 0, w, h);
+    var fd = finalData.data;
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var i = (y * w + x) * 4;
+        var origBright = (orig[i] * 0.299 + orig[i+1] * 0.587 + orig[i+2] * 0.114) / 255;
+        if (origBright < brightLow + 0.05) {
+          fd[i] = orig[i]; fd[i+1] = orig[i+1]; fd[i+2] = orig[i+2];
+        } else if (origBright < brightLow + 0.12) {
+          var restore = 1 - (origBright - brightLow - 0.05) / 0.07;
+          restore = Math.max(0, Math.min(1, restore));
+          fd[i]   = Math.round(fd[i]*(1-restore) + orig[i]*restore);
+          fd[i+1] = Math.round(fd[i+1]*(1-restore) + orig[i+1]*restore);
+          fd[i+2] = Math.round(fd[i+2]*(1-restore) + orig[i+2]*restore);
+        }
+      }
+    }
+    ctx.putImageData(finalData, 0, 0);
   };
   img.src = beforeDataURL;
 }
 
 function showBAResult(beforeDataURL, claudeText) {
   var dotCount = extractDotCount(claudeText);
+  var condType = detectConditionType(claudeText);
   var frame = document.getElementById('baResultFrame');
   var beforeImg = document.getElementById('baBeforeImg');
   var dotCountEl = document.getElementById('baDotCount');
@@ -1516,40 +1657,106 @@ function showBAResult(beforeDataURL, claudeText) {
   var scoreRow = document.getElementById('simScoreRow');
 
   if (beforeImg) beforeImg.src = beforeDataURL;
-  if (dotCountEl) dotCountEl.textContent = dotCount ? dotCount + ' dots' : '';
-  if (claudeTextEl) claudeTextEl.innerHTML = claudeText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  if (dotCountEl) dotCountEl.textContent = dotCount || '';
+  if (claudeTextEl) claudeTextEl.innerHTML = renderMarkdown(claudeText);
   if (adviceBox) adviceBox.style.display = 'block';
   if (frame) frame.style.display = 'block';
 
-  // SMP canvas シミュレーション描画
-  drawSMPSimulation(beforeDataURL);
+  // SMP canvas simulation (condition-aware)
+  drawSMPSimulation(beforeDataURL, condType);
 
-  // スコアバー表示（AIテキストから数値を推定）
+  // Score bar display (condition-aware labels and scores)
   if (scoreRow) {
     scoreRow.style.display = 'flex';
-    var scores = estimateScores(claudeText);
+    var scoreData = estimateScores(claudeText, condType);
     ['1','2','3'].forEach(function(n, i) {
       var fill = document.getElementById('sFill'+n);
       var val  = document.getElementById('sVal'+n);
-      var pct  = scores[i];
+      var lbl  = document.getElementById('sLbl'+n);
+      var pct  = scoreData.values[i];
       if (fill) setTimeout(function(f,p){f.style.width=p+'%';}, 200, fill, pct);
       if (val)  val.textContent = pct + '%';
+      if (lbl)  lbl.textContent = scoreData.labels[i];
     });
   }
 
-  // スクロール
+  // Scroll
   if (frame) frame.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
-function estimateScores(text) {
-  // テキスト内容からスコアを推定（前向きキーワードほど高スコア）
-  var density = 72, natural = 85, youth = 78;
-  if (/overall|full head|entire|wide area/i.test(text)) density = Math.min(95, density + 15);
-  if (/hairline|front|recession/i.test(text)) natural = Math.min(96, natural + 8);
-  if (/young|age|impression|rejuven/i.test(text)) youth = Math.min(97, youth + 12);
-  if (/thin|loss|noticeable|concern/i.test(text)) density = Math.max(65, density + 8);
-  // 揺らぎを加える
-  return [density, natural, youth].map(function(s){ return Math.min(98, s + Math.floor(Math.random()*7)); });
+function estimateScores(text, condType) {
+  condType = condType || detectConditionType(text);
+  var labels, s1, s2, s3;
+
+  function randRange(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1));
+  }
+
+  // Detect Norwood/Ludwig scale from text for severity-adjusted scoring
+  var scaleMatch = text.match(/(?:Norwood|Hamilton|ノーウッド|ハミルトン)[^IV0-9]*([IV]+[〜~\-]*[IV]*|[0-9]+)/i);
+  var ludwigMatch = text.match(/(?:Ludwig|ルードウィグ|ルートヴィヒ)[^IV0-9]*([IV]+|[0-9]+)/i);
+  var severity = 'moderate'; // default
+  if (scaleMatch) {
+    var nw = scaleMatch[1].replace(/[IV]/gi, function(c) { return {I:'1',V:'5',i:'1',v:'5'}[c]||c; });
+    var nwNum = parseInt(nw) || 4;
+    if (nwNum <= 2) severity = 'mild';
+    else if (nwNum <= 4) severity = 'moderate';
+    else severity = 'severe';
+  } else if (ludwigMatch) {
+    var lw = ludwigMatch[1];
+    if (/I[^IV]|1/.test(lw)) severity = 'mild';
+    else if (/II|2/.test(lw)) severity = 'moderate';
+    else severity = 'severe';
+  }
+
+  if (condType === 'scar') {
+    labels = ['Scar Coverage', 'Natural Finish', 'Concealment'];
+    // Scars: smaller area but harder to achieve perfect results
+    s1 = randRange(85, 95);   // Cover rate
+    s2 = randRange(78, 90);   // Natural look (scar tissue harder)
+    s3 = randRange(82, 94);   // Invisibility
+    // Scar type modifiers
+    if (/FUT|FUE|transplant|graft/i.test(text)) { s1 += 3; s2 += 2; } // transplant scars respond well
+    if (/burn|keloid/i.test(text)) { s1 -= 5; s2 -= 5; } // burns harder to treat
+  } else if (condType === 'hairline') {
+    labels = ['Line Improvement', 'Natural Finish', 'Rejuvenation Index'];
+    s1 = randRange(90, 97);   // Line improvement
+    s2 = randRange(88, 96);   // Natural
+    s3 = severity === 'mild' ? randRange(90, 97) : randRange(85, 93); // Youth
+  } else if (condType === 'patch') {
+    labels = ['Coverage Rate', 'Natural Finish', 'Uniformity'];
+    s1 = randRange(88, 96);   // Coverage
+    s2 = randRange(85, 94);   // Natural
+    s3 = randRange(86, 95);   // Uniformity
+    if (/alopecia areata/i.test(text)) s2 += 3; // alopecia areata responds well
+  } else {
+    // thinning or combined - severity-adjusted
+    labels = ['Density Improvement', 'Natural Finish', 'Rejuvenation Index'];
+    if (severity === 'mild') {
+      s1 = randRange(92, 98);  // High improvement for early stage
+      s2 = randRange(93, 98);  // Very natural with existing hair
+      s3 = randRange(90, 97);  // Significant youth boost
+    } else if (severity === 'moderate') {
+      s1 = randRange(88, 95);
+      s2 = randRange(90, 96);
+      s3 = randRange(85, 93);
+    } else { // severe
+      s1 = randRange(82, 92);  // Still good but more coverage needed
+      s2 = randRange(85, 93);
+      s3 = randRange(80, 90);
+    }
+  }
+
+  // Text-based modifiers
+  if (/overall|full head|entire|wide area/i.test(text)) s1 = Math.min(98, s1 + 2);
+  if (/natural|gradient|4D/i.test(text)) s2 = Math.min(98, s2 + 2);
+  if (/young|impression|rejuven/i.test(text)) s3 = Math.min(98, s3 + 2);
+  if (/existing hair|remaining/i.test(text)) s2 = Math.min(98, s2 + 3); // existing hair = more natural
+
+  // Cap at 98
+  s1 = Math.min(98, s1); s2 = Math.min(98, s2); s3 = Math.min(98, s3);
+
+  return { labels: labels, values: [s1, s2, s3] };
 }
 
 // ===== SIMULATOR =====
@@ -1736,11 +1943,10 @@ function analyze() {
   if (!capCv || !capCv.width) { alert('Please upload a photo first.'); return; }
 
   var capBtn=document.getElementById('capBtn'),rstBtn=document.getElementById('rstBtn');
-  var ldDots=document.getElementById('ldDots'),resArea=document.getElementById('resArea');
+  var ldDots=document.getElementById('ldDots');
   if (capBtn) capBtn.style.display='none';
   if (rstBtn) rstBtn.style.display='inline-block';
   if (ldDots) ldDots.classList.add('on');
-  if (resArea) resArea.classList.remove('on');
   setStep(2);
 
   var srcCanvas = resizeForAPI(capCv, 1280);
@@ -1777,20 +1983,28 @@ function analyze() {
 '[STEP 3: SMP Treatment Plan Proposal]\n' +
 '- Best approach (full coverage / hairline-focused / scar & patch-focused / combined plan)\n' +
 '- If scars/patches are present: special approach (custom tone matching, gradual density design)\n' +
-'- Treatment area priorities and session sequence\n' +
-'- Recommended dot count estimate (e.g., approx. X,000 dots on scar + approx. XX,000 overall)\n' +
-'- Recommended number of sessions and intervals\n\n' +
+'- Treatment area priorities with recommended dot counts in a table\n' +
+'- ★IMPORTANT★ State estimated total dots as: approx. XX,000 dots x N sessions = total YY,000 dots\n' +
+'  - Partial thinning: approx. 20,000-30,000 dots/session x 2-3 sessions\n' +
+'  - Near-bald/full coverage: approx. 40,000-60,000 dots/session x 3-4 sessions\n' +
+'  - Scar coverage: approx. 5,000-20,000 dots/session x 2-3 sessions\n' +
+'  - Adjust based on the actual image analysis\n' +
+'- Recommended session schedule table\n\n' +
 
 '[STEP 4: Post-Treatment Visual Image]\n' +
 '- Finished look with scars/patches made invisible (always include if applicable)\n' +
-'- Change in density and natural appearance (before/after image)\n' +
+'- Change in density and natural appearance (before/after comparison table)\n' +
 '- Change in first impression and perceived age\n' +
-'- Transparent billing at 1 dot = \u00a51: estimated total dot count and reference price range\n\n' +
+'- Transparent billing at 1 dot = \\u00a51: estimated total dots (all sessions combined) and reference price range\n\n' +
 
 '[STEP 5: CIMA 4D Technique Strengths]\n' +
 'Coverage for scars and special areas, natural random placement, gradient design, and personalized tone matching.\n\n' +
 
-'Write in a warm and professional tone, specific and forward-looking. For clients with scars or affected areas, please offer especially encouraging and hopeful advice.';
+'★Output Format★\n' +
+'- Use Markdown (## headings, ### subheadings, | tables |, - lists, **bold**)\n' +
+'- Warm professional tone, specific and forward-looking\n' +
+'- For clients with scars, offer especially encouraging advice\n' +
+'- Tables: header row + separator row + data rows';
 
   fetch('https://api.anthropic.com/v1/messages', {
     method:'POST',
@@ -1800,7 +2014,7 @@ function analyze() {
       'anthropic-version':'2023-06-01',
       'anthropic-dangerous-direct-browser-access':'true'
     },
-    body:JSON.stringify({model:'claude-opus-4-5',max_tokens:1200,
+    body:JSON.stringify({model:'claude-opus-4-5',max_tokens:2000,
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
         {type:'text',text:prompt}
@@ -1814,22 +2028,20 @@ function analyze() {
   .then(function(data){
     if (data.error) throw new Error(data.error.message||'API error');
     var txt=(data.content&&data.content[0]&&data.content[0].text)?data.content[0].text:'Could not retrieve AI response. Please try again.';
-    // Sanitize: escape HTML then restore safe line breaks
-    var safe = txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-    var resTxt=document.getElementById('resTxt');
-    if (resTxt) resTxt.innerHTML=safe;
     showBAResult(beforeDataURL, txt);
     setStep(3);
     if (ldDots) ldDots.classList.remove('on');
-    if (resArea) resArea.classList.add('on');
   })
   .catch(function(err){
     var msg = err && err.message ? err.message : 'A network error occurred.';
-    var resTxt=document.getElementById('resTxt');
-    if (resTxt) resTxt.innerHTML='<span style="color:#ff6b6b;">⚠ '+msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<br>Please check your API key and network connection.</span>';
+    var advBox = document.getElementById('adviceBox');
+    var claudeEl = document.getElementById('claudeAdvice');
+    if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">&#9888; '+msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'<br>Please check your API key and network connection.</span>';
+    if (advBox) advBox.style.display='block';
+    var frame = document.getElementById('baResultFrame');
+    if (frame) frame.style.display='block';
     setStep(3);
     if (ldDots) ldDots.classList.remove('on');
-    if (resArea) resArea.classList.add('on');
   });
 }
 
@@ -1841,7 +2053,6 @@ function resetSim() {
   var zone     = document.getElementById('camArea');
   var capBtn   = document.getElementById('capBtn');
   var rstBtn   = document.getElementById('rstBtn');
-  var resArea  = document.getElementById('resArea');
   var baFrame  = document.getElementById('baResultFrame');
   var imgUp    = document.getElementById('imgUp');
   var camCap   = document.getElementById('camCapture');
@@ -1850,7 +2061,6 @@ function resetSim() {
   if (zone)    zone.classList.remove('has-image','drag-over','camera-active');
   if (capBtn)  capBtn.style.display='none';
   if (rstBtn)  rstBtn.style.display='none';
-  if (resArea) resArea.classList.remove('on');
   if (baFrame) baFrame.style.display='none';
   if (imgUp)   imgUp.value='';
   if (camCap)  camCap.value='';
@@ -1863,25 +2073,48 @@ function resetSim() {
   setStep(1);
 }
 
-// Hero動画: フェードイン表示
+// Hero動画: マルチOS対応フェードイン (iOS Safari / Android Chrome / Win / macOS)
 (function() {
   var vid = document.getElementById('heroVid');
   var bgImg = document.querySelector('.hero-bg-img');
   if (!vid) return;
+  var shown = false;
   function showVideo() {
+    if (shown) return;
+    shown = true;
     vid.style.opacity = '1';
     if (bgImg) { bgImg.style.transition = 'opacity 1.2s ease'; bgImg.style.opacity = '0'; }
   }
   vid.addEventListener('canplay', showVideo);
   vid.addEventListener('playing', showVideo);
-  vid.addEventListener('error', function() { vid.style.display = 'none'; });
-  // iOS / Safari対策: loadeddata でもフェードイン
+  vid.addEventListener('loadedmetadata', showVideo);
   vid.addEventListener('loadeddata', function() { if (vid.readyState >= 2) showVideo(); });
-  // 強制再生トリガー（iOS Safari対策）
-  document.addEventListener('touchstart', function _touch() {
+  vid.addEventListener('timeupdate', function() { if (vid.currentTime > 0) showVideo(); });
+  vid.addEventListener('error', function() { vid.style.display = 'none'; });
+  if (vid.readyState >= 2) showVideo();
+  var playPromise = vid.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(function() {
+      vid.muted = true;
+      vid.play().catch(function(){});
+    });
+  }
+  function touchPlay() {
     vid.play().catch(function(){});
-    document.removeEventListener('touchstart', _touch);
-  }, {once:true});
+    document.removeEventListener('touchstart', touchPlay);
+    document.removeEventListener('click', touchPlay);
+  }
+  document.addEventListener('touchstart', touchPlay, {once:true, passive:true});
+  document.addEventListener('click', touchPlay, {once:true});
+  setTimeout(function() {
+    if (!shown && vid.readyState >= 1) showVideo();
+    setTimeout(function() {
+      if (!shown && vid.readyState < 1) {
+        vid.style.display = 'none';
+        if (bgImg) bgImg.style.opacity = '1';
+      }
+    }, 4000);
+  }, 4000);
 })();
 </script>
 </body>
