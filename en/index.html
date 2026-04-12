@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-B8SKQ9HHPZ"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-17MPNMJ5GN"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-B8SKQ9HHPZ');
+  gtag('config', 'G-17MPNMJ5GN');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,11 +20,19 @@
 <meta property="og:title" content="THE SCALP INK | Scalp Ink by CIMA">
 <meta property="og:description" content="Korean-origin SMP technology. Transparent pricing: 1 dot = ¥1. Trial session ¥3,000. Full-head plans from ¥30,000.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="../assets/ogp.png">
+<meta property="og:url" content="https://cima-scalpink.com/en/">
+<meta property="og:image" content="https://cima-scalpink.com/assets/ogp.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta property="og:site_name" content="THE SCALP INK by CIMA">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="../assets/ogp.png">
+<meta name="twitter:image" content="https://cima-scalpink.com/assets/ogp.png">
+<link rel="canonical" href="https://cima-scalpink.com/en/">
+<link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/">
+<link rel="alternate" hreflang="en" href="https://cima-scalpink.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://cima-scalpink.com/">
 <link rel="icon" type="image/x-icon" href="../favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png">
@@ -518,6 +526,40 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
   .ba-imgs{grid-template-columns:1fr 1fr;}
 }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "THE SCALP INK by CIMA",
+  "description": "Korean-origin SMP (Scalp Micropigmentation) specialist. Transparent pricing: 1 dot = 1 yen.",
+  "url": "https://cima-scalpink.com/en/",
+  "telephone": "+81-80-5822-8855",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Nodake 2-34-3, 2002y Room 202",
+    "addressLocality": "Ginowan",
+    "addressRegion": "Okinawa",
+    "postalCode": "901-2203",
+    "addressCountry": "JP"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 26.3388,
+    "longitude": 127.7722
+  },
+  "image": "https://cima-scalpink.com/assets/ogp.png",
+  "priceRange": "¥3,000~",
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+    "opens": "10:00",
+    "closes": "20:00"
+  },
+  "sameAs": [
+    "https://line.me/R/ti/p/@045ovoxr"
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -1223,8 +1265,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <p>Start with a free consultation.　<br>Feel free to reach out anytime.</p>
         <div class="c-links">
           <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="c-link">Consult via Instagram DM</a>
-          <a href="tel:00000000000" class="c-link">Call to Book <!-- TASK-04: set phone number --></a>
-          <a href="#" class="c-link">Book via LINE <!-- TASK-04: set LINE URL --></a>
+          <a href="tel:08058228855" class="c-link">Call to Book</a>
+          <a href="https://lin.ee/8SFMOpf" target="_blank" class="c-link">Book via LINE</a>
         </div>
       </div>
       <div class="rv d2">
@@ -1552,24 +1594,20 @@ function extractDotCount(text) {
 }
 
 // ===== BA FRAME: show result frame =====
-function drawSMPSimulation(beforeDataURL, conditionType) {
+function drawSMPSimulation(beforeDataURL, conditionType, structured) {
   /*
-   * SMP (Scalp Micropigmentation) Simulation v3
+   * SMP (Scalp Micropigmentation) Simulation v5
    * ─────────────────────────────────────────────
-   * Real SMP: ~0.001mm micro-dots applied thousands to tens of thousands of times.
-   * Individual dots are invisible to the naked eye, but their accumulation
-   * gradually darkens skin-colored areas (exposed scalp), creating the
-   * appearance of hair.
+   * v5: Gemini AI-driven treatment region polygons + texture analysis
    *
-   * Algorithm:
-   * 1. Detect treatment area (skin-colored = bright pixels = exposed scalp)
-   * 2. Sample surrounding hair color
-   * 3. Blend each pixel from skin color toward hair color based on brightness
-   *    (brighter = more scalp exposure = stronger blend)
-   * 4. Soft gaussian blur for natural boundary transitions
-   * Result: thinning areas naturally darken, appearing as if hair is present
+   * Key improvements:
+   * - Dots placed ONLY within Gemini-specified treatment_regions polygons
+   * - exclusion_zones (face, ears, neck, background) fully excluded
+   * - Texture analysis detects hair density, dynamically adjusts dot density
+   * - Fallback: No Gemini data → improved skinMap + safety heuristics
    */
   conditionType = conditionType || 'thinning';
+  structured = structured || {};
   var cv = document.getElementById('smpSimCanvas');
   if (!cv) return;
   var img = new Image();
@@ -1578,104 +1616,245 @@ function drawSMPSimulation(beforeDataURL, conditionType) {
     cv.width = w; cv.height = h;
     var ctx = cv.getContext('2d');
 
-    // 1. Draw original image as-is
     ctx.drawImage(img, 0, 0, w, h);
-
-    // 2. Get pixel data
     var imgData = ctx.getImageData(0, 0, w, h);
     var px = imgData.data;
     var orig = new Uint8ClampedArray(px);
 
-    // 3. Sample hair color from dark pixels
-    var hR = 0, hG = 0, hB = 0, hCnt = 0;
-    var step = 3;
-    for (var sy = 0; sy < h; sy += step) {
-      for (var sx = 0; sx < w; sx += step) {
+    // Utility: point-in-polygon (ray-casting)
+    function pointInPoly(px, py, poly) {
+      var inside = false;
+      for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        var xi = poly[i][0], yi = poly[i][1];
+        var xj = poly[j][0], yj = poly[j][1];
+        if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) {
+          inside = !inside;
+        }
+      }
+      return inside;
+    }
+
+    // ─── STEP A: Mask generation (Gemini data preferred) ───
+    var treatmentMask = new Float32Array(w * h);
+    var hasGeminiRegions = !!(structured.treatment_regions && structured.treatment_regions.length > 0);
+    var hasExclusions = !!(structured.exclusion_zones && structured.exclusion_zones.length > 0);
+    var hb = structured.head_bounds || null;
+
+    if (hasGeminiRegions) {
+      var regions = structured.treatment_regions;
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var nx = x / w, ny = y / h;
+          var maxDensity = 0;
+          for (var ri = 0; ri < regions.length; ri++) {
+            if (pointInPoly(nx, ny, regions[ri].polygon)) {
+              maxDensity = Math.max(maxDensity, regions[ri].density_hint || 0.5);
+            }
+          }
+          treatmentMask[y * w + x] = maxDensity;
+        }
+      }
+    } else {
+      var ecx, ecy, erx, ery;
+      if (hb) {
+        ecx = (hb.x + hb.w / 2) * w; ecy = (hb.y + hb.h / 2) * h;
+        erx = (hb.w / 2) * w; ery = (hb.h / 2) * h;
+      } else {
+        ecx = w / 2; ecy = h * 0.40; erx = w * 0.40; ery = h * 0.42;
+      }
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var ed = ((x-ecx)/erx)*((x-ecx)/erx)+((y-ecy)/ery)*((y-ecy)/ery);
+          if (ed <= 1) {
+            var fade = ed > 0.7 ? Math.max(0, (1 - ed) / 0.3) : 1.0;
+            treatmentMask[y * w + x] = fade * 0.6;
+          }
+        }
+      }
+      var cutoffY = Math.round(h * 0.65);
+      for (var y = cutoffY; y < h; y++) {
+        var fadeOut = 1 - (y - cutoffY) / (h - cutoffY);
+        fadeOut = Math.max(0, fadeOut * fadeOut);
+        for (var x = 0; x < w; x++) treatmentMask[y * w + x] *= fadeOut;
+      }
+      var earMargin = Math.round(w * 0.12);
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < earMargin; x++) treatmentMask[y * w + x] *= x / earMargin;
+        for (var x = w - earMargin; x < w; x++) treatmentMask[y * w + x] *= (w - 1 - x) / earMargin;
+      }
+    }
+
+    if (hasExclusions) {
+      var zones = structured.exclusion_zones;
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var nx = x / w, ny = y / h;
+          for (var zi = 0; zi < zones.length; zi++) {
+            if (pointInPoly(nx, ny, zones[zi].polygon)) { treatmentMask[y * w + x] = 0; break; }
+          }
+        }
+      }
+    }
+
+    // ─── STEP B: skinMap (within mask only) ───
+    var skinMap = new Float32Array(w * h);
+    var hairR = 0, hairG = 0, hairB = 0, hairCnt = 0;
+    var avgSkinR = 0, avgSkinG = 0, avgSkinB = 0, skinCnt = 0;
+
+    var crSamples = [], sampleStep = 5;
+    for (var sy = 0; sy < h; sy += sampleStep) {
+      for (var sx = 0; sx < w; sx += sampleStep) {
+        if (treatmentMask[sy * w + sx] < 0.1) continue;
         var si = (sy * w + sx) * 4;
-        var sB = (orig[si] * 0.299 + orig[si+1] * 0.587 + orig[si+2] * 0.114) / 255;
-        if (sB > 0.04 && sB < 0.20) {
-          hR += orig[si]; hG += orig[si+1]; hB += orig[si+2];
-          hCnt++;
-        }
+        var cr = 128 + 0.5 * orig[si] - 0.418688 * orig[si+1] - 0.081312 * orig[si+2];
+        if (cr > 125 && cr < 185) crSamples.push(cr);
       }
     }
-    if (hCnt > 0) {
-      hR = Math.floor(hR / hCnt);
-      hG = Math.floor(hG / hCnt);
-      hB = Math.floor(hB / hCnt);
-    } else {
-      hR = 30; hG = 26; hB = 24;
-    }
+    crSamples.sort(function(a,b){return a-b;});
+    var crMedian = crSamples.length > 0 ? crSamples[Math.floor(crSamples.length/2)] : 150;
+    var crLow = Math.max(125, crMedian - 25), crHigh = Math.min(185, crMedian + 25);
 
-    // 4. Condition-specific thresholds
-    var brightLow, brightHigh, maxBlend;
-    if (conditionType === 'scar') {
-      brightLow = 0.28; brightHigh = 0.65; maxBlend = 0.70;
-    } else if (conditionType === 'hairline') {
-      brightLow = 0.22; brightHigh = 0.55; maxBlend = 0.72;
-    } else if (conditionType === 'patch') {
-      brightLow = 0.22; brightHigh = 0.60; maxBlend = 0.75;
-    } else {
-      brightLow = 0.20; brightHigh = 0.55; maxBlend = 0.68;
-    }
-
-    // 5. Per-pixel SMP blend
     for (var y = 0; y < h; y++) {
       for (var x = 0; x < w; x++) {
-        var i = (y * w + x) * 4;
+        var idx = y * w + x;
+        var maskVal = treatmentMask[idx];
+        if (maskVal < 0.05) { skinMap[idx] = 0; continue; }
+        var i = idx * 4;
         var r = orig[i], g = orig[i+1], b = orig[i+2];
-        var brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
-        if (brightness <= brightLow) continue;
-        var t = (brightness - brightLow) / (brightHigh - brightLow);
-        t = Math.max(0, Math.min(1, t));
-        t = t * t * (3 - 2 * t);
-        var blend = t * maxBlend;
-        var tR = hR * 0.85 + r * 0.15;
-        var tG = hG * 0.85 + g * 0.15;
-        var tB = hB * 0.85 + b * 0.15;
-        px[i]   = Math.round(r + (tR - r) * blend);
-        px[i+1] = Math.round(g + (tG - g) * blend);
-        px[i+2] = Math.round(b + (tB - b) * blend);
+        var Y = 0.299*r+0.587*g+0.114*b;
+        var Cb = 128-0.168736*r-0.331264*g+0.5*b;
+        var Cr = 128+0.5*r-0.418688*g-0.081312*b;
+        var rn=r/255,gn=g/255,bn=b/255;
+        var cmax=Math.max(rn,gn,bn),cmin=Math.min(rn,gn,bn);
+        var delta=cmax-cmin;
+        var hue=0,sat=0,val=cmax;
+        if(delta>0){sat=delta/cmax;if(cmax===rn)hue=60*(((gn-bn)/delta)%6);else if(cmax===gn)hue=60*((bn-rn)/delta+2);else hue=60*((rn-gn)/delta+4);if(hue<0)hue+=360;}
+        var hsvScore=0,ycbcrScore=0;
+        if((hue<=50||hue>=340)&&sat>=0.08&&sat<=0.65&&val>=0.25&&val<=0.85){hsvScore=1.0;if(hue>40&&hue<50)hsvScore*=(50-hue)/10;if(sat<0.15)hsvScore*=(sat-0.08)/0.07;}
+        if(Cb>=77&&Cb<=132&&Cr>=crLow&&Cr<=crHigh&&Y>=70&&Y<=230){ycbcrScore=1.0;var crNorm=(Cr-crLow)/(crHigh-crLow);if(crNorm<0.15)ycbcrScore*=crNorm/0.15;if(crNorm>0.85)ycbcrScore*=(1-crNorm)/0.15;}
+        var score=hsvScore*0.4+ycbcrScore*0.6;
+        var brightness=Y/255;
+        if(brightness<0.22) score*=Math.max(0,(brightness-0.10)/0.12);
+        if(brightness>0.78) score*=Math.max(0,(0.90-brightness)/0.12);
+        skinMap[idx]=Math.max(0,Math.min(1,score*maskVal));
+        if(brightness>0.04&&brightness<0.35&&score<0.3&&maskVal>0.1){hairR+=r;hairG+=g;hairB+=b;hairCnt++;}
+        if(score>0.6&&maskVal>0.3){avgSkinR+=r;avgSkinG+=g;avgSkinB+=b;skinCnt++;}
       }
     }
+    if(hairCnt>0){hairR=Math.floor(hairR/hairCnt);hairG=Math.floor(hairG/hairCnt);hairB=Math.floor(hairB/hairCnt);}else{hairR=35;hairG=30;hairB=28;}
+    if(skinCnt>0){avgSkinR=Math.floor(avgSkinR/skinCnt);avgSkinG=Math.floor(avgSkinG/skinCnt);avgSkinB=Math.floor(avgSkinB/skinCnt);}else{avgSkinR=180;avgSkinG=150;avgSkinB=130;}
+    var isWarmSkin=avgSkinR>avgSkinB+20;
 
-    // 6. Write back blended result
-    ctx.putImageData(imgData, 0, 0);
+    // ─── STEP C: Texture analysis (local variance for hair density) ───
+    var blockSize=8;
+    var bw=Math.ceil(w/blockSize),bh=Math.ceil(h/blockSize);
+    var varianceMap=new Float32Array(bw*bh);
+    var maxVar=0;
+    for(var by=0;by<bh;by++){for(var bx=0;bx<bw;bx++){var sum=0,sumSq=0,cnt=0;var y0=by*blockSize,y1=Math.min(y0+blockSize,h);var x0=bx*blockSize,x1=Math.min(x0+blockSize,w);for(var yy=y0;yy<y1;yy++){for(var xx=x0;xx<x1;xx++){var ii=(yy*w+xx)*4;var lum=orig[ii]*0.299+orig[ii+1]*0.587+orig[ii+2]*0.114;sum+=lum;sumSq+=lum*lum;cnt++;}}if(cnt>0){var mean=sum/cnt;var variance=sumSq/cnt-mean*mean;varianceMap[by*bw+bx]=variance;if(variance>maxVar)maxVar=variance;}}}
+    if(maxVar>0){for(var y=0;y<h;y++){for(var x=0;x<w;x++){var idx=y*w+x;if(skinMap[idx]<0.05)continue;var bx2=Math.min(Math.floor(x/blockSize),bw-1);var by2=Math.min(Math.floor(y/blockSize),bh-1);var normVar=varianceMap[by2*bw+bx2]/maxVar;if(normVar>0.3){var texturePenalty=Math.max(0,1-(normVar-0.3)/0.5);skinMap[idx]*=texturePenalty;}}}}
 
-    // 7. Soft blur pass for natural boundary
-    var blurRadius = Math.max(1, Math.round(Math.min(w, h) * 0.004));
-    ctx.filter = 'blur(' + blurRadius + 'px)';
-    ctx.globalAlpha = 0.35;
-    ctx.drawImage(cv, 0, 0);
-    ctx.filter = 'none';
-    ctx.globalAlpha = 1.0;
+    // 3x3 smoothing
+    var smoothed=new Float32Array(w*h);
+    for(var y=1;y<h-1;y++){for(var x=1;x<w-1;x++){var s=0;for(var dy=-1;dy<=1;dy++)for(var dx=-1;dx<=1;dx++)s+=skinMap[(y+dy)*w+(x+dx)];smoothed[y*w+x]=s/9;}}
+    skinMap=smoothed;
 
-    // 8. Restore original hair detail
-    var finalData = ctx.getImageData(0, 0, w, h);
-    var fd = finalData.data;
-    for (var y = 0; y < h; y++) {
-      for (var x = 0; x < w; x++) {
-        var i = (y * w + x) * 4;
-        var origBright = (orig[i] * 0.299 + orig[i+1] * 0.587 + orig[i+2] * 0.114) / 255;
-        if (origBright < brightLow + 0.05) {
-          fd[i] = orig[i]; fd[i+1] = orig[i+1]; fd[i+2] = orig[i+2];
-        } else if (origBright < brightLow + 0.12) {
-          var restore = 1 - (origBright - brightLow - 0.05) / 0.07;
-          restore = Math.max(0, Math.min(1, restore));
-          fd[i]   = Math.round(fd[i]*(1-restore) + orig[i]*restore);
-          fd[i+1] = Math.round(fd[i+1]*(1-restore) + orig[i+1]*restore);
-          fd[i+2] = Math.round(fd[i+2]*(1-restore) + orig[i+2]*restore);
-        }
-      }
-    }
-    ctx.putImageData(finalData, 0, 0);
+    // ─── STEP D: Condition-specific parameters ───
+    var dotSpacing,dotOpacityMin,dotOpacityMax,dotRadiusMin,dotRadiusMax,densityMultiplier;
+    if(conditionType==='scar'){dotSpacing=2.5;dotOpacityMin=0.25;dotOpacityMax=0.55;dotRadiusMin=1.0;dotRadiusMax=2.0;densityMultiplier=1.3;}
+    else if(conditionType==='hairline'){dotSpacing=3.0;dotOpacityMin=0.20;dotOpacityMax=0.50;dotRadiusMin=0.8;dotRadiusMax=1.8;densityMultiplier=1.0;}
+    else if(conditionType==='patch'){dotSpacing=2.8;dotOpacityMin=0.22;dotOpacityMax=0.52;dotRadiusMin=0.9;dotRadiusMax=1.9;densityMultiplier=1.2;}
+    else{dotSpacing=3.0;dotOpacityMin=0.18;dotOpacityMax=0.48;dotRadiusMin=0.8;dotRadiusMax=1.8;densityMultiplier=1.0;}
+    var scale=Math.min(w,h)/800;dotSpacing*=scale;dotRadiusMin*=scale;dotRadiusMax*=scale;
+
+    // ─── STEP E: Poisson disk distribution (mask-restricted Bridson) ───
+    var minDist=dotSpacing;var cellSize=minDist/Math.sqrt(2);var gridW2=Math.ceil(w/cellSize);var gridH2=Math.ceil(h/cellSize);var grid=new Int32Array(gridW2*gridH2).fill(-1);var dots=[];var active=[];
+    function gridIdx(gx,gy){return gy*gridW2+gx;}
+    var seedFound=false;for(var attempt=0;attempt<200&&!seedFound;attempt++){var seedX=Math.floor(Math.random()*w);var seedY=Math.floor(Math.random()*h);if(skinMap[seedY*w+seedX]>0.3){dots.push({x:seedX,y:seedY,s:skinMap[seedY*w+seedX]});active.push(0);var gx=Math.floor(seedX/cellSize),gy=Math.floor(seedY/cellSize);if(gx>=0&&gx<gridW2&&gy>=0&&gy<gridH2)grid[gridIdx(gx,gy)]=0;seedFound=true;}}
+    var maxCandidates=16;
+    while(active.length>0){var randIdx=Math.floor(Math.random()*active.length);var parentIdx=active[randIdx];var parent=dots[parentIdx];var found=false;for(var c=0;c<maxCandidates;c++){var angle=Math.random()*Math.PI*2;var localDensity=skinMap[Math.floor(parent.y)*w+Math.floor(parent.x)]||0;var distMult=1.0+(1-localDensity)*1.5;distMult/=densityMultiplier;var dist=minDist*distMult*(1+Math.random());var nnx=parent.x+Math.cos(angle)*dist;var nny=parent.y+Math.sin(angle)*dist;if(nnx<0||nnx>=w||nny<0||nny>=h)continue;var nSkin=skinMap[Math.floor(nny)*w+Math.floor(nnx)];if(nSkin<0.1)continue;if(nSkin<0.4&&Math.random()>nSkin*2)continue;var ngx=Math.floor(nnx/cellSize),ngy=Math.floor(nny/cellSize);var tooClose=false;for(var dy=-2;dy<=2&&!tooClose;dy++){for(var dx=-2;dx<=2&&!tooClose;dx++){var cgx=ngx+dx,cgy=ngy+dy;if(cgx<0||cgx>=gridW2||cgy<0||cgy>=gridH2)continue;var ni=grid[gridIdx(cgx,cgy)];if(ni>=0){var nb=dots[ni];var ddx3=nnx-nb.x,ddy3=nny-nb.y;if(ddx3*ddx3+ddy3*ddy3<minDist*minDist*distMult*distMult*0.64)tooClose=true;}}}if(tooClose)continue;var newIdx=dots.length;dots.push({x:nnx,y:nny,s:nSkin});active.push(newIdx);if(ngx>=0&&ngx<gridW2&&ngy>=0&&ngy<gridH2)grid[gridIdx(ngx,ngy)]=newIdx;found=true;}if(!found)active.splice(randIdx,1);if(dots.length>80000)break;}
+
+    // ─── STEP F: Dot rendering (ImageData direct) ───
+    var outData=ctx.getImageData(0,0,w,h);var out=outData.data;
+    var rngState=12345;function fastRand(){rngState=(rngState*1103515245+12345)&0x7fffffff;return rngState/0x7fffffff;}
+    for(var d=0;d<dots.length;d++){var dot=dots[d];var ddx=dot.x,ddy=dot.y,ds=dot.s;var radius=dotRadiusMin+fastRand()*(dotRadiusMax-dotRadiusMin);var radiusCeil=Math.ceil(radius);var pi2=(Math.floor(ddy)*w+Math.floor(ddx))*4;var localR=orig[pi2],localG=orig[pi2+1],localB=orig[pi2+2];var darkenFactor=0.45+fastRand()*0.15;var dotR2,dotG2,dotB2;if(isWarmSkin){dotR2=Math.round(localR*darkenFactor*0.90+hairR*0.10);dotG2=Math.round(localG*darkenFactor*0.88+hairG*0.12);dotB2=Math.round(localB*darkenFactor*0.85+hairB*0.15);}else{dotR2=Math.round(localR*darkenFactor*0.88+hairR*0.12);dotG2=Math.round(localG*darkenFactor*0.88+hairG*0.12);dotB2=Math.round(localB*darkenFactor*0.88+hairB*0.12);}var jitter=Math.round((fastRand()-0.5)*12);dotR2=Math.max(10,Math.min(80,dotR2+jitter));dotG2=Math.max(8,Math.min(75,dotG2+jitter));dotB2=Math.max(8,Math.min(75,dotB2+jitter));var opacity=dotOpacityMin+ds*(dotOpacityMax-dotOpacityMin);opacity*=(0.85+fastRand()*0.30);opacity=Math.max(0.05,Math.min(0.65,opacity));var ixMin=Math.max(0,Math.floor(ddx-radiusCeil));var ixMax=Math.min(w-1,Math.ceil(ddx+radiusCeil));var iyMin=Math.max(0,Math.floor(ddy-radiusCeil));var iyMax=Math.min(h-1,Math.ceil(ddy+radiusCeil));for(var py=iyMin;py<=iyMax;py++){for(var px2=ixMin;px2<=ixMax;px2++){var dx2=px2-ddx,dy2=py-ddy;var distSq=dx2*dx2+dy2*dy2;if(distSq>radius*radius)continue;var distRatio=Math.sqrt(distSq)/radius;var edgeAlpha=1-distRatio*distRatio;var finalAlpha=opacity*edgeAlpha;var oi=(py*w+px2)*4;out[oi]=Math.round(out[oi]*(1-finalAlpha)+dotR2*finalAlpha);out[oi+1]=Math.round(out[oi+1]*(1-finalAlpha)+dotG2*finalAlpha);out[oi+2]=Math.round(out[oi+2]*(1-finalAlpha)+dotB2*finalAlpha);}}}
+
+    // ─── STEP G: Light blur ───
+    ctx.putImageData(outData,0,0);var offscreen=document.createElement('canvas');offscreen.width=w;offscreen.height=h;offscreen.getContext('2d').drawImage(cv,0,0);var blurRadius=Math.max(1,Math.round(Math.min(w,h)*0.003));try{ctx.filter='blur('+blurRadius+'px)';ctx.globalAlpha=0.25;ctx.drawImage(offscreen,0,0);ctx.filter='none';ctx.globalAlpha=1.0;}catch(e){}
+
+    // ─── STEP H: Restore non-mask areas ───
+    var finalData=ctx.getImageData(0,0,w,h);var fd=finalData.data;
+    for(var y=0;y<h;y++){for(var x=0;x<w;x++){var i=(y*w+x)*4;var sm=skinMap[y*w+x]||0;var origBright=(orig[i]*0.299+orig[i+1]*0.587+orig[i+2]*0.114)/255;if(sm===0){fd[i]=orig[i];fd[i+1]=orig[i+1];fd[i+2]=orig[i+2];continue;}if(origBright<0.22&&sm<0.3){fd[i]=orig[i];fd[i+1]=orig[i+1];fd[i+2]=orig[i+2];}else if(origBright<0.30&&sm<0.5){var restore=1-(origBright-0.22)/0.08;restore*=(1-sm);restore=Math.max(0,Math.min(1,restore));fd[i]=Math.round(fd[i]*(1-restore)+orig[i]*restore);fd[i+1]=Math.round(fd[i+1]*(1-restore)+orig[i+1]*restore);fd[i+2]=Math.round(fd[i+2]*(1-restore)+orig[i+2]*restore);}}}
+    ctx.putImageData(finalData,0,0);
+    img.onload=null;img.src='';
   };
   img.src = beforeDataURL;
 }
 
+// Polygon area calculation (Shoelace formula, normalized coordinates)
+function _polyArea(pts) {
+  var n = pts.length, a = 0;
+  for (var i = 0, j = n - 1; i < n; j = i++) {
+    a += pts[j][0] * pts[i][1] - pts[i][0] * pts[j][1];
+  }
+  return Math.abs(a) / 2;
+}
+
+function extractStructuredData(responseText) {
+  var jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+  var data = null;
+  if (jsonMatch) {
+    try { data = JSON.parse(jsonMatch[1]); } catch(e) { /* fallback */ }
+  }
+  if (!data) {
+    var rawMatch = responseText.match(/\{[\s\S]*"condition_type"[\s\S]*"scores"[\s\S]*\}/);
+    if (rawMatch) {
+      try { data = JSON.parse(rawMatch[0]); } catch(e) { /* fallback */ }
+    }
+  }
+  if (!data) return null;
+
+  // Polygon coordinate validation & sanitization
+  if (data.treatment_regions && Array.isArray(data.treatment_regions)) {
+    data.treatment_regions = data.treatment_regions.filter(function(r) {
+      if (!r || !Array.isArray(r.polygon) || r.polygon.length < 3) return false;
+      var valid = r.polygon.every(function(p) {
+        return Array.isArray(p) && p.length >= 2 && p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1;
+      });
+      if (!valid) { console.warn('[SMP Sim] Invalid polygon filtered:', r.label); return false; }
+      var area = _polyArea(r.polygon);
+      if (area < 0.001 || area > 0.95) { console.warn('[SMP Sim] Polygon area out of range:', r.label, area); return false; }
+      r.density_hint = Math.max(0, Math.min(1, r.density_hint || 0.5));
+      return true;
+    });
+    if (data.treatment_regions.length === 0) data.treatment_regions = null;
+  } else { data.treatment_regions = null; }
+
+  if (data.exclusion_zones && Array.isArray(data.exclusion_zones)) {
+    data.exclusion_zones = data.exclusion_zones.filter(function(z) {
+      if (!z || !Array.isArray(z.polygon) || z.polygon.length < 3) return false;
+      return z.polygon.every(function(p) { return Array.isArray(p) && p.length >= 2 && p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1; });
+    });
+    if (data.exclusion_zones.length === 0) data.exclusion_zones = null;
+  } else { data.exclusion_zones = null; }
+
+  if (data.head_bounds) {
+    var hb = data.head_bounds;
+    if (typeof hb.x !== 'number' || typeof hb.y !== 'number' || typeof hb.w !== 'number' || typeof hb.h !== 'number' || hb.w <= 0 || hb.h <= 0) {
+      data.head_bounds = null;
+    }
+  }
+  return data;
+}
+
 function showBAResult(beforeDataURL, claudeText) {
+  // Extract structured data
+  var structured = extractStructuredData(claudeText);
+
+  // Remove JSON block from Markdown display
+  var displayText = claudeText.replace(/```json[\s\S]*?```/g, '').trim();
+
   var dotCount = extractDotCount(claudeText);
-  var condType = detectConditionType(claudeText);
+  var condType = structured ? structured.condition_type : detectConditionType(claudeText);
   var frame = document.getElementById('baResultFrame');
   var beforeImg = document.getElementById('baBeforeImg');
   var dotCountEl = document.getElementById('baDotCount');
@@ -1683,19 +1862,43 @@ function showBAResult(beforeDataURL, claudeText) {
   var adviceBox = document.getElementById('adviceBox');
   var scoreRow = document.getElementById('simScoreRow');
 
+  // Get dot count from structured data if available
+  if (structured && structured.treatment_plan) {
+    var tp = structured.treatment_plan;
+    var totalDots = tp.total_dots || ((tp.total_dots_per_session || 0) * (tp.sessions || 1));
+    if (totalDots >= 1000) dotCount = 'Approx. ' + totalDots.toLocaleString() + ' dots (estimated)';
+  }
+
   if (beforeImg) beforeImg.src = beforeDataURL;
   if (dotCountEl) dotCountEl.textContent = dotCount || '';
-  if (claudeTextEl) claudeTextEl.innerHTML = renderMarkdown(claudeText);
+  if (claudeTextEl) claudeTextEl.innerHTML = renderMarkdown(displayText);
   if (adviceBox) adviceBox.style.display = 'block';
   if (frame) frame.style.display = 'block';
 
-  // SMP canvas simulation (condition-aware)
-  drawSMPSimulation(beforeDataURL, condType);
+  // SMP canvas simulation (condition-aware + region-aware)
+  drawSMPSimulation(beforeDataURL, condType, structured);
 
-  // Score bar display (condition-aware labels and scores)
+  // Score bar display (structured data preferred, fallback to estimates)
   if (scoreRow) {
     scoreRow.style.display = 'flex';
-    var scoreData = estimateScores(claudeText, condType);
+    var scoreData;
+    if (structured && structured.scores) {
+      var s = structured.scores;
+      scoreData = {
+        labels: ['Density Improvement', 'Natural Finish', 'Rejuvenation Index'],
+        values: [
+          Math.min(98, Math.max(50, s.coverage_improvement || 85)),
+          Math.min(98, Math.max(50, s.naturalness || 90)),
+          Math.min(98, Math.max(50, s.confidence_boost || 88))
+        ]
+      };
+      // Condition-type label adjustments
+      if (condType === 'scar') scoreData.labels = ['Scar Coverage', 'Natural Finish', 'Concealment'];
+      else if (condType === 'hairline') scoreData.labels = ['Line Improvement', 'Natural Finish', 'Rejuvenation Index'];
+      else if (condType === 'patch') scoreData.labels = ['Coverage Rate', 'Natural Finish', 'Uniformity'];
+    } else {
+      scoreData = estimateScores(claudeText, condType);
+    }
     ['1','2','3'].forEach(function(n, i) {
       var fill = document.getElementById('sFill'+n);
       var val  = document.getElementById('sVal'+n);
@@ -1705,6 +1908,26 @@ function showBAResult(beforeDataURL, claudeText) {
       if (val)  val.textContent = pct + '%';
       if (lbl)  lbl.textContent = scoreData.labels[i];
     });
+  }
+
+  // Pricing estimate section (when structured data has pricing)
+  if (structured && structured.pricing && structured.pricing.total_price > 0) {
+    var pr = structured.pricing;
+    var tp2 = structured.treatment_plan || {};
+    var pricingHtml = '<div style="margin-top:18px;padding:16px 18px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;border:1px solid rgba(212,175,55,0.3);">';
+    pricingHtml += '<h4 style="color:#d4af37;margin:0 0 12px 0;font-size:1.05em;">Pricing Estimate (1 dot = \u00a51)</h4>';
+    pricingHtml += '<table style="width:100%;border-collapse:collapse;color:#e0e0e0;font-size:0.95em;">';
+    pricingHtml += '<tr><td style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">Per Session</td><td style="text-align:right;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-weight:bold;color:#d4af37;">\u00a5' + (pr.per_session_price || 0).toLocaleString() + '</td></tr>';
+    pricingHtml += '<tr><td style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">Sessions</td><td style="text-align:right;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">' + (tp2.sessions || '-') + '</td></tr>';
+    if (tp2.time_per_session_hours) {
+      pricingHtml += '<tr><td style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">Time per Session</td><td style="text-align:right;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">~' + tp2.time_per_session_hours + ' hours</td></tr>';
+    }
+    if (tp2.retention_rate_initial) {
+      pricingHtml += '<tr><td style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">Retention (initial \u2192 final)</td><td style="text-align:right;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">' + Math.round(tp2.retention_rate_initial * 100) + '% \u2192 ' + Math.round((tp2.retention_rate_final || 0.85) * 100) + '%</td></tr>';
+    }
+    pricingHtml += '<tr><td style="padding:10px 0 0;font-weight:bold;font-size:1.05em;">Total Estimate</td><td style="text-align:right;padding:10px 0 0;font-weight:bold;font-size:1.15em;color:#d4af37;">\u00a5' + pr.total_price.toLocaleString() + '</td></tr>';
+    pricingHtml += '</table></div>';
+    if (claudeTextEl) claudeTextEl.innerHTML += pricingHtml;
   }
 
   // Scroll
@@ -1961,7 +2184,9 @@ function setStep(n) {
 }
 
 // ===== Gemini API (Google AI) =====
-var _GEMINI_KEY = 'AIzaSyAtVoAPTfdxjD4guiwKTsAiyIhH6SycFOE';
+var _GEMINI_KEY = 'AIzaSyDLYETtOr5cQeIx3-ZEgVuOoEZmVd5hCRc';
+// Model fallback chain (free tier: lite=1000RPD, flash=250RPD, pro=100RPD)
+var _GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.5-pro'];
 
 function getSimApiKey() {
   try { return localStorage.getItem('scalp_ink_gemini_key') || _GEMINI_KEY; } catch(e) { return _GEMINI_KEY; }
@@ -2017,6 +2242,20 @@ function analyze() {
   var prompt = 'You are a senior SMP specialist at THE SCALP INK by CIMA.\n' +
 'Please carefully examine this head/scalp image and create a detailed diagnostic report following the 5 steps below.\n\n' +
 
+'[SMP Treatment Reference Data (use for calculations)]\n' +
+'- Dot size: 0.001-0.01mm\n' +
+'- Dots per session: 30,000-50,000 (practitioner speed: ~20 dots/sec)\n' +
+'- Standard sessions: 2-4, spaced 7-14 days apart\n' +
+'- Retention rate: initial 50-70%, after completion 80-90%\n' +
+'- Dot density formula: treatment area (cm2) x dot density (40-120 dots/cm2)\n\n' +
+
+'[Treatment Category Dot Ranges]\n' +
+'1. Full Head (shaved look): 50,000-150,000 dots / density 70-90% / 3-5 hours\n' +
+'2. Hairline Design: 5,000-20,000 dots / density 10-30% / 1-2 hours\n' +
+'3. Density Addition (thinning): 20,000-50,000 dots / density 30-60% / 2-3 hours\n' +
+'4. Scar Camouflage (FUE/FUT): 5,000-20,000 dots / 1-2 hours\n' +
+'5. Female Density Enhancement: 10,000-30,000 dots / density 20-50% / 1.5-3 hours\n\n' +
+
 '[STEP 1: Identify Condition Type]\n' +
 'Look at the image and clearly state which type applies from the list below.\n' +
 '  A. Diffuse Thinning Type (overall / crown area thinning)\n' +
@@ -2030,7 +2269,7 @@ function analyze() {
 'Analyze the following according to the identified type.\n' +
 '\u25a0 Diffuse Thinning Type\n' +
 '  - Hamilton scale (male) or Ludwig scale (female) progression level\n' +
-'  - Location, area size, and scalp show-through of density deficit zones\n' +
+'  - Location, area size (cm2), and scalp show-through of density deficit zones\n' +
 '\u25a0 Hairline Recession Type\n' +
 '  - Recession pattern (M-shape, recession angle, left-right asymmetry)\n' +
 '  - Gap between current and ideal hairline\n' +
@@ -2040,18 +2279,18 @@ function analyze() {
 '  - How visible the scar is\n' +
 '\u25a0 Alopecia Patch Type\n' +
 '  - Shape, estimated size, and edge clarity of the patch\n' +
-'  - Whether multiple patches are present\n\n' +
+'  - Whether multiple patches are present\n' +
+'- Skin tone (Fitzpatrick scale I-VI)\n\n' +
 
 '[STEP 3: SMP Treatment Plan Proposal]\n' +
 '- Best approach (full coverage / hairline-focused / scar & patch-focused / combined plan)\n' +
 '- If scars/patches are present: special approach (custom tone matching, gradual density design)\n' +
 '- Treatment area priorities with recommended dot counts in a table\n' +
-'- ★IMPORTANT★ State estimated total dots as: approx. XX,000 dots x N sessions = total YY,000 dots\n' +
-'  - Partial thinning: approx. 20,000-30,000 dots/session x 2-3 sessions\n' +
-'  - Near-bald/full coverage: approx. 40,000-60,000 dots/session x 3-4 sessions\n' +
-'  - Scar coverage: approx. 5,000-20,000 dots/session x 2-3 sessions\n' +
-'  - Adjust based on the actual image analysis\n' +
-'- Recommended session schedule table\n\n' +
+'- ★IMPORTANT★ Calculate total dots using: treatment area (cm2) x dot density (40-120 dots/cm2)\n' +
+'  Show calculation process and state as: approx. XX,000 dots x N sessions = total YY,000 dots\n' +
+'- Retention-aware multi-session plan (initial retention 50-70% requires 2-4 sessions)\n' +
+'- Estimated treatment time per session based on area\n' +
+'- Recommended session schedule table (7-14 day intervals)\n\n' +
 
 '[STEP 4: Post-Treatment Visual Image]\n' +
 '- Finished look with scars/patches made invisible (always include if applicable)\n' +
@@ -2060,61 +2299,143 @@ function analyze() {
 '- Transparent billing at 1 dot = \\u00a51: estimated total dots (all sessions combined) and reference price range\n\n' +
 
 '[STEP 5: CIMA 4D Technique Strengths]\n' +
-'Coverage for scars and special areas, natural random placement, gradient design, and personalized tone matching.\n\n' +
+'- Coverage for scars and special areas\n' +
+'- Natural random placement\n' +
+'- Gradient design\n' +
+'- Personalized tone matching\n\n' +
 
 '★Output Format★\n' +
 '- Use Markdown (## headings, ### subheadings, | tables |, - lists, **bold**)\n' +
 '- Warm professional tone, specific and forward-looking\n' +
 '- For clients with scars, offer especially encouraging advice\n' +
-'- Tables: header row + separator row + data rows';
+'- Tables: header row + separator row + data rows\n\n' +
 
-  // Gemini API (Google Generative AI)
-  var geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + encodeURIComponent(key);
+'★★IMPORTANT: Append the following JSON block at the end of your report★★\n' +
+'Coordinates use normalized values (0.0-1.0) relative to image width/height.\n' +
+'treatment_regions: Define treatment areas as polygons ([x,y] arrays, 5-12 points). Multiple regions OK.\n' +
+'  - Thinning: only where scalp is visibly exposed (exclude areas with dense hair)\n' +
+'  - Scars: only the scar/wound outline (exclude surrounding healthy hair)\n' +
+'  - Hairline: only the receded/exposed hairline area\n' +
+'  - Part line: narrow region along the visible part only\n' +
+'  density_hint: scalp exposure level (0.0=dense hair / 1.0=fully exposed)\n' +
+'exclusion_zones: Always specify face (below eyebrows to chin), ears, neck, background as polygons.\n' +
+'  Accurate face contour is critical for frontal and angled photos.\n' +
+'head_bounds: Bounding box of the entire head in normalized coordinates.\n\n' +
+'```json\n' +
+'{\n' +
+'  "condition_type": "thinning|hairline|scar|patch|combined",\n' +
+'  "severity_scale": "Hamilton III etc.",\n' +
+'  "treatment_regions": [\n' +
+'    { "label": "crown_thinning", "polygon": [[0.3,0.2],[0.7,0.2],[0.7,0.5],[0.3,0.5]], "density_hint": 0.7 }\n' +
+'  ],\n' +
+'  "exclusion_zones": [\n' +
+'    { "label": "face", "polygon": [[0.25,0.55],[0.75,0.55],[0.75,0.95],[0.25,0.95]] }\n' +
+'  ],\n' +
+'  "head_bounds": { "x": 0.1, "y": 0.05, "w": 0.8, "h": 0.85 },\n' +
+'  "treatment_plan": {\n' +
+'    "total_dots_per_session": 30000,\n' +
+'    "sessions": 3,\n' +
+'    "total_dots": 90000,\n' +
+'    "area_cm2": 120,\n' +
+'    "dot_density_per_cm2": 75,\n' +
+'    "dot_size_mm": 0.005,\n' +
+'    "time_per_session_hours": 2.5,\n' +
+'    "retention_rate_initial": 0.65,\n' +
+'    "retention_rate_final": 0.85\n' +
+'  },\n' +
+'  "scores": {\n' +
+'    "coverage_improvement": 85,\n' +
+'    "naturalness": 90,\n' +
+'    "confidence_boost": 88\n' +
+'  },\n' +
+'  "pricing": {\n' +
+'    "price_per_dot": 1,\n' +
+'    "total_price": 90000,\n' +
+'    "per_session_price": 30000\n' +
+'  }\n' +
+'}\n' +
+'```';
 
-  fetch(geminiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          { inlineData: { mimeType: 'image/jpeg', data: b64 } },
-          { text: prompt }
-        ]
-      }],
-      generationConfig: { maxOutputTokens: 2048, temperature: 0.7 }
-    })
-  })
-  .then(function(res){
-    if (!res.ok) return res.json().then(function(e){
-      var errMsg = (e.error && e.error.message) || 'API error ' + res.status;
-      throw new Error(errMsg);
-    });
-    return res.json();
-  })
-  .then(function(data){
-    var txt = '';
-    try { txt = data.candidates[0].content.parts[0].text; }
-    catch(ex) { txt = 'Could not retrieve AI response. Please try again.'; }
-    showBAResult(beforeDataURL, txt);
-    setStep(3);
-    if (ldDots) ldDots.classList.remove('on');
-  })
-  .catch(function(err){
-    var msg = err && err.message ? err.message : 'A network error occurred.';
-    var isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|403|401/i.test(msg);
-    var displayMsg = isAuthErr
-      ? '⚠ Invalid API key. Please contact the administrator.'
-      : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>Please check your network connection.';
-    var advBox = document.getElementById('adviceBox');
-    var claudeEl = document.getElementById('claudeAdvice');
-    if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
-    if (advBox) advBox.style.display='block';
-    var frame = document.getElementById('baResultFrame');
-    if (frame) frame.style.display='block';
-    setStep(3);
-    if (capBtn) capBtn.style.display='inline-block';
-    if (ldDots) ldDots.classList.remove('on');
+  // Gemini API - fallback chain
+  var requestBody = JSON.stringify({
+    system_instruction: {
+      parts: [{
+        text: 'You are an SMP (Scalp Micropigmentation) specialist. Analyze scalp images and propose accurate treatment plans. ' +
+        'Dot size is 0.001-0.01mm. Each session places 30,000-50,000 dots at ~20 dots/sec. ' +
+        'Retention rate: initial 50-70%, after completion 80-90%. Always calculate total dots using: area (cm2) x density (40-120 dots/cm2). ' +
+        'Output must follow a structured format with a JSON data block at the end.'
+      }]
+    },
+    contents: [{
+      parts: [
+        { inlineData: { mimeType: 'image/jpeg', data: b64 } },
+        { text: prompt }
+      ]
+    }],
+    generationConfig: { maxOutputTokens: 3072, temperature: 0.4, topP: 0.85, topK: 40 }
   });
+
+  function tryGeminiModel(modelIndex) {
+    if (modelIndex >= _GEMINI_MODELS.length) {
+      var advBox = document.getElementById('adviceBox');
+      var claudeEl = document.getElementById('claudeAdvice');
+      if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">⚠ All AI models have reached their usage limits.<br>Please try again shortly (usually recovers within 1 minute).</span>';
+      if (advBox) advBox.style.display='block';
+      var frame = document.getElementById('baResultFrame');
+      if (frame) frame.style.display='block';
+      setStep(3);
+      if (capBtn) capBtn.style.display='inline-block';
+      if (ldDots) ldDots.classList.remove('on');
+      return;
+    }
+    var model = _GEMINI_MODELS[modelIndex];
+    var geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(key);
+
+    fetch(geminiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: requestBody
+    })
+    .then(function(res){
+      if (!res.ok) return res.json().then(function(e){
+        var errMsg = (e.error && e.error.message) || 'API error ' + res.status;
+        throw new Error(errMsg);
+      });
+      return res.json();
+    })
+    .then(function(data){
+      var txt = '';
+      try { txt = data.candidates[0].content.parts[0].text; }
+      catch(ex) { txt = 'Could not retrieve AI response. Please try again.'; }
+      showBAResult(beforeDataURL, txt);
+      setStep(3);
+      if (ldDots) ldDots.classList.remove('on');
+    })
+    .catch(function(err){
+      var msg = err && err.message ? err.message : '';
+      var isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
+      var isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|403|401/i.test(msg);
+      if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
+        console.log('[AI Sim] ' + model + ' quota exceeded, trying ' + _GEMINI_MODELS[modelIndex + 1]);
+        tryGeminiModel(modelIndex + 1);
+        return;
+      }
+      var displayMsg = isAuthErr
+        ? '⚠ Invalid API key. Please contact the administrator.'
+        : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>Please check your network connection.';
+      var advBox = document.getElementById('adviceBox');
+      var claudeEl = document.getElementById('claudeAdvice');
+      if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
+      if (advBox) advBox.style.display='block';
+      var frame = document.getElementById('baResultFrame');
+      if (frame) frame.style.display='block';
+      setStep(3);
+      if (capBtn) capBtn.style.display='inline-block';
+      if (ldDots) ldDots.classList.remove('on');
+    });
+  }
+
+  tryGeminiModel(0);
 }
 
 function resetSim() {

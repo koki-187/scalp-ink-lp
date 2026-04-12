@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-B8SKQ9HHPZ"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-17MPNMJ5GN"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-B8SKQ9HHPZ');
+  gtag('config', 'G-17MPNMJ5GN');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,11 +20,19 @@
 <meta property="og:title" content="THE SCALP INK | スカルプインク by CIMA">
 <meta property="og:description" content="韓国発SMP技術。1ドット=1円の明朗会計。全頭30,000発〜。体験¥3,000から。">
 <meta property="og:type" content="website">
-<meta property="og:image" content="assets/ogp.png">
+<meta property="og:url" content="https://cima-scalpink.com/">
+<meta property="og:image" content="https://cima-scalpink.com/assets/ogp.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:site_name" content="THE SCALP INK by CIMA">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="assets/ogp.png">
+<meta name="twitter:image" content="https://cima-scalpink.com/assets/ogp.png">
+<link rel="canonical" href="https://cima-scalpink.com/">
+<link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/">
+<link rel="alternate" hreflang="en" href="https://cima-scalpink.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://cima-scalpink.com/">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
@@ -522,6 +530,41 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
   .ba-imgs{grid-template-columns:1fr 1fr;}
 }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "THE SCALP INK by CIMA",
+  "alternateName": "スカルプインク by シーマ",
+  "description": "韓国発SMP（スカルプマイクロピグメンテーション）技術による頭皮アートメイク専門店。1ドット=1円の明朗会計。",
+  "url": "https://cima-scalpink.com/",
+  "telephone": "+81-80-5822-8855",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "野嵩2-34-3 2002y 202号室",
+    "addressLocality": "宜野湾市",
+    "addressRegion": "沖縄県",
+    "postalCode": "901-2203",
+    "addressCountry": "JP"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 26.3388,
+    "longitude": 127.7722
+  },
+  "image": "https://cima-scalpink.com/assets/ogp.png",
+  "priceRange": "¥3,000〜",
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+    "opens": "10:00",
+    "closes": "20:00"
+  },
+  "sameAs": [
+    "https://line.me/R/ti/p/@045ovoxr"
+  ]
+}
+</script>
 </head>
 <body>
 
@@ -1227,8 +1270,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <p>まずは無料カウンセリングからどうぞ。<br>お気軽にお問い合わせください。</p>
         <div class="c-links">
           <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="c-link">Instagram DM で相談する</a>
-          <a href="tel:00000000000" class="c-link">お電話で予約する <!-- TASK-04: 電話番号を設定 --></a>
-          <a href="#" class="c-link">LINE で予約する <!-- TASK-04: LINE URLを設定 --></a>
+          <a href="tel:08058228855" class="c-link">お電話で予約する</a>
+          <a href="https://lin.ee/8SFMOpf" target="_blank" class="c-link">LINE で予約する</a>
         </div>
       </div>
       <div class="rv d2">
@@ -1551,23 +1594,20 @@ function extractDotCount(text) {
 }
 
 // ===== BA FRAME: 結果フレーム表示 =====
-function drawSMPSimulation(beforeDataURL, conditionType) {
+function drawSMPSimulation(beforeDataURL, conditionType, structured) {
   /*
-   * SMP（スカルプマイクロピグメンテーション）シミュレーション v3
+   * SMP（スカルプマイクロピグメンテーション）シミュレーション v5
    * ─────────────────────────────────────────────────
-   * 実際のSMP施術：0.001mm程度の極小ドットを数千～数万回打つ。
-   * 個々のドットは肉眼では見えないが、集積により肌色（頭皮露出部分）が
-   * 徐々に暗くなり、髪の毛があるように見える。
+   * v5: Gemini AIによる施術領域ポリゴン指定 + テクスチャ分析
    *
-   * アルゴリズム：
-   * 1. 施術エリア（肌色＝明るいピクセル）を検出
-   * 2. 周辺の髪色をサンプリング
-   * 3. 各ピクセルの明るさに応じて、肌色→髪色へ自然にブレンド
-   *    （明るい＝頭皮露出が多い → より強くブレンド）
-   * 4. ガウシアンぼかしで境界を自然に
-   * 結果：薄毛部分の肌色が自然に消え、髪があるように見える
+   * 核心的改善:
+   * - Geminiが返すtreatment_regionsポリゴン内のみにドット配置
+   * - exclusion_zones（顔・耳・首・背景）を完全除外
+   * - テクスチャ分析で髪密度を検出し、ドット密度を動的調整
+   * - フォールバック: Geminiデータなし→改良版skinMap + 安全ヒューリスティック
    */
   conditionType = conditionType || 'thinning';
+  structured = structured || {};
   var cv = document.getElementById('smpSimCanvas');
   if (!cv) return;
   var img = new Image();
@@ -1576,132 +1616,495 @@ function drawSMPSimulation(beforeDataURL, conditionType) {
     cv.width = w; cv.height = h;
     var ctx = cv.getContext('2d');
 
-    // 1. 元画像をそのまま描画
+    // 元画像を描画・ピクセルデータ取得
     ctx.drawImage(img, 0, 0, w, h);
-
-    // 2. 元画像のピクセルデータを取得
     var imgData = ctx.getImageData(0, 0, w, h);
     var px = imgData.data;
-    // 元データのコピーを保持（読み取り専用）
     var orig = new Uint8ClampedArray(px);
 
-    // 3. 髪色をサンプリング：画像内の暗いピクセル（＝既存の髪）の平均色
-    var hR = 0, hG = 0, hB = 0, hCnt = 0;
-    var step = 3; // サンプリング間隔
-    for (var sy = 0; sy < h; sy += step) {
-      for (var sx = 0; sx < w; sx += step) {
+    // ─── ユーティリティ: ポリゴン内判定（ray-casting） ───
+    function pointInPoly(px, py, poly) {
+      var inside = false;
+      for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        var xi = poly[i][0], yi = poly[i][1];
+        var xj = poly[j][0], yj = poly[j][1];
+        if ((yi > py) !== (yj > py) && px < (xj - xi) * (py - yi) / (yj - yi) + xi) {
+          inside = !inside;
+        }
+      }
+      return inside;
+    }
+
+    // ─── STEP A: マスク生成（Geminiデータ優先） ───
+    var treatmentMask = new Float32Array(w * h); // 0=除外, 0-1=施術密度
+    var hasGeminiRegions = !!(structured.treatment_regions && structured.treatment_regions.length > 0);
+    var hasExclusions = !!(structured.exclusion_zones && structured.exclusion_zones.length > 0);
+    var hb = structured.head_bounds || null;
+
+    if (hasGeminiRegions) {
+      // ポリゴン座標をピクセル座標に変換してマスク生成
+      var regions = structured.treatment_regions;
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var nx = x / w, ny = y / h;
+          var maxDensity = 0;
+          for (var ri = 0; ri < regions.length; ri++) {
+            if (pointInPoly(nx, ny, regions[ri].polygon)) {
+              maxDensity = Math.max(maxDensity, regions[ri].density_hint || 0.5);
+            }
+          }
+          treatmentMask[y * w + x] = maxDensity;
+        }
+      }
+    } else {
+      // フォールバック: head_bounds or 固定楕円ROI + 安全ヒューリスティック
+      var ecx, ecy, erx, ery;
+      if (hb) {
+        ecx = (hb.x + hb.w / 2) * w;
+        ecy = (hb.y + hb.h / 2) * h;
+        erx = (hb.w / 2) * w;
+        ery = (hb.h / 2) * h;
+      } else {
+        ecx = w / 2; ecy = h * 0.40;
+        erx = w * 0.40; ery = h * 0.42;
+      }
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var ed = ((x - ecx) / erx) * ((x - ecx) / erx) + ((y - ecy) / ery) * ((y - ecy) / ery);
+          if (ed <= 1) {
+            var fade = ed > 0.7 ? Math.max(0, (1 - ed) / 0.3) : 1.0;
+            treatmentMask[y * w + x] = fade * 0.6;
+          }
+        }
+      }
+      // 安全ヒューリスティック: 下部35%を除外（顔・首対策）
+      var cutoffY = Math.round(h * 0.65);
+      for (var y = cutoffY; y < h; y++) {
+        var fadeOut = 1 - (y - cutoffY) / (h - cutoffY);
+        fadeOut = Math.max(0, fadeOut * fadeOut); // 二次減衰
+        for (var x = 0; x < w; x++) {
+          treatmentMask[y * w + x] *= fadeOut;
+        }
+      }
+      // 両端12%を減衰（耳対策）
+      var earMargin = Math.round(w * 0.12);
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < earMargin; x++) {
+          treatmentMask[y * w + x] *= x / earMargin;
+        }
+        for (var x = w - earMargin; x < w; x++) {
+          treatmentMask[y * w + x] *= (w - 1 - x) / earMargin;
+        }
+      }
+    }
+
+    // exclusion_zonesをマスクから除外
+    if (hasExclusions) {
+      var zones = structured.exclusion_zones;
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var nx = x / w, ny = y / h;
+          for (var zi = 0; zi < zones.length; zi++) {
+            if (pointInPoly(nx, ny, zones[zi].polygon)) {
+              treatmentMask[y * w + x] = 0;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    // ─── STEP B: skinMap生成（マスク内のみ） ───
+    var skinMap = new Float32Array(w * h);
+    var hairR = 0, hairG = 0, hairB = 0, hairCnt = 0;
+    var avgSkinR = 0, avgSkinG = 0, avgSkinB = 0, skinCnt = 0;
+
+    // 適応的Crサンプリング
+    var crSamples = [];
+    var sampleStep = 5;
+    for (var sy = 0; sy < h; sy += sampleStep) {
+      for (var sx = 0; sx < w; sx += sampleStep) {
+        if (treatmentMask[sy * w + sx] < 0.1) continue;
         var si = (sy * w + sx) * 4;
-        var sB = (orig[si] * 0.299 + orig[si+1] * 0.587 + orig[si+2] * 0.114) / 255;
-        // 暗いピクセル = 髪の毛（極端に暗い＝背景は除外）
-        if (sB > 0.04 && sB < 0.20) {
-          hR += orig[si]; hG += orig[si+1]; hB += orig[si+2];
-          hCnt++;
-        }
+        var cr = 128 + 0.5 * orig[si] - 0.418688 * orig[si+1] - 0.081312 * orig[si+2];
+        if (cr > 125 && cr < 185) crSamples.push(cr);
       }
     }
-    if (hCnt > 0) {
-      hR = Math.floor(hR / hCnt);
-      hG = Math.floor(hG / hCnt);
-      hB = Math.floor(hB / hCnt);
-    } else {
-      // フォールバック：黒髪
-      hR = 30; hG = 26; hB = 24;
-    }
+    crSamples.sort(function(a,b){return a-b;});
+    var crMedian = crSamples.length > 0 ? crSamples[Math.floor(crSamples.length/2)] : 150;
+    var crLow = Math.max(125, crMedian - 25);
+    var crHigh = Math.min(185, crMedian + 25);
 
-    // 4. condition別の閾値設定
-    //    brightLow: これ以下は髪がある（施術不要）
-    //    brightHigh: これ以上は完全に頭皮露出（最大ブレンド）
-    //    maxBlend: 最大ブレンド率（0〜1、自然に見える上限）
-    var brightLow, brightHigh, maxBlend;
-    if (conditionType === 'scar') {
-      brightLow = 0.28; brightHigh = 0.65; maxBlend = 0.70;
-    } else if (conditionType === 'hairline') {
-      brightLow = 0.22; brightHigh = 0.55; maxBlend = 0.72;
-    } else if (conditionType === 'patch') {
-      brightLow = 0.22; brightHigh = 0.60; maxBlend = 0.75;
-    } else {
-      // thinning（デフォルト）
-      brightLow = 0.20; brightHigh = 0.55; maxBlend = 0.68;
-    }
-
-    // 5. ピクセル単位のSMPブレンド処理
-    //    明るいピクセル（肌色＝頭皮露出）を髪色に向かって徐々にブレンド
-    //    数万のドットが集積した結果を直接シミュレート
     for (var y = 0; y < h; y++) {
       for (var x = 0; x < w; x++) {
-        var i = (y * w + x) * 4;
+        var idx = y * w + x;
+        var maskVal = treatmentMask[idx];
+        if (maskVal < 0.05) { skinMap[idx] = 0; continue; }
+
+        var i = idx * 4;
         var r = orig[i], g = orig[i+1], b = orig[i+2];
-        var brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+        var Y  = 0.299*r + 0.587*g + 0.114*b;
+        var Cb = 128 - 0.168736*r - 0.331264*g + 0.5*b;
+        var Cr = 128 + 0.5*r - 0.418688*g - 0.081312*b;
+        var rn = r/255, gn = g/255, bn = b/255;
+        var cmax = Math.max(rn,gn,bn), cmin = Math.min(rn,gn,bn);
+        var delta = cmax - cmin;
+        var hue = 0, sat = 0, val = cmax;
+        if (delta > 0) {
+          sat = delta / cmax;
+          if (cmax === rn) hue = 60*(((gn-bn)/delta)%6);
+          else if (cmax === gn) hue = 60*((bn-rn)/delta+2);
+          else hue = 60*((rn-gn)/delta+4);
+          if (hue < 0) hue += 360;
+        }
 
-        // 暗いピクセル（既に髪がある）はスキップ
-        if (brightness <= brightLow) continue;
+        var hsvScore = 0, ycbcrScore = 0;
+        if ((hue<=50||hue>=340) && sat>=0.08 && sat<=0.65 && val>=0.25 && val<=0.85) {
+          hsvScore = 1.0;
+          if (hue>40&&hue<50) hsvScore *= (50-hue)/10;
+          if (sat<0.15) hsvScore *= (sat-0.08)/0.07;
+        }
+        if (Cb>=77&&Cb<=132&&Cr>=crLow&&Cr<=crHigh&&Y>=70&&Y<=230) {
+          ycbcrScore = 1.0;
+          var crNorm = (Cr-crLow)/(crHigh-crLow);
+          if (crNorm<0.15) ycbcrScore *= crNorm/0.15;
+          if (crNorm>0.85) ycbcrScore *= (1-crNorm)/0.15;
+        }
+        var score = hsvScore*0.4 + ycbcrScore*0.6;
+        var brightness = Y/255;
+        if (brightness<0.22) score *= Math.max(0,(brightness-0.10)/0.12);
+        if (brightness>0.78) score *= Math.max(0,(0.90-brightness)/0.12);
 
-        // ブレンド率：明るいほど強く（肌色が多い＝より多くのドットが必要）
-        var t = (brightness - brightLow) / (brightHigh - brightLow);
-        t = Math.max(0, Math.min(1, t));
-        // イージング：緩やかに立ち上げてエッジをソフトに
-        t = t * t * (3 - 2 * t); // smoothstep
-        var blend = t * maxBlend;
+        // Geminiマスクと合成（マスク値で重み付け）
+        skinMap[idx] = Math.max(0, Math.min(1, score * maskVal));
 
-        // ターゲット色：髪色に微妙なバリエーション（元の色味を少し残す）
-        // 完全な塗りつぶしではなく、元の肌色と髪色の自然な中間
-        var tR = hR * 0.85 + r * 0.15;
-        var tG = hG * 0.85 + g * 0.15;
-        var tB = hB * 0.85 + b * 0.15;
-
-        // ブレンド実行：元の色 → ターゲット色
-        px[i]   = Math.round(r + (tR - r) * blend);
-        px[i+1] = Math.round(g + (tG - g) * blend);
-        px[i+2] = Math.round(b + (tB - b) * blend);
-        // アルファは変更しない
-      }
-    }
-
-    // 6. ブレンド結果を書き戻し
-    ctx.putImageData(imgData, 0, 0);
-
-    // 7. 境界をなめらかにするためのソフトぼかしパス
-    //    StackBlur的な簡易ガウシアン（施術エリア境界の自然化）
-    //    小さなカーネルでエッジだけぼかす
-    var blurRadius = Math.max(1, Math.round(Math.min(w, h) * 0.004));
-    // Canvas native blur (supported in modern browsers)
-    ctx.filter = 'blur(' + blurRadius + 'px)';
-    ctx.globalAlpha = 0.35; // 軽くブレンド
-    ctx.drawImage(cv, 0, 0);
-    ctx.filter = 'none';
-    ctx.globalAlpha = 1.0;
-
-    // 8. 元画像の髪部分を復元（ぼかしで髪のディテールが失われないように）
-    //    暗い部分は元画像からそのまま上書き
-    var finalData = ctx.getImageData(0, 0, w, h);
-    var fd = finalData.data;
-    for (var y = 0; y < h; y++) {
-      for (var x = 0; x < w; x++) {
-        var i = (y * w + x) * 4;
-        var origBright = (orig[i] * 0.299 + orig[i+1] * 0.587 + orig[i+2] * 0.114) / 255;
-        // 髪のある部分（暗いピクセル）は元画像を優先して復元
-        if (origBright < brightLow + 0.05) {
-          fd[i] = orig[i];
-          fd[i+1] = orig[i+1];
-          fd[i+2] = orig[i+2];
-        } else if (origBright < brightLow + 0.12) {
-          // 境界部分はソフトにブレンド
-          var restore = 1 - (origBright - brightLow - 0.05) / 0.07;
-          restore = Math.max(0, Math.min(1, restore));
-          fd[i]   = Math.round(fd[i]   * (1-restore) + orig[i]   * restore);
-          fd[i+1] = Math.round(fd[i+1] * (1-restore) + orig[i+1] * restore);
-          fd[i+2] = Math.round(fd[i+2] * (1-restore) + orig[i+2] * restore);
+        if (brightness>0.04 && brightness<0.35 && score<0.3 && maskVal>0.1) {
+          hairR+=r; hairG+=g; hairB+=b; hairCnt++;
+        }
+        if (score>0.6 && maskVal>0.3) {
+          avgSkinR+=r; avgSkinG+=g; avgSkinB+=b; skinCnt++;
         }
       }
     }
-    ctx.putImageData(finalData, 0, 0);
+
+    if (hairCnt>0) { hairR=Math.floor(hairR/hairCnt); hairG=Math.floor(hairG/hairCnt); hairB=Math.floor(hairB/hairCnt); }
+    else { hairR=35; hairG=30; hairB=28; }
+    if (skinCnt>0) { avgSkinR=Math.floor(avgSkinR/skinCnt); avgSkinG=Math.floor(avgSkinG/skinCnt); avgSkinB=Math.floor(avgSkinB/skinCnt); }
+    else { avgSkinR=180; avgSkinG=150; avgSkinB=130; }
+    var isWarmSkin = avgSkinR > avgSkinB + 20;
+
+    // ─── STEP C: テクスチャ分析（ローカルバリアンスで髪密度を推定） ───
+    var blockSize = 8;
+    var bw = Math.ceil(w / blockSize), bh = Math.ceil(h / blockSize);
+    var varianceMap = new Float32Array(bw * bh);
+    var maxVar = 0;
+    for (var by = 0; by < bh; by++) {
+      for (var bx = 0; bx < bw; bx++) {
+        var sum = 0, sumSq = 0, cnt = 0;
+        var y0 = by*blockSize, y1 = Math.min(y0+blockSize, h);
+        var x0 = bx*blockSize, x1 = Math.min(x0+blockSize, w);
+        for (var yy = y0; yy < y1; yy++) {
+          for (var xx = x0; xx < x1; xx++) {
+            var ii = (yy*w+xx)*4;
+            var lum = orig[ii]*0.299+orig[ii+1]*0.587+orig[ii+2]*0.114;
+            sum += lum; sumSq += lum*lum; cnt++;
+          }
+        }
+        if (cnt > 0) {
+          var mean = sum/cnt;
+          var variance = sumSq/cnt - mean*mean;
+          varianceMap[by*bw+bx] = variance;
+          if (variance > maxVar) maxVar = variance;
+        }
+      }
+    }
+    // 正規化＆密度マップに統合（高分散=髪あり=密度減、低分散=頭皮露出=密度増）
+    if (maxVar > 0) {
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var idx = y * w + x;
+          if (skinMap[idx] < 0.05) continue;
+          var bx2 = Math.min(Math.floor(x/blockSize), bw-1);
+          var by2 = Math.min(Math.floor(y/blockSize), bh-1);
+          var normVar = varianceMap[by2*bw+bx2] / maxVar;
+          // 高分散（>0.3）= 髪のテクスチャ → ドット密度を下げる
+          if (normVar > 0.3) {
+            var texturePenalty = Math.max(0, 1 - (normVar - 0.3) / 0.5);
+            skinMap[idx] *= texturePenalty;
+          }
+        }
+      }
+    }
+
+    // 3x3スムージング
+    var smoothed = new Float32Array(w * h);
+    for (var y = 1; y < h-1; y++) {
+      for (var x = 1; x < w-1; x++) {
+        var s = 0;
+        for (var dy=-1;dy<=1;dy++) for (var dx=-1;dx<=1;dx++) s+=skinMap[(y+dy)*w+(x+dx)];
+        smoothed[y*w+x] = s/9;
+      }
+    }
+    skinMap = smoothed;
+
+    // ─── STEP D: condition別パラメータ設定 ───
+    var dotSpacing, dotOpacityMin, dotOpacityMax, dotRadiusMin, dotRadiusMax, densityMultiplier;
+    if (conditionType === 'scar') {
+      dotSpacing=2.5; dotOpacityMin=0.25; dotOpacityMax=0.55;
+      dotRadiusMin=1.0; dotRadiusMax=2.0; densityMultiplier=1.3;
+    } else if (conditionType === 'hairline') {
+      dotSpacing=3.0; dotOpacityMin=0.20; dotOpacityMax=0.50;
+      dotRadiusMin=0.8; dotRadiusMax=1.8; densityMultiplier=1.0;
+    } else if (conditionType === 'patch') {
+      dotSpacing=2.8; dotOpacityMin=0.22; dotOpacityMax=0.52;
+      dotRadiusMin=0.9; dotRadiusMax=1.9; densityMultiplier=1.2;
+    } else {
+      dotSpacing=3.0; dotOpacityMin=0.18; dotOpacityMax=0.48;
+      dotRadiusMin=0.8; dotRadiusMax=1.8; densityMultiplier=1.0;
+    }
+    var scale = Math.min(w,h)/800;
+    dotSpacing*=scale; dotRadiusMin*=scale; dotRadiusMax*=scale;
+
+    // ─── STEP E: ポアソンディスク分布（マスク制限付きBridson法） ───
+    var minDist = dotSpacing;
+    var cellSize = minDist / Math.sqrt(2);
+    var gridW2 = Math.ceil(w/cellSize);
+    var gridH2 = Math.ceil(h/cellSize);
+    var grid = new Int32Array(gridW2*gridH2).fill(-1);
+    var dots = [];
+    var active = [];
+    function gridIdx(gx,gy){return gy*gridW2+gx;}
+
+    // シード点: skinMap > 0.3 の点をランダムに選ぶ
+    var seedFound = false;
+    for (var attempt=0; attempt<200 && !seedFound; attempt++) {
+      var seedX = Math.floor(Math.random()*w);
+      var seedY = Math.floor(Math.random()*h);
+      if (skinMap[seedY*w+seedX] > 0.3) {
+        dots.push({x:seedX,y:seedY,s:skinMap[seedY*w+seedX]});
+        active.push(0);
+        var gx=Math.floor(seedX/cellSize), gy=Math.floor(seedY/cellSize);
+        if(gx>=0&&gx<gridW2&&gy>=0&&gy<gridH2) grid[gridIdx(gx,gy)]=0;
+        seedFound=true;
+      }
+    }
+
+    var maxCandidates = 16;
+    while (active.length > 0) {
+      var randIdx = Math.floor(Math.random()*active.length);
+      var parentIdx = active[randIdx];
+      var parent = dots[parentIdx];
+      var found = false;
+      for (var c=0; c<maxCandidates; c++) {
+        var angle = Math.random()*Math.PI*2;
+        var localDensity = skinMap[Math.floor(parent.y)*w+Math.floor(parent.x)]||0;
+        var distMult = 1.0+(1-localDensity)*1.5;
+        distMult /= densityMultiplier;
+        var dist = minDist*distMult*(1+Math.random());
+        var nnx = parent.x+Math.cos(angle)*dist;
+        var nny = parent.y+Math.sin(angle)*dist;
+        if(nnx<0||nnx>=w||nny<0||nny>=h) continue;
+
+        var nSkin = skinMap[Math.floor(nny)*w+Math.floor(nnx)];
+        if (nSkin<0.1) continue;
+        if (nSkin<0.4 && Math.random()>nSkin*2) continue;
+
+        var ngx=Math.floor(nnx/cellSize), ngy=Math.floor(nny/cellSize);
+        var tooClose = false;
+        for(var dy=-2;dy<=2&&!tooClose;dy++){
+          for(var dx=-2;dx<=2&&!tooClose;dx++){
+            var cgx=ngx+dx, cgy=ngy+dy;
+            if(cgx<0||cgx>=gridW2||cgy<0||cgy>=gridH2) continue;
+            var ni=grid[gridIdx(cgx,cgy)];
+            if(ni>=0){var nb=dots[ni];var ddx3=nnx-nb.x,ddy3=nny-nb.y;
+              if(ddx3*ddx3+ddy3*ddy3<minDist*minDist*distMult*distMult*0.64) tooClose=true;}
+          }
+        }
+        if (tooClose) continue;
+        var newIdx=dots.length;
+        dots.push({x:nnx,y:nny,s:nSkin});
+        active.push(newIdx);
+        if(ngx>=0&&ngx<gridW2&&ngy>=0&&ngy<gridH2) grid[gridIdx(ngx,ngy)]=newIdx;
+        found=true;
+      }
+      if (!found) active.splice(randIdx,1);
+      if (dots.length>80000) break;
+    }
+
+    // ─── STEP F: 個別ドット描画（ImageData直接操作） ───
+    var outData = ctx.getImageData(0,0,w,h);
+    var out = outData.data;
+    var rngState = 12345;
+    function fastRand(){rngState=(rngState*1103515245+12345)&0x7fffffff;return rngState/0x7fffffff;}
+
+    for (var d=0; d<dots.length; d++) {
+      var dot=dots[d];
+      var ddx=dot.x, ddy=dot.y, ds=dot.s;
+      var radius = dotRadiusMin+fastRand()*(dotRadiusMax-dotRadiusMin);
+      var radiusCeil = Math.ceil(radius);
+      var pi2 = (Math.floor(ddy)*w+Math.floor(ddx))*4;
+      var localR=orig[pi2], localG=orig[pi2+1], localB=orig[pi2+2];
+      var darkenFactor = 0.45+fastRand()*0.15;
+      var dotR2,dotG2,dotB2;
+      if (isWarmSkin) {
+        dotR2=Math.round(localR*darkenFactor*0.90+hairR*0.10);
+        dotG2=Math.round(localG*darkenFactor*0.88+hairG*0.12);
+        dotB2=Math.round(localB*darkenFactor*0.85+hairB*0.15);
+      } else {
+        dotR2=Math.round(localR*darkenFactor*0.88+hairR*0.12);
+        dotG2=Math.round(localG*darkenFactor*0.88+hairG*0.12);
+        dotB2=Math.round(localB*darkenFactor*0.88+hairB*0.12);
+      }
+      var jitter=Math.round((fastRand()-0.5)*12);
+      dotR2=Math.max(10,Math.min(80,dotR2+jitter));
+      dotG2=Math.max(8,Math.min(75,dotG2+jitter));
+      dotB2=Math.max(8,Math.min(75,dotB2+jitter));
+      var opacity=dotOpacityMin+ds*(dotOpacityMax-dotOpacityMin);
+      opacity*=(0.85+fastRand()*0.30);
+      opacity=Math.max(0.05,Math.min(0.65,opacity));
+
+      var ixMin=Math.max(0,Math.floor(ddx-radiusCeil));
+      var ixMax=Math.min(w-1,Math.ceil(ddx+radiusCeil));
+      var iyMin=Math.max(0,Math.floor(ddy-radiusCeil));
+      var iyMax=Math.min(h-1,Math.ceil(ddy+radiusCeil));
+      for(var py=iyMin;py<=iyMax;py++){
+        for(var px2=ixMin;px2<=ixMax;px2++){
+          var dx2=px2-ddx, dy2=py-ddy;
+          var distSq=dx2*dx2+dy2*dy2;
+          if(distSq>radius*radius) continue;
+          var distRatio=Math.sqrt(distSq)/radius;
+          var edgeAlpha=1-distRatio*distRatio;
+          var finalAlpha=opacity*edgeAlpha;
+          var oi=(py*w+px2)*4;
+          out[oi]=Math.round(out[oi]*(1-finalAlpha)+dotR2*finalAlpha);
+          out[oi+1]=Math.round(out[oi+1]*(1-finalAlpha)+dotG2*finalAlpha);
+          out[oi+2]=Math.round(out[oi+2]*(1-finalAlpha)+dotB2*finalAlpha);
+        }
+      }
+    }
+
+    // ─── STEP G: 軽量ぼかし ───
+    ctx.putImageData(outData,0,0);
+    var offscreen=document.createElement('canvas');
+    offscreen.width=w; offscreen.height=h;
+    offscreen.getContext('2d').drawImage(cv,0,0);
+    var blurRadius=Math.max(1,Math.round(Math.min(w,h)*0.003));
+    try{ctx.filter='blur('+blurRadius+'px)';ctx.globalAlpha=0.25;ctx.drawImage(offscreen,0,0);ctx.filter='none';ctx.globalAlpha=1.0;}catch(e){}
+
+    // ─── STEP H: マスク外の完全復元 ───
+    var finalData=ctx.getImageData(0,0,w,h);
+    var fd=finalData.data;
+    for (var y=0; y<h; y++) {
+      for (var x=0; x<w; x++) {
+        var i=(y*w+x)*4;
+        var sm = skinMap[y*w+x]||0;
+        var origBright=(orig[i]*0.299+orig[i+1]*0.587+orig[i+2]*0.114)/255;
+
+        // マスク外は完全に元画像を復元
+        if (sm === 0) {
+          fd[i]=orig[i]; fd[i+1]=orig[i+1]; fd[i+2]=orig[i+2];
+          continue;
+        }
+        // 暗い部分（既存の髪）は元画像を復元
+        if (origBright<0.22 && sm<0.3) {
+          fd[i]=orig[i]; fd[i+1]=orig[i+1]; fd[i+2]=orig[i+2];
+        } else if (origBright<0.30 && sm<0.5) {
+          var restore=1-(origBright-0.22)/0.08;
+          restore*=(1-sm);
+          restore=Math.max(0,Math.min(1,restore));
+          fd[i]=Math.round(fd[i]*(1-restore)+orig[i]*restore);
+          fd[i+1]=Math.round(fd[i+1]*(1-restore)+orig[i+1]*restore);
+          fd[i+2]=Math.round(fd[i+2]*(1-restore)+orig[i+2]*restore);
+        }
+      }
+    }
+    ctx.putImageData(finalData,0,0);
+
+    img.onload=null; img.src='';
   };
   img.src = beforeDataURL;
 }
 
+// ===== 構造化データ抽出（Gemini JSON出力） =====
+function extractStructuredData(responseText) {
+  var jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+  var data = null;
+  if (jsonMatch) {
+    try { data = JSON.parse(jsonMatch[1]); } catch(e) { /* フォールバック */ }
+  }
+  if (!data) {
+    // ```なしのJSONブロックも試行
+    var rawMatch = responseText.match(/\{[\s\S]*"condition_type"[\s\S]*"scores"[\s\S]*\}/);
+    if (rawMatch) {
+      try { data = JSON.parse(rawMatch[0]); } catch(e) { /* フォールバック */ }
+    }
+  }
+  if (!data) return null;
+
+  // ポリゴン座標のバリデーション＆サニタイズ
+  if (data.treatment_regions && Array.isArray(data.treatment_regions)) {
+    data.treatment_regions = data.treatment_regions.filter(function(r) {
+      if (!r || !Array.isArray(r.polygon) || r.polygon.length < 3) return false;
+      // 全座標が0-1範囲内かチェック
+      var valid = r.polygon.every(function(p) {
+        return Array.isArray(p) && p.length >= 2 &&
+          p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1;
+      });
+      if (!valid) { console.warn('[SMP Sim] Invalid polygon filtered:', r.label); return false; }
+      // 面積チェック（極端に小さいor大きいポリゴンを除外）
+      var area = _polyArea(r.polygon);
+      if (area < 0.001 || area > 0.95) { console.warn('[SMP Sim] Polygon area out of range:', r.label, area); return false; }
+      r.density_hint = Math.max(0, Math.min(1, r.density_hint || 0.5));
+      return true;
+    });
+    if (data.treatment_regions.length === 0) data.treatment_regions = null;
+  } else {
+    data.treatment_regions = null;
+  }
+
+  if (data.exclusion_zones && Array.isArray(data.exclusion_zones)) {
+    data.exclusion_zones = data.exclusion_zones.filter(function(z) {
+      if (!z || !Array.isArray(z.polygon) || z.polygon.length < 3) return false;
+      return z.polygon.every(function(p) {
+        return Array.isArray(p) && p.length >= 2 &&
+          p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1;
+      });
+    });
+    if (data.exclusion_zones.length === 0) data.exclusion_zones = null;
+  } else {
+    data.exclusion_zones = null;
+  }
+
+  if (data.head_bounds) {
+    var hb = data.head_bounds;
+    if (typeof hb.x !== 'number' || typeof hb.y !== 'number' ||
+        typeof hb.w !== 'number' || typeof hb.h !== 'number' ||
+        hb.w <= 0 || hb.h <= 0) {
+      data.head_bounds = null;
+    }
+  }
+
+  return data;
+}
+
+// ポリゴン面積計算（Shoelace formula、正規化座標）
+function _polyArea(pts) {
+  var n = pts.length, a = 0;
+  for (var i = 0, j = n - 1; i < n; j = i++) {
+    a += pts[j][0] * pts[i][1] - pts[i][0] * pts[j][1];
+  }
+  return Math.abs(a) / 2;
+}
+
 function showBAResult(beforeDataURL, claudeText) {
+  // 構造化データの抽出を試行
+  var structured = extractStructuredData(claudeText);
+
+  // Markdown表示用にJSONブロックを除去
+  var displayText = claudeText.replace(/```json[\s\S]*?```/g, '').trim();
+
   var dotCount = extractDotCount(claudeText);
-  var condType = detectConditionType(claudeText);
+  var condType = structured ? structured.condition_type : detectConditionType(claudeText);
   var frame = document.getElementById('baResultFrame');
   var beforeImg = document.getElementById('baBeforeImg');
   var dotCountEl = document.getElementById('baDotCount');
@@ -1709,19 +2112,44 @@ function showBAResult(beforeDataURL, claudeText) {
   var adviceBox = document.getElementById('adviceBox');
   var scoreRow = document.getElementById('simScoreRow');
 
+  // 構造化データからドット数を取得（利用可能な場合）
+  if (structured && structured.treatment_plan) {
+    var tp = structured.treatment_plan;
+    var totalDots = tp.total_dots || ((tp.total_dots_per_session || 0) * (tp.sessions || 1));
+    if (totalDots >= 10000) dotCount = '約' + Math.round(totalDots / 10000) + '万ドット（推定）';
+    else if (totalDots > 0) dotCount = '約' + totalDots.toLocaleString() + 'ドット（推定）';
+  }
+
   if (beforeImg) beforeImg.src = beforeDataURL;
   if (dotCountEl) dotCountEl.textContent = dotCount ? dotCount + ' dots' : '';
-  if (claudeTextEl) claudeTextEl.innerHTML = renderMarkdown(claudeText);
+  if (claudeTextEl) claudeTextEl.innerHTML = renderMarkdown(displayText);
   if (adviceBox) adviceBox.style.display = 'block';
   if (frame) frame.style.display = 'block';
 
-  // SMP canvas シミュレーション描画（condition-aware）
-  drawSMPSimulation(beforeDataURL, condType);
+  // SMP canvas シミュレーション描画（condition-aware + region-aware）
+  drawSMPSimulation(beforeDataURL, condType, structured);
 
-  // スコアバー表示（condition-aware labels and scores）
+  // スコアバー表示（構造化データ優先、フォールバックは推定値）
   if (scoreRow) {
     scoreRow.style.display = 'flex';
-    var scoreData = estimateScores(claudeText, condType);
+    var scoreData;
+    if (structured && structured.scores) {
+      var s = structured.scores;
+      scoreData = {
+        labels: ['密度改善効果', '自然な仕上がり', '若返り指数'],
+        values: [
+          Math.min(98, Math.max(50, s.coverage_improvement || 85)),
+          Math.min(98, Math.max(50, s.naturalness || 90)),
+          Math.min(98, Math.max(50, s.confidence_boost || 88))
+        ]
+      };
+      // conditionType別のラベル調整
+      if (condType === 'scar') scoreData.labels = ['傷跡カバー率', '自然な仕上がり', '目立ちにくさ'];
+      else if (condType === 'hairline') scoreData.labels = ['ライン改善度', '自然な仕上がり', '若返り指数'];
+      else if (condType === 'patch') scoreData.labels = ['カバー率', '自然な仕上がり', '均一性'];
+    } else {
+      scoreData = estimateScores(claudeText, condType);
+    }
     ['1','2','3'].forEach(function(n, i) {
       var fill = document.getElementById('sFill'+n);
       var val  = document.getElementById('sVal'+n);
@@ -1731,6 +2159,26 @@ function showBAResult(beforeDataURL, claudeText) {
       if (val)  val.textContent = pct + '%';
       if (lbl)  lbl.textContent = scoreData.labels[i];
     });
+  }
+
+  // 料金見積もりセクション（構造化データにpricingがある場合）
+  if (structured && structured.pricing && structured.pricing.total_price > 0) {
+    var pr = structured.pricing;
+    var tp2 = structured.treatment_plan || {};
+    var pricingHtml = '<div style="margin-top:18px;padding:16px 18px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;border:1px solid rgba(212,175,55,0.3);">';
+    pricingHtml += '<h4 style="color:#d4af37;margin:0 0 12px 0;font-size:1.05em;">料金見積もり（1ドット＝1円）</h4>';
+    pricingHtml += '<table style="width:100%;border-collapse:collapse;color:#e0e0e0;font-size:0.95em;">';
+    pricingHtml += '<tr><td style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">1セッションあたり</td><td style="text-align:right;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-weight:bold;color:#d4af37;">¥' + (pr.per_session_price || 0).toLocaleString() + '</td></tr>';
+    pricingHtml += '<tr><td style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">セッション数</td><td style="text-align:right;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">' + (tp2.sessions || '-') + '回</td></tr>';
+    if (tp2.time_per_session_hours) {
+      pricingHtml += '<tr><td style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">1回あたりの施術時間</td><td style="text-align:right;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">約' + tp2.time_per_session_hours + '時間</td></tr>';
+    }
+    if (tp2.retention_rate_initial) {
+      pricingHtml += '<tr><td style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">定着率（初回→完成後）</td><td style="text-align:right;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">' + Math.round(tp2.retention_rate_initial * 100) + '%→' + Math.round((tp2.retention_rate_final || 0.85) * 100) + '%</td></tr>';
+    }
+    pricingHtml += '<tr><td style="padding:10px 0 0;font-weight:bold;font-size:1.05em;">合計見積もり</td><td style="text-align:right;padding:10px 0 0;font-weight:bold;font-size:1.15em;color:#d4af37;">¥' + pr.total_price.toLocaleString() + '</td></tr>';
+    pricingHtml += '</table></div>';
+    if (claudeTextEl) claudeTextEl.innerHTML += pricingHtml;
   }
 
   // スクロール
@@ -1987,7 +2435,9 @@ function setStep(n) {
 }
 
 // ===== Gemini API（Google AI）によるAI解析 =====
-var _GEMINI_KEY = 'AIzaSyAtVoAPTfdxjD4guiwKTsAiyIhH6SycFOE';
+var _GEMINI_KEY = 'AIzaSyDLYETtOr5cQeIx3-ZEgVuOoEZmVd5hCRc';
+// モデルフォールバックチェーン（無料枠: lite=1000RPD, flash=250RPD, pro=100RPD）
+var _GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.5-pro'];
 
 // APIキー管理（管理者がカスタムキーを設定可能）
 function getSimApiKey() {
@@ -2044,6 +2494,20 @@ function analyze() {
   var prompt = 'あなたはTHE SCALP INK by CIMAの上級SMPスペシャリストです。\n' +
 'この頭部・頭皮の画像を精密に観察し、以下の5ステップで日本語の詳細診断レポートを作成してください。\n\n' +
 
+'【SMP施術の基礎データ（計算の根拠として使用）】\n' +
+'- ドットサイズ: 0.001〜0.01mm\n' +
+'- 1回の施術: 30,000〜50,000ドット（施術者速度: 約20ドット/秒）\n' +
+'- 標準セッション数: 2〜4回、間隔7〜14日\n' +
+'- 定着率: 初回50〜70%、完成後80〜90%\n' +
+'- ドット密度計算式: 施術面積(cm2) × ドット密度(40-120 dots/cm2)\n\n' +
+
+'【施術カテゴリ別ドット数目安】\n' +
+'1. フルヘッド（スキンヘッド）: 50,000〜150,000ドット / 密度70〜90% / 3〜5時間\n' +
+'2. 生え際形成（ヘアライン）: 5,000〜20,000ドット / 密度10〜30% / 1〜2時間\n' +
+'3. 密度追加（薄毛補強）: 20,000〜50,000ドット / 密度30〜60% / 2〜3時間\n' +
+'4. 傷隠し（FUE/FUT scar）: 5,000〜20,000ドット / 1〜2時間\n' +
+'5. 女性密度強化: 10,000〜30,000ドット / 密度20〜50% / 1.5〜3時間\n\n' +
+
 '【STEP 1: 状態タイプの特定】\n' +
 '画像を見て、以下の中から該当するタイプを最初に明示してください。\n' +
 '  A. 薄毛全体型（びまん性薄毛・頭頂部薄毛）\n' +
@@ -2054,98 +2518,167 @@ function analyze() {
 '→ 例：「状態タイプ：B＋C（ヘアライン後退＋後頭部に手術跡）」\n\n' +
 
 '【STEP 2: 詳細状態分析】\n' +
-'特定したタイプに応じて以下を分析してください。\n' +
-'■ 薄毛全体型の場合\n' +
-'  - Hamiltonスケール（男性）またはLudwigスケール（女性）での進行度\n' +
-'  - 密度不足エリアの位置・面積・頭皮透け感\n' +
-'■ ヘアライン後退型の場合\n' +
-'  - 後退パターン（M字・後退角度・左右差）\n' +
-'  - 理想的な生え際ラインとの差\n' +
-'■ 傷跡・瘢痕型の場合\n' +
-'  - 傷跡の推定長さ・幅・色の違い\n' +
-'  - 傷跡周辺の毛包残存状況\n' +
-'  - 傷跡がどの程度目立つか\n' +
-'■ 脱毛パッチ型の場合\n' +
-'  - パッチの形状・推定サイズ・境界の明確度\n' +
-'  - 複数パッチの有無\n\n' +
+'STEP 1で特定したタイプに基づき、以下の観点で分析：\n' +
+'- 進行度スケール（Hamilton/Ludwig該当する場合）\n' +
+'- 施術対象エリアの位置・推定面積（cm2単位）・深刻度\n' +
+'- 周辺の毛包・毛髪の残存状態\n' +
+'- 肌色トーン（フィッツパトリックスケール I-VI）\n\n' +
 
 '【STEP 3: SMP施術プランの提案】\n' +
 '- 最適アプローチ（全体カバー／ヘアライン特化／傷跡・パッチ特化／複合プラン）\n' +
-'- 傷跡・パッチがある場合：患部への特別アプローチ（専用色調マッチング・段階的密度設計）\n' +
 '- 施術エリアの優先順位と推奨ドット数をテーブルで明示\n' +
-'- ★重要★ 推定総ドット数を「約○万ドット × ○回」の形式で必ず明記（例：約3万ドット × 3回 = 約9万ドット）\n' +
-'  - 部分的な薄毛の場合：1回あたり約2〜3万ドット × 2〜3回\n' +
-'  - スキンヘッドに近い場合：1回あたり約4〜6万ドット × 3〜4回\n' +
-'  - 傷跡カバーの場合：1回あたり約0.5〜2万ドット × 2〜3回\n' +
-'  - 上記はあくまで目安。画像から推定した状態に合わせて具体的に記載すること\n' +
-'- 推奨セッション数と間隔のテーブル\n\n' +
+'- ★重要★ 推定総ドット数の算出方法：施術面積（cm2）× ドット密度（40-120 dots/cm2）で計算すること\n' +
+'  計算過程を明示し、「約○万ドット × ○回」の形式で記載\n' +
+'- 定着率を考慮した複数回施術プラン（初回定着率50-70%のため2-4回必要）\n' +
+'- 面積別の推定施術時間をテーブルで明示\n' +
+'- 推奨セッション数と間隔（7〜14日）のテーブル\n\n' +
 
 '【STEP 4: 施術後のビジュアルイメージ】\n' +
-'- 傷跡・パッチが目立たなくなる仕上がり（該当する場合は必ず記載）\n' +
-'- 密度感・自然さの変化（ビフォーアフターのイメージ）テーブル形式\n' +
+'- 密度感・自然さの変化テーブル\n' +
 '- 第一印象・年齢印象の変化\n' +
 '- 1ドット＝1円の透明会計：推定総ドット数（全セッション合計）と参考価格帯\n\n' +
 
-'【STEP 5: CIMAの4Dテクニックの強み】\n' +
-'傷跡・特殊部位への対応を含む、自然なランダム配置・グラデーション・個人最適色調マッチングについて。\n\n' +
+'【STEP 5: CIMA 4Dテクニックの強み】\n' +
+'- 傷跡・特殊エリアのカバレッジ\n' +
+'- 自然なランダム配置\n' +
+'- グラデーションデザイン\n' +
+'- パーソナライズドトーンマッチング\n\n' +
 
 '★出力フォーマット指示★\n' +
 '- Markdown形式で出力（## 見出し、### 小見出し、| テーブル |、- リスト、**太字** を使用）\n' +
 '- 温かく専門的なトーンで、具体的・前向きに\n' +
 '- 傷跡・患部がある方には特に丁寧な希望を持てるアドバイスを\n' +
-'- テーブルはヘッダー行 + セパレーター行 + データ行の正しい形式で';
+'- テーブルはヘッダー行 + セパレーター行 + データ行の正しい形式で\n\n' +
 
-  // Gemini API (Google Generative AI)
-  var geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + encodeURIComponent(key);
+'★★重要：レポート末尾に以下のJSONブロックを必ず追加してください★★\n' +
+'座標は画像の幅・高さを1.0とした正規化座標（0.0〜1.0）で指定してください。\n' +
+'treatment_regions: 施術すべき領域を5〜12点のポリゴン（[x,y]の配列）で囲む。複数領域可。\n' +
+'  - 薄毛: 頭皮が透けて見える部分のみ（髪が密な部分は含めない）\n' +
+'  - 傷跡: 傷跡・瘢痕の輪郭のみ（周辺の正常な髪は含めない）\n' +
+'  - ヘアライン: 後退した生え際の露出部分のみ\n' +
+'  - 分け目: 分け目ラインに沿った細長い領域のみ\n' +
+'  density_hint: そのエリアの頭皮露出度（0.0=髪密集/1.0=完全露出）\n' +
+'exclusion_zones: 顔（額の下〜顎）、耳、首、背景を必ずポリゴンで指定。\n' +
+'  正面・斜め写真では顔の輪郭を正確に指定することが特に重要。\n' +
+'head_bounds: 画像内の頭部全体のバウンディングボックス。\n\n' +
+'```json\n' +
+'{\n' +
+'  "condition_type": "thinning|hairline|scar|patch|combined",\n' +
+'  "severity_scale": "Hamilton III など",\n' +
+'  "treatment_regions": [\n' +
+'    { "label": "crown_thinning", "polygon": [[0.3,0.2],[0.7,0.2],[0.7,0.5],[0.3,0.5]], "density_hint": 0.7 }\n' +
+'  ],\n' +
+'  "exclusion_zones": [\n' +
+'    { "label": "face", "polygon": [[0.25,0.55],[0.75,0.55],[0.75,0.95],[0.25,0.95]] }\n' +
+'  ],\n' +
+'  "head_bounds": { "x": 0.1, "y": 0.05, "w": 0.8, "h": 0.85 },\n' +
+'  "treatment_plan": {\n' +
+'    "total_dots_per_session": 30000,\n' +
+'    "sessions": 3,\n' +
+'    "total_dots": 90000,\n' +
+'    "area_cm2": 120,\n' +
+'    "dot_density_per_cm2": 75,\n' +
+'    "dot_size_mm": 0.005,\n' +
+'    "time_per_session_hours": 2.5,\n' +
+'    "retention_rate_initial": 0.65,\n' +
+'    "retention_rate_final": 0.85\n' +
+'  },\n' +
+'  "scores": {\n' +
+'    "coverage_improvement": 85,\n' +
+'    "naturalness": 90,\n' +
+'    "confidence_boost": 88\n' +
+'  },\n' +
+'  "pricing": {\n' +
+'    "price_per_dot": 1,\n' +
+'    "total_price": 90000,\n' +
+'    "per_session_price": 30000\n' +
+'  }\n' +
+'}\n' +
+'```';
 
-  fetch(geminiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          { inlineData: { mimeType: 'image/jpeg', data: b64 } },
-          { text: prompt }
-        ]
-      }],
-      generationConfig: { maxOutputTokens: 2048, temperature: 0.7 }
-    })
-  })
-  .then(function(res){
-    if (!res.ok) return res.json().then(function(e){
-      var errMsg = (e.error && e.error.message) || 'API error ' + res.status;
-      throw new Error(errMsg);
-    });
-    return res.json();
-  })
-  .then(function(data){
-    // Gemini response format: data.candidates[0].content.parts[0].text
-    var txt = '';
-    try {
-      txt = data.candidates[0].content.parts[0].text;
-    } catch(ex) {
-      txt = 'AIからの応答を取得できませんでした。';
-    }
-    showBAResult(beforeDataURL, txt);
-    setStep(3);
-    if (ldDots) ldDots.classList.remove('on');
-  })
-  .catch(function(err){
-    var msg = err && err.message ? err.message : 'ネットワークエラーが発生しました';
-    var isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|403|401/i.test(msg);
-    var displayMsg = isAuthErr
-      ? '⚠ APIキーが無効です。管理者にお問い合わせください。'
-      : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>ネットワーク接続をご確認ください。';
-    var advBox = document.getElementById('adviceBox');
-    var claudeEl = document.getElementById('claudeAdvice');
-    if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
-    if (advBox) advBox.style.display='block';
-    var frame = document.getElementById('baResultFrame');
-    if (frame) frame.style.display='block';
-    setStep(3);
-    if (capBtn) capBtn.style.display='inline-block';
-    if (ldDots) ldDots.classList.remove('on');
+  // Gemini API - フォールバックチェーン対応
+  var requestBody = JSON.stringify({
+    system_instruction: {
+      parts: [{
+        text: 'あなたはSMP（スカルプマイクロピグメンテーション）の専門家です。頭皮画像を解析し、正確な施術プランを提案します。' +
+        'ドットサイズ0.001〜0.01mm、1回の施術で30,000〜50,000ドット、施術者速度は1秒20ドットが基準です。' +
+        '定着率は初回50〜70%、完成後80〜90%です。必ず施術面積(cm2)×ドット密度(40-120 dots/cm2)で総ドット数を算出してください。' +
+        '出力は必ず日本語で、構造化されたフォーマットに従い、末尾にJSON構造データを含めてください。'
+      }]
+    },
+    contents: [{
+      parts: [
+        { inlineData: { mimeType: 'image/jpeg', data: b64 } },
+        { text: prompt }
+      ]
+    }],
+    generationConfig: { maxOutputTokens: 4096, temperature: 0.3, topP: 0.85, topK: 40 }
   });
+
+  function tryGeminiModel(modelIndex) {
+    if (modelIndex >= _GEMINI_MODELS.length) {
+      var advBox = document.getElementById('adviceBox');
+      var claudeEl = document.getElementById('claudeAdvice');
+      if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">⚠ すべてのAIモデルが利用上限に達しています。<br>時間をおいて再度お試しください（通常1分程度で回復します）。</span>';
+      if (advBox) advBox.style.display='block';
+      var frame = document.getElementById('baResultFrame');
+      if (frame) frame.style.display='block';
+      setStep(3);
+      if (capBtn) capBtn.style.display='inline-block';
+      if (ldDots) ldDots.classList.remove('on');
+      return;
+    }
+    var model = _GEMINI_MODELS[modelIndex];
+    var geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(key);
+
+    fetch(geminiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: requestBody
+    })
+    .then(function(res){
+      if (!res.ok) return res.json().then(function(e){
+        var errMsg = (e.error && e.error.message) || 'API error ' + res.status;
+        throw new Error(errMsg);
+      });
+      return res.json();
+    })
+    .then(function(data){
+      var txt = '';
+      try {
+        txt = data.candidates[0].content.parts[0].text;
+      } catch(ex) {
+        txt = 'AIからの応答を取得できませんでした。';
+      }
+      showBAResult(beforeDataURL, txt);
+      setStep(3);
+      if (ldDots) ldDots.classList.remove('on');
+    })
+    .catch(function(err){
+      var msg = err && err.message ? err.message : '';
+      var isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
+      var isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|403|401/i.test(msg);
+      if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
+        console.log('[AI Sim] ' + model + ' quota exceeded, trying ' + _GEMINI_MODELS[modelIndex + 1]);
+        tryGeminiModel(modelIndex + 1);
+        return;
+      }
+      var displayMsg = isAuthErr
+        ? '⚠ APIキーが無効です。管理者にお問い合わせください。'
+        : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>ネットワーク接続をご確認ください。';
+      var advBox = document.getElementById('adviceBox');
+      var claudeEl = document.getElementById('claudeAdvice');
+      if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
+      if (advBox) advBox.style.display='block';
+      var frame = document.getElementById('baResultFrame');
+      if (frame) frame.style.display='block';
+      setStep(3);
+      if (capBtn) capBtn.style.display='inline-block';
+      if (ldDots) ldDots.classList.remove('on');
+    });
+  }
+
+  tryGeminiModel(0);
 }
 
 function resetSim() {
