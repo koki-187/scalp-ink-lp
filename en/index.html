@@ -2416,7 +2416,7 @@ function analyze() {
     .catch(function(err){
       var msg = err && err.message ? err.message : '';
       var isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
-      var isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|403|401/i.test(msg);
+      var isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
       if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
         console.log('[AI Sim] ' + model + ' quota exceeded, trying ' + _GEMINI_MODELS[modelIndex + 1]);
         tryGeminiModel(modelIndex + 1);
