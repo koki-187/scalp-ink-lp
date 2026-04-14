@@ -1596,24 +1596,31 @@ function extractDotCount(text) {
 // ===== BA FRAME: show result frame =====
 function drawSMPSimulation(beforeDataURL, conditionType, structured) {
   /*
-   * SMP (Scalp Micropigmentation) Simulation v7
-   * ─────────────────────────────────────────────────────────
-   * v7: Density-based coverage synthesis (43,000–130,000 dots)
+   * SMP (Scalp Micropigmentation) Simulation v8-fast
+   * ══════════════════════════════════════════════════════════════════
+   * Production spec: Multi-layer mask separation + deterministic cell-dot blue-noise placement
    *
-   * Replaces slow Poisson disk individual dot placement with
-   * physics-based coverage rate calculation + hash noise synthesis.
+   * Core difference from v7:
+   *  v7: Single treatmentMask served as region + density + edge → paint-like coverage
+   *  v8: 3 maps fully separated → circular stipple dots placed directly
    *
-   * Physical rationale:
-   * 0.01mm real dot → diffuses in skin to ~0.5mm effective visual diameter
-   * 129,600 dots × π×(0.25mm)² / treatment area ≈ 100% coverage
-   * ∴ Skin color disappears; treatment area becomes uniformly dark (SMP shadow effect)
+   * Three-layer masks:
+   *  regionMask  – Binary region (inside Gemini polygon=1, outside=0)
+   *  densityMap  – Treatment intensity (0-1) = density_hint × luminance exposure factor
+   *  edgeMask    – Box-blurred regionMask → boundary feathering
    *
-   * Algorithm:
-   * 1. Gemini polygons → treatment mask (exclusions removed)
-   * 2. Extract hair/skin colors → compute SMP pigment color
-   * 3. totalDots × effective dot area / mask area → Poisson saturation coverage
-   * 4. Each pixel: 2D hash noise for dot grain texture + coverage-weighted color blend
-   * 5. Mask boundary: automatic edge blend (weighted by mask value)
+   * Dot placement (v8-fast deterministic cell method):
+   *  1 cell = dotDiameter × 2.2 (blue-noise spacing)
+   *  hash32/rand01 deterministically places 1 dot per cell
+   *  density value = probability that a cell contains a dot → local density control
+   *
+   * Two-layer synthesis:
+   *  Layer1 = Poisson saturation coverage (uniform darkening base)
+   *  Layer2 = cellDotAlpha (circular stipple texture)
+   *  finalAlpha = min(0.95, L1×0.80 + L2×0.55) × edgeMask
+   *
+   * Unified dot scale (per spec):
+   *  dot_size_rel 0.001–0.01 × head_width_px → always proportional to head size
    */
   conditionType = conditionType || 'thinning';
   structured = structured || {};
@@ -1637,25 +1644,61 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
       return inside;
     }
     function getLum(i4) { return (orig[i4] * 0.299 + orig[i4+1] * 0.587 + orig[i4+2] * 0.114) / 255; }
-    function hash2d(x, y) { var n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return n - Math.floor(n); }
-    function hash2db(x, y) { var n = Math.sin(x * 269.5 + y * 183.3) * 43758.5453; return n - Math.floor(n); }
 
-    // ─── STEP A: Treatment mask (Gemini polygons preferred) ───
-    var treatmentMask = new Float32Array(w * h);
+    // 32-bit deterministic hash (Murmur-style, per spec)
+    function hash32(xv) {
+      xv = xv >>> 0;
+      xv ^= xv >>> 16;
+      xv = Math.imul(xv, 0x7feb352d) >>> 0;
+      xv ^= xv >>> 15;
+      xv = Math.imul(xv, 0x846ca68b) >>> 0;
+      xv ^= xv >>> 16;
+      return xv >>> 0;
+    }
+    function rand01(ix, iy, seed) {
+      return hash32(((ix * 73856093) ^ (iy * 19349663) ^ seed) >>> 0) / 4294967296.0;
+    }
+    // Cell-dot alpha: deterministically place 1 dot per cell, return coverage at (x,y)
+    function cellDotAlpha(x, y, cellSz, dotR, localDensity, seed) {
+      var cx = Math.floor(x / cellSz) | 0;
+      var cy = Math.floor(y / cellSz) | 0;
+      // Probabilistic dot presence based on local density
+      if (rand01(cx, cy, seed) > localDensity) return 0.0;
+      // Dot center within cell (±30% offset for blue-noise feel)
+      var ox = (rand01(cx, cy, seed + 1) - 0.5) * cellSz * 0.60;
+      var oy = (rand01(cx, cy, seed + 2) - 0.5) * cellSz * 0.60;
+      var mx = (cx + 0.5) * cellSz + ox;
+      var my = (cy + 0.5) * cellSz + oy;
+      var dx = x - mx, dy = y - my;
+      var d2 = dx * dx + dy * dy;
+      var r2 = dotR * dotR;
+      if (d2 <= r2) return 1.0;
+      // Soft edge falloff
+      var t = (d2 - r2) / (0.30 * r2);
+      return Math.max(0.0, 1.0 - Math.min(1.0, t));
+    }
+
+    // ─── STEP A: Three-layer mask generation ───
+    // regionMask: binary region (inside Gemini polygon=1, outside=0)
+    // densityMap: treatment intensity (density_hint, adjusted later)
+    var regionMask = new Float32Array(w * h);
+    var densityMap  = new Float32Array(w * h);
     var hasGeminiRegions = !!(structured.treatment_regions && structured.treatment_regions.length > 0);
-    var hasExclusions = !!(structured.exclusion_zones && structured.exclusion_zones.length > 0);
+    var hasExclusions    = !!(structured.exclusion_zones   && structured.exclusion_zones.length   > 0);
     var hb = structured.head_bounds || null;
 
     if (hasGeminiRegions) {
       var regions = structured.treatment_regions;
       for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {
-          var nx = x / w, ny = y / h, maxD = 0;
+          var nx = x / w, ny = y / h, maxDHint = 0, inReg = false;
           for (var ri = 0; ri < regions.length; ri++) {
-            if (pointInPoly(nx, ny, regions[ri].polygon))
-              maxD = Math.max(maxD, regions[ri].density_hint || 0.7);
+            if (pointInPoly(nx, ny, regions[ri].polygon)) {
+              inReg = true;
+              maxDHint = Math.max(maxDHint, regions[ri].density_hint || 0.7);
+            }
           }
-          treatmentMask[y * w + x] = maxD;
+          if (inReg) { regionMask[y*w+x] = 1.0; densityMap[y*w+x] = maxDHint; }
         }
       }
     } else {
@@ -1663,22 +1706,22 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
       var ecx = hb ? (hb.x + hb.w / 2) * w : w / 2;
       var ecy = hb ? (hb.y + hb.h * 0.38) * h : h * 0.33;
       var erx = hb ? (hb.w / 2) * w : w * 0.38;
-      var ery = hb ? (hb.h * 0.5) * h : h * 0.36;
+      var ery = hb ? (hb.h * 0.50) * h : h * 0.36;
       for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {
-          var ed = ((x - ecx) / erx) * ((x - ecx) / erx) + ((y - ecy) / ery) * ((y - ecy) / ery);
-          if (ed <= 1) treatmentMask[y * w + x] = ed > 0.7 ? Math.max(0, (1 - ed) / 0.3) * 0.7 : 0.7;
+          var ed = ((x-ecx)/erx)*((x-ecx)/erx) + ((y-ecy)/ery)*((y-ecy)/ery);
+          if (ed <= 1) { regionMask[y*w+x] = 1.0; densityMap[y*w+x] = 0.7; }
         }
       }
       var cy2 = Math.round(h * 0.70);
       for (var y = cy2; y < h; y++) {
-        var fo = Math.max(0, 1 - (y - cy2) / (h - cy2)); fo *= fo;
-        for (var x = 0; x < w; x++) treatmentMask[y * w + x] *= fo;
+        var fo = Math.max(0, 1-(y-cy2)/(h-cy2)); fo *= fo;
+        for (var x = 0; x < w; x++) { regionMask[y*w+x]*=fo; densityMap[y*w+x]*=fo; }
       }
       var em2 = Math.round(w * 0.10);
       for (var y = 0; y < h; y++) {
-        for (var x = 0; x < em2; x++) treatmentMask[y * w + x] *= x / em2;
-        for (var x = w - em2; x < w; x++) treatmentMask[y * w + x] *= (w - 1 - x) / em2;
+        for (var x = 0; x < em2; x++) { var ef=x/em2; regionMask[y*w+x]*=ef; densityMap[y*w+x]*=ef; }
+        for (var x = w-em2; x < w; x++) { var ef=(w-1-x)/em2; regionMask[y*w+x]*=ef; densityMap[y*w+x]*=ef; }
       }
     }
 
@@ -1687,133 +1730,147 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
       var zones = structured.exclusion_zones;
       for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {
-          var nx = x / w, ny = y / h;
+          var nx = x/w, ny = y/h;
           for (var zi = 0; zi < zones.length; zi++) {
-            if (pointInPoly(nx, ny, zones[zi].polygon)) { treatmentMask[y * w + x] = 0; break; }
+            if (pointInPoly(nx, ny, zones[zi].polygon)) { regionMask[y*w+x]=0; densityMap[y*w+x]=0; break; }
           }
         }
       }
     }
 
-    // ─── STEP B: Extract hair/skin color for SMP pigment calculation ───
-    var hairR = 0, hairG = 0, hairB = 0, hairN = 0;
-    var skinR = 0, skinG = 0, skinB = 0, skinN = 0;
-    for (var y = 0; y < h; y += 3) {
-      for (var x = 0; x < w; x += 3) {
-        var idx = y * w + x;
-        if (treatmentMask[idx] < 0.08) continue;
-        var i4 = idx * 4, lum = getLum(i4);
-        var r = orig[i4], g = orig[i4+1], b = orig[i4+2];
-        if (lum < 0.38) { hairR += r; hairG += g; hairB += b; hairN++; }
-        else if (lum > 0.42 && lum < 0.84) { skinR += r; skinG += g; skinB += b; skinN++; }
+    // edgeMask: separable box blur of regionMask → boundary feathering
+    var featherR = Math.max(4, Math.min(20, Math.round(Math.min(w, h) * 0.018)));
+    var edgeMask = new Float32Array(w * h);
+    var tempBuf  = new Float32Array(w * h);
+    // Horizontal pass
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var sum = 0, cnt = 0;
+        for (var dx = -featherR; dx <= featherR; dx++) {
+          var nx2 = x + dx;
+          if (nx2 >= 0 && nx2 < w) { sum += regionMask[y*w+nx2]; cnt++; }
+        }
+        tempBuf[y*w+x] = cnt > 0 ? sum / cnt : 0;
       }
     }
-    if (hairN > 0) { hairR = Math.floor(hairR/hairN); hairG = Math.floor(hairG/hairN); hairB = Math.floor(hairB/hairN); }
-    else { hairR = 38; hairG = 33; hairB = 30; }
-    if (skinN > 0) { skinR = Math.floor(skinR/skinN); skinG = Math.floor(skinG/skinN); skinB = Math.floor(skinB/skinN); }
-    else { skinR = 185; skinG = 155; skinB = 135; }
+    // Vertical pass
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var sum = 0, cnt = 0;
+        for (var dy = -featherR; dy <= featherR; dy++) {
+          var ny3 = y + dy;
+          if (ny3 >= 0 && ny3 < h) { sum += tempBuf[ny3*w+x]; cnt++; }
+        }
+        edgeMask[y*w+x] = cnt > 0 ? sum / cnt : 0;
+      }
+    }
+    tempBuf = null;
 
-    // SMP pigment: hair-color base (ink blends into skin, slightly lighter than pure hair)
-    var pigR = Math.max(18, Math.min(90, hairR + 10));
-    var pigG = Math.max(15, Math.min(85, hairG + 8));
-    var pigB = Math.max(20, Math.min(95, hairB + 12)); // slight blue tint (ink characteristic)
+    // ─── STEP B: Adjust densityMap by luminance exposure factor ───
+    // SMP treatment: brighten exposed scalp (bright px) fully, spare existing follicles (dark px)
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var idx = y*w+x;
+        if (regionMask[idx] < 0.5) continue;
+        var lum = getLum(idx * 4);
+        var exposeFactor = Math.max(0, Math.min(1, (lum - 0.07) / 0.28));
+        densityMap[idx] *= (0.30 + exposeFactor * 0.70);
+      }
+    }
 
-    // ─── STEP C: Coverage rate (Poisson saturation model) ───
-    var totalDots = (structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
+    // ─── STEP C: Hair color extraction → SMP pigment color ───
+    var hairR = 0, hairG = 0, hairB = 0, hairN = 0;
+    for (var y = 0; y < h; y += 3) {
+      for (var x = 0; x < w; x += 3) {
+        var idx = y*w+x;
+        if (regionMask[idx] < 0.5) continue;
+        var i4 = idx*4, lum = getLum(i4);
+        if (lum < 0.40) { hairR+=orig[i4]; hairG+=orig[i4+1]; hairB+=orig[i4+2]; hairN++; }
+      }
+    }
+    if (hairN > 0) { hairR=Math.floor(hairR/hairN); hairG=Math.floor(hairG/hairN); hairB=Math.floor(hairB/hairN); }
+    else { hairR=38; hairG=33; hairB=30; }
+    // SMP pigment = hair color + subtle blue offset (ink characteristic)
+    var pigR = Math.max(20, Math.min(88, hairR + 10));
+    var pigG = Math.max(16, Math.min(82, hairG +  8));
+    var pigB = Math.max(22, Math.min(92, hairB + 13));
+
+    // ─── STEP D: Dot parameters (spec: dot_size_rel × head_width_px) ───
     var headW_px = hb ? hb.w * w : w * 0.75;
-
-    // Effective dot radius: 0.01mm real → diffuses to ~0.5mm visual in skin
-    // Scale assumption: head width ≈ 180mm
-    var mmPerPx = 180.0 / Math.max(100, headW_px);
-    var dotRadius_px = 0.25 / mmPerPx; // 0.5mm diameter → 0.25mm radius
-    dotRadius_px = Math.max(1.0, Math.min(5.0, dotRadius_px));
+    var dot_size_rel = conditionType === 'hairline' ? 0.0038
+                     : conditionType === 'scar'     ? 0.0055
+                     : conditionType === 'patch'    ? 0.0048
+                     : 0.0045;
+    var dotRadius_px = (dot_size_rel * headW_px) / 2;
+    dotRadius_px = Math.max(0.9, Math.min(6.5, dotRadius_px));
+    var cellSize   = dotRadius_px * 2.0 * 2.2; // blue-noise spacing
     var dotArea_px = Math.PI * dotRadius_px * dotRadius_px;
+    var SEED = 0x4d534d50; // 'MSMP' fixed seed → reproducible results
 
-    // Weighted treatment area in pixels
+    // ─── STEP E: Poisson saturation coverage rate (for Layer 1) ───
+    var totalDots = (structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
     var treatArea = 0;
-    for (var ii = 0; ii < treatmentMask.length; ii++) {
-      if (treatmentMask[ii] > 0.02) treatArea += treatmentMask[ii];
+    for (var ii = 0; ii < regionMask.length; ii++) {
+      if (regionMask[ii] > 0.5) treatArea++;
     }
     treatArea = Math.max(1, treatArea);
+    var lam = totalDots * dotArea_px / treatArea;
+    var baseCoverage = Math.min(0.94, 1.0 - Math.exp(-lam));
+    console.log('[SMP v8] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px cell=' + cellSize.toFixed(1) + 'px treatPx=' + treatArea + ' λ=' + lam.toFixed(2) + ' cov=' + (baseCoverage*100).toFixed(1) + '%');
 
-    // Poisson distribution: P(≥1 dot hits pixel) = 1 - e^(-λ), λ = average overlaps
-    var lambda = totalDots * dotArea_px / treatArea;
-    var baseCoverage = Math.min(0.94, 1 - Math.exp(-lambda));
-
-    console.log('[SMP v7] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px area=' + treatArea.toFixed(0) + 'px² λ=' + lambda.toFixed(2) + ' cov=' + (baseCoverage * 100).toFixed(1) + '%');
-
-    // ─── STEP D: Apply SMP coverage synthesis ───
+    // ─── STEP F: Two-layer synthesis (Layer1 Poisson base + Layer2 cell-dot stipple) ───
     var outData = ctx.getImageData(0, 0, w, h);
     var out = outData.data;
 
     for (var y = 0; y < h; y++) {
       for (var x = 0; x < w; x++) {
-        var idx = y * w + x;
-        var mask = treatmentMask[idx];
-        if (mask < 0.005) continue;
+        var idx = y*w+x;
+        var rMask = regionMask[idx];
+        if (rMask < 0.005) continue;
 
-        var i4 = idx * 4;
+        var i4 = idx*4;
         var r = orig[i4], g = orig[i4+1], b = orig[i4+2];
-        var lum = getLum(i4);
+        var dMap  = densityMap[idx];
+        var eMask = edgeMask[idx];
 
-        // Exposed scalp factor: dark pixels (existing hair) get less treatment
-        // SMP treats the bright exposed scalp between follicles
-        var exposeFactor = Math.max(0, Math.min(1, (lum - 0.07) / 0.28));
+        // Layer 1: Poisson uniform darkening base (skin color removal)
+        var layer1 = baseCoverage * dMap * 0.80;
 
-        // Local coverage = base × (30% base + 70% exposure-weighted)
-        var localCov = baseCoverage * (0.30 + exposeFactor * 0.70);
+        // Layer 2: Deterministic cell dots (circular stipple texture)
+        var dotA   = cellDotAlpha(x, y, cellSize, dotRadius_px, dMap, SEED);
+        var layer2 = dotA * 0.55;
 
-        // 2D hash noise for dot grain texture
-        var n1 = hash2d(x, y);   // density variation
-        var n2 = hash2db(x, y);  // grain noise
+        // Combine layers, feather at boundaries
+        var finalAlpha = Math.min(0.95, layer1 + layer2) * eMask;
+        if (finalAlpha < 0.002) continue;
 
-        // Density variation: 85%-115% per location
-        var densityNoise = 0.85 + n1 * 0.30;
-        var effectiveCov = Math.min(0.95, localCov * densityNoise);
+        // Dot color + micro grain (natural variation between dots)
+        var gr = Math.round((rand01(x, y, SEED+3) - 0.5) * 14);
+        var tR = Math.max(5, Math.min(245, pigR + gr));
+        var tG = Math.max(5, Math.min(240, pigG + gr));
+        var tB = Math.max(5, Math.min(245, pigB + gr));
 
-        // Grain: stronger where coverage is lower (individual dots visible)
-        var grainAmp = Math.max(3, (1 - effectiveCov) * 24 + 3);
-        var grain = (n2 - 0.5) * grainAmp;
-
-        var tR = Math.max(5, Math.min(255, pigR + grain));
-        var tG = Math.max(5, Math.min(255, pigG + grain));
-        var tB = Math.max(5, Math.min(255, pigB + grain));
-
-        // mask value handles edge blending automatically
-        var alpha = effectiveCov * mask;
-        out[i4]   = Math.round(r * (1 - alpha) + tR * alpha);
-        out[i4+1] = Math.round(g * (1 - alpha) + tG * alpha);
-        out[i4+2] = Math.round(b * (1 - alpha) + tB * alpha);
+        out[i4]   = Math.round(r * (1 - finalAlpha) + tR * finalAlpha);
+        out[i4+1] = Math.round(g * (1 - finalAlpha) + tG * finalAlpha);
+        out[i4+2] = Math.round(b * (1 - finalAlpha) + tB * finalAlpha);
       }
     }
 
-    // ─── STEP E: Subtle edge blur for natural boundary ───
+    // ─── STEP G: Restore non-mask areas (face, background, exclusions) ───
     ctx.putImageData(outData, 0, 0);
-    var offscreen = document.createElement('canvas');
-    offscreen.width = w; offscreen.height = h;
-    offscreen.getContext('2d').drawImage(cv, 0, 0);
-    try {
-      ctx.filter = 'blur(0.6px)';
-      ctx.globalAlpha = 0.30;
-      ctx.drawImage(offscreen, 0, 0);
-      ctx.filter = 'none';
-      ctx.globalAlpha = 1.0;
-    } catch(e) {}
-
-    // ─── STEP F: Restore non-mask areas to original ───
     var finalData = ctx.getImageData(0, 0, w, h);
     var fd = finalData.data;
     for (var y = 0; y < h; y++) {
       for (var x = 0; x < w; x++) {
-        var fi = (y * w + x) * 4;
-        var sm = treatmentMask[y * w + x] || 0;
+        var fi = (y*w+x)*4;
+        var sm = regionMask[y*w+x] || 0;
         if (sm < 0.01) {
-          fd[fi] = orig[fi]; fd[fi+1] = orig[fi+1]; fd[fi+2] = orig[fi+2];
-        } else if (sm < 0.15) {
-          var blend = sm / 0.15;
-          fd[fi]   = Math.round(fd[fi]   * blend + orig[fi]   * (1 - blend));
-          fd[fi+1] = Math.round(fd[fi+1] * blend + orig[fi+1] * (1 - blend));
-          fd[fi+2] = Math.round(fd[fi+2] * blend + orig[fi+2] * (1 - blend));
+          fd[fi]=orig[fi]; fd[fi+1]=orig[fi+1]; fd[fi+2]=orig[fi+2];
+        } else if (sm < 0.20) {
+          var blend = sm / 0.20;
+          fd[fi]  = Math.round(fd[fi]  *blend + orig[fi]  *(1-blend));
+          fd[fi+1]= Math.round(fd[fi+1]*blend + orig[fi+1]*(1-blend));
+          fd[fi+2]= Math.round(fd[fi+2]*blend + orig[fi+2]*(1-blend));
         }
       }
     }

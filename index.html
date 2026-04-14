@@ -1596,24 +1596,31 @@ function extractDotCount(text) {
 // ===== BA FRAME: 結果フレーム表示 =====
 function drawSMPSimulation(beforeDataURL, conditionType, structured) {
   /*
-   * SMP（スカルプマイクロピグメンテーション）シミュレーション v7
-   * ─────────────────────────────────────────────────────────
-   * v7: 密度ベースカバレッジ合成（43,000〜130,000ドット対応）
+   * SMP（スカルプマイクロピグメンテーション）シミュレーション v8-fast
+   * ══════════════════════════════════════════════════════════════════
+   * 本番仕様書準拠: 多層マスク分離 + 決定論的セルドット blue-noise 配置
    *
-   * 従来のポアソンディスク個別ドット描画を廃止。
-   * カバレッジ率計算（ポアソン分布）＋ハッシュノイズ合成方式に変更。
+   * v7との根本的な違い:
+   *  v7: treatmentMask が「領域」「密度」「境界」を兼用 → ペイント感の塗布
+   *  v8: 3マップを完全分離 → 均一間隔の円形点描パターンを直接生成
    *
-   * 物理的根拠:
-   * 0.01mm実ドット → 皮膚内拡散で実効0.5mm視覚径
-   * 129,600ドット × π×(0.25mm)² / 施術面積 → カバレッジ率≒100%
-   * ∴ 肌色は消え、施術エリア全体がSMP後の暗い質感に変わる
+   * 3層マスク:
+   *  regionMask  – バイナリ（Geminiポリゴン内=1, 外=0）
+   *  densityMap  – 施術強度（0-1）= density_hint × 輝度露出係数
+   *  edgeMask    – regionMaskのボックスブラー → 境界フェザリング
    *
-   * アルゴリズム:
-   * 1. Geminiポリゴン → 施術マスク（exclusion除去済み）
-   * 2. 画像内の髪色・肌色を抽出 → SMP色算出
-   * 3. totalDots × 実効ドット面積 / マスク面積 → Poisson飽和カバレッジ率
-   * 4. 各ピクセル: 2Dハッシュノイズでドット粒子感 + カバレッジ率で色合成
-   * 5. マスク境界: 自動エッジブレンド（maskの値で重み付け）
+   * ドット配置（v8-fast決定論的セル方式）:
+   *  1セル = dotDiameter × 2.2（blue-noise 間隔）
+   *  hash32/rand01 で決定論的にセル内に1ドットを配置
+   *  density値 = セルにドットが存在する確率 → 局所密度制御
+   *
+   * 2層合成:
+   *  Layer1 = Poisson飽和カバレッジ（均一暗化ベース）
+   *  Layer2 = cellDotAlpha（円形点描テクスチャ）
+   *  finalAlpha = min(0.95, L1*0.80 + L2*0.55) × edgeMask
+   *
+   * dotスケール統一（仕様書準拠）:
+   *  dot_size_rel 0.001〜0.01 × head_width_px → 常に頭部比例サイズ
    */
   conditionType = conditionType || 'thinning';
   structured = structured || {};
@@ -1637,26 +1644,62 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
       return inside;
     }
     function getLum(i4) { return (orig[i4] * 0.299 + orig[i4+1] * 0.587 + orig[i4+2] * 0.114) / 255; }
-    // 2D決定論的ハッシュ（ドット粒子感テクスチャ用）
-    function hash2d(x, y) { var n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return n - Math.floor(n); }
-    function hash2db(x, y) { var n = Math.sin(x * 269.5 + y * 183.3) * 43758.5453; return n - Math.floor(n); }
 
-    // ─── STEP A: 施術マスク生成（Geminiポリゴン優先） ───
-    var treatmentMask = new Float32Array(w * h);
+    // 32bit決定論的ハッシュ（仕様書準拠: Murmur系整数ハッシュ）
+    function hash32(xv) {
+      xv = xv >>> 0;
+      xv ^= xv >>> 16;
+      xv = Math.imul(xv, 0x7feb352d) >>> 0;
+      xv ^= xv >>> 15;
+      xv = Math.imul(xv, 0x846ca68b) >>> 0;
+      xv ^= xv >>> 16;
+      return xv >>> 0;
+    }
+    function rand01(ix, iy, seed) {
+      return hash32(((ix * 73856093) ^ (iy * 19349663) ^ seed) >>> 0) / 4294967296.0;
+    }
+    // セルドットアルファ: セル内に1つのドットを配置し、(x,y)がドット内か判定
+    // localDensity: セルにドットが存在する確率（0=なし, 1=必ず存在）
+    function cellDotAlpha(x, y, cellSz, dotR, localDensity, seed) {
+      var cx = Math.floor(x / cellSz) | 0;
+      var cy = Math.floor(y / cellSz) | 0;
+      // 密度に基づく確率的ドット存在判定
+      if (rand01(cx, cy, seed) > localDensity) return 0.0;
+      // セル内ドット中心（±30%オフセットでblue-noise感）
+      var ox = (rand01(cx, cy, seed + 1) - 0.5) * cellSz * 0.60;
+      var oy = (rand01(cx, cy, seed + 2) - 0.5) * cellSz * 0.60;
+      var mx = (cx + 0.5) * cellSz + ox;
+      var my = (cy + 0.5) * cellSz + oy;
+      var dx = x - mx, dy = y - my;
+      var d2 = dx * dx + dy * dy;
+      var r2 = dotR * dotR;
+      if (d2 <= r2) return 1.0;
+      // ソフトエッジ（ドット輪郭の自然なフェード）
+      var t = (d2 - r2) / (0.30 * r2);
+      return Math.max(0.0, 1.0 - Math.min(1.0, t));
+    }
+
+    // ─── STEP A: 3層マスク生成 ───
+    // regionMask: バイナリ領域（Geminiポリゴン内=1, 外=0）
+    // densityMap: 施術強度（density_hint ベース、後で輝度補正）
+    var regionMask = new Float32Array(w * h);
+    var densityMap  = new Float32Array(w * h);
     var hasGeminiRegions = !!(structured.treatment_regions && structured.treatment_regions.length > 0);
-    var hasExclusions = !!(structured.exclusion_zones && structured.exclusion_zones.length > 0);
+    var hasExclusions    = !!(structured.exclusion_zones   && structured.exclusion_zones.length   > 0);
     var hb = structured.head_bounds || null;
 
     if (hasGeminiRegions) {
       var regions = structured.treatment_regions;
       for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {
-          var nx = x / w, ny = y / h, maxD = 0;
+          var nx = x / w, ny = y / h, maxDHint = 0, inReg = false;
           for (var ri = 0; ri < regions.length; ri++) {
-            if (pointInPoly(nx, ny, regions[ri].polygon))
-              maxD = Math.max(maxD, regions[ri].density_hint || 0.7);
+            if (pointInPoly(nx, ny, regions[ri].polygon)) {
+              inReg = true;
+              maxDHint = Math.max(maxDHint, regions[ri].density_hint || 0.7);
+            }
           }
-          treatmentMask[y * w + x] = maxD;
+          if (inReg) { regionMask[y*w+x] = 1.0; densityMap[y*w+x] = maxDHint; }
         }
       }
     } else {
@@ -1664,161 +1707,179 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
       var ecx = hb ? (hb.x + hb.w / 2) * w : w / 2;
       var ecy = hb ? (hb.y + hb.h * 0.38) * h : h * 0.33;
       var erx = hb ? (hb.w / 2) * w : w * 0.38;
-      var ery = hb ? (hb.h * 0.5) * h : h * 0.36;
+      var ery = hb ? (hb.h * 0.50) * h : h * 0.36;
       for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {
-          var ed = ((x - ecx) / erx) * ((x - ecx) / erx) + ((y - ecy) / ery) * ((y - ecy) / ery);
-          if (ed <= 1) treatmentMask[y * w + x] = ed > 0.7 ? Math.max(0, (1 - ed) / 0.3) * 0.7 : 0.7;
+          var ed = ((x-ecx)/erx)*((x-ecx)/erx) + ((y-ecy)/ery)*((y-ecy)/ery);
+          if (ed <= 1) { regionMask[y*w+x] = 1.0; densityMap[y*w+x] = 0.7; }
         }
       }
       var cy2 = Math.round(h * 0.70);
       for (var y = cy2; y < h; y++) {
-        var fo = Math.max(0, 1 - (y - cy2) / (h - cy2)); fo *= fo;
-        for (var x = 0; x < w; x++) treatmentMask[y * w + x] *= fo;
+        var fo = Math.max(0, 1 - (y-cy2)/(h-cy2)); fo *= fo;
+        for (var x = 0; x < w; x++) { regionMask[y*w+x] *= fo; densityMap[y*w+x] *= fo; }
       }
       var em2 = Math.round(w * 0.10);
       for (var y = 0; y < h; y++) {
-        for (var x = 0; x < em2; x++) treatmentMask[y * w + x] *= x / em2;
-        for (var x = w - em2; x < w; x++) treatmentMask[y * w + x] *= (w - 1 - x) / em2;
+        for (var x = 0; x < em2; x++) { var ef = x/em2; regionMask[y*w+x]*=ef; densityMap[y*w+x]*=ef; }
+        for (var x = w-em2; x < w; x++) { var ef=(w-1-x)/em2; regionMask[y*w+x]*=ef; densityMap[y*w+x]*=ef; }
       }
     }
 
-    // exclusion_zones（顔・耳・首・背景）をマスクから除外
+    // exclusion_zones（顔・耳・首）を両マスクから除外
     if (hasExclusions) {
       var zones = structured.exclusion_zones;
       for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {
-          var nx = x / w, ny = y / h;
+          var nx = x/w, ny = y/h;
           for (var zi = 0; zi < zones.length; zi++) {
-            if (pointInPoly(nx, ny, zones[zi].polygon)) { treatmentMask[y * w + x] = 0; break; }
+            if (pointInPoly(nx, ny, zones[zi].polygon)) { regionMask[y*w+x]=0; densityMap[y*w+x]=0; break; }
           }
         }
       }
     }
 
-    // ─── STEP B: 髪色・肌色の抽出（SMP色算出用） ───
-    var hairR = 0, hairG = 0, hairB = 0, hairN = 0;
-    var skinR = 0, skinG = 0, skinB = 0, skinN = 0;
-    for (var y = 0; y < h; y += 3) {
-      for (var x = 0; x < w; x += 3) {
-        var idx = y * w + x;
-        if (treatmentMask[idx] < 0.08) continue;
-        var i4 = idx * 4, lum = getLum(i4);
-        var r = orig[i4], g = orig[i4+1], b = orig[i4+2];
-        if (lum < 0.38) { hairR += r; hairG += g; hairB += b; hairN++; }
-        else if (lum > 0.42 && lum < 0.84) { skinR += r; skinG += g; skinB += b; skinN++; }
+    // edgeMask: regionMaskのセパラブルボックスブラー（境界フェザリング）
+    // 内部=1.0、境界から featherR px以内で 0→1 にフェード
+    var featherR = Math.max(4, Math.min(20, Math.round(Math.min(w, h) * 0.018)));
+    var edgeMask = new Float32Array(w * h);
+    var tempBuf  = new Float32Array(w * h);
+    // 水平ブラー
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var sum = 0, cnt = 0;
+        for (var dx = -featherR; dx <= featherR; dx++) {
+          var nx2 = x + dx;
+          if (nx2 >= 0 && nx2 < w) { sum += regionMask[y*w+nx2]; cnt++; }
+        }
+        tempBuf[y*w+x] = cnt > 0 ? sum / cnt : 0;
       }
     }
-    if (hairN > 0) { hairR = Math.floor(hairR/hairN); hairG = Math.floor(hairG/hairN); hairB = Math.floor(hairB/hairN); }
-    else { hairR = 38; hairG = 33; hairB = 30; }
-    if (skinN > 0) { skinR = Math.floor(skinR/skinN); skinG = Math.floor(skinG/skinN); skinB = Math.floor(skinB/skinN); }
-    else { skinR = 185; skinG = 155; skinB = 135; }
+    // 垂直ブラー
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var sum = 0, cnt = 0;
+        for (var dy = -featherR; dy <= featherR; dy++) {
+          var ny3 = y + dy;
+          if (ny3 >= 0 && ny3 < h) { sum += tempBuf[ny3*w+x]; cnt++; }
+        }
+        edgeMask[y*w+x] = cnt > 0 ? sum / cnt : 0;
+      }
+    }
+    tempBuf = null; // GC
 
-    // SMP色 = 髪色ベース（施術後インクが肌に馴染んだ色調）
-    // 施術直後〜数週間後: 髪色に近いダークグレー
-    var pigR = Math.max(18, Math.min(90, hairR + 10));
-    var pigG = Math.max(15, Math.min(85, hairG + 8));
-    var pigB = Math.max(20, Math.min(95, hairB + 12)); // インクは僅かに青みがかる
+    // ─── STEP B: densityMap を輝度露出係数で補正 ───
+    // SMP施術 = 毛穴間の明るい頭皮（exposed scalp）を暗くする
+    // 暗いピクセル（既存毛包）→ 少ない処理、明るい（頭皮肌）→ フル処理
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var idx = y*w+x;
+        if (regionMask[idx] < 0.5) continue;
+        var lum = getLum(idx * 4);
+        var exposeFactor = Math.max(0, Math.min(1, (lum - 0.07) / 0.28));
+        densityMap[idx] *= (0.30 + exposeFactor * 0.70);
+      }
+    }
 
-    // ─── STEP C: カバレッジ率算出（ポアソン飽和モデル） ───
-    var totalDots = (structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
+    // ─── STEP C: 色抽出（髪色→SMP色算出） ───
+    var hairR = 0, hairG = 0, hairB = 0, hairN = 0;
+    for (var y = 0; y < h; y += 3) {
+      for (var x = 0; x < w; x += 3) {
+        var idx = y*w+x;
+        if (regionMask[idx] < 0.5) continue;
+        var i4 = idx*4, lum = getLum(i4);
+        if (lum < 0.40) { hairR+=orig[i4]; hairG+=orig[i4+1]; hairB+=orig[i4+2]; hairN++; }
+      }
+    }
+    if (hairN > 0) { hairR=Math.floor(hairR/hairN); hairG=Math.floor(hairG/hairN); hairB=Math.floor(hairB/hairN); }
+    else { hairR=38; hairG=33; hairB=30; }
+    // SMP色 = 髪色ベース + 微青補正（インクの実際の色調）
+    var pigR = Math.max(20, Math.min(88, hairR + 10));
+    var pigG = Math.max(16, Math.min(82, hairG +  8));
+    var pigB = Math.max(22, Math.min(92, hairB + 13));
+
+    // ─── STEP D: ドットパラメータ（仕様書: dot_size_rel × head_width_px） ───
     var headW_px = hb ? hb.w * w : w * 0.75;
-
-    // 実効ドット径: 実際0.01mm → 皮膚内拡散で視覚的に約0.5mm
-    // スケール仮定: 頭幅≒180mm → mm/px = 180 / headW_px
-    var mmPerPx = 180.0 / Math.max(100, headW_px);
-    var dotRadius_px = (0.25) / mmPerPx; // 0.5mm径の半径
-    dotRadius_px = Math.max(1.0, Math.min(5.0, dotRadius_px));
+    // 施術種別で dot_size_rel 調整（0.001〜0.01）
+    var dot_size_rel = conditionType === 'hairline' ? 0.0038
+                     : conditionType === 'scar'     ? 0.0055
+                     : conditionType === 'patch'    ? 0.0048
+                     : 0.0045; // thinning / default
+    var dotRadius_px = (dot_size_rel * headW_px) / 2;
+    dotRadius_px = Math.max(0.9, Math.min(6.5, dotRadius_px));
+    // セルサイズ = 直径 × 2.2（blue-noise 相当の間隔）
+    var cellSize = dotRadius_px * 2.0 * 2.2;
     var dotArea_px = Math.PI * dotRadius_px * dotRadius_px;
+    var SEED = 0x4d534d50; // 'MSMP' 固定シード → 再現性確保
 
-    // 施術マスクの有効ピクセル面積
+    // ─── STEP E: Poisson飽和カバレッジ率（Layer1用） ───
+    var totalDots = (structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
     var treatArea = 0;
-    for (var ii = 0; ii < treatmentMask.length; ii++) {
-      if (treatmentMask[ii] > 0.02) treatArea += treatmentMask[ii];
+    for (var ii = 0; ii < regionMask.length; ii++) {
+      if (regionMask[ii] > 0.5) treatArea++;
     }
     treatArea = Math.max(1, treatArea);
+    // λ = 平均重なり回数（仕様書準拠ポアソン飽和）
+    var lam = totalDots * dotArea_px / treatArea;
+    var baseCoverage = Math.min(0.94, 1.0 - Math.exp(-lam));
+    console.log('[SMP v8] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px cell=' + cellSize.toFixed(1) + 'px treatPx=' + treatArea + ' λ=' + lam.toFixed(2) + ' cov=' + (baseCoverage*100).toFixed(1) + '%');
 
-    // ポアソン分布: P(≥1ドット) = 1 - e^(-λ), λ=平均重なり回数
-    var lambda = totalDots * dotArea_px / treatArea;
-    var baseCoverage = Math.min(0.94, 1 - Math.exp(-lambda));
-
-    console.log('[SMP v7] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px area=' + treatArea.toFixed(0) + 'px² λ=' + lambda.toFixed(2) + ' cov=' + (baseCoverage * 100).toFixed(1) + '%');
-
-    // ─── STEP D: カバレッジ合成（密度ベースSMP効果適用） ───
+    // ─── STEP F: 2層合成（Layer1 Poisson均一化 + Layer2 セルドット点描） ───
     var outData = ctx.getImageData(0, 0, w, h);
     var out = outData.data;
 
     for (var y = 0; y < h; y++) {
       for (var x = 0; x < w; x++) {
-        var idx = y * w + x;
-        var mask = treatmentMask[idx];
-        if (mask < 0.005) continue; // マスク外はスキップ（元画像のまま）
+        var idx = y*w+x;
+        var rMask = regionMask[idx];
+        if (rMask < 0.005) continue;  // 領域外は完全スキップ
 
-        var i4 = idx * 4;
+        var i4 = idx*4;
         var r = orig[i4], g = orig[i4+1], b = orig[i4+2];
-        var lum = getLum(i4);
+        var dMap = densityMap[idx];
+        var eMask = edgeMask[idx];
 
-        // 露出頭皮係数: 暗いピクセル（既存髪）は少ない処理、明るい（頭皮）は多い処理
-        // SMP施術 = 毛穴間の明るい肌を暗くする
-        var exposeFactor = Math.max(0, Math.min(1, (lum - 0.07) / 0.28));
+        // Layer 1: Poisson飽和による均一暗化ベース（肌色を消す）
+        var layer1 = baseCoverage * dMap * 0.80;
 
-        // ローカルカバレッジ = ベース × (既存髪30%保持 + 露出肌70%フル処理)
-        var localCov = baseCoverage * (0.30 + exposeFactor * 0.70);
+        // Layer 2: 決定論的セルドット（点描テクスチャ）
+        var dotA = cellDotAlpha(x, y, cellSize, dotRadius_px, dMap, SEED);
+        var layer2 = dotA * 0.55;
 
-        // 2Dハッシュノイズでドット粒子感テクスチャ生成
-        var n1 = hash2d(x, y);   // 密度揺らぎ用
-        var n2 = hash2db(x, y);  // グレイン用
+        // 2層を合算してedgeMaskでフェザリング
+        var finalAlpha = Math.min(0.95, layer1 + layer2) * eMask;
 
-        // 密度揺らぎ: 場所によって85%〜115%の濃淡
-        var densityNoise = 0.85 + n1 * 0.30;
-        var effectiveCov = Math.min(0.95, localCov * densityNoise);
+        if (finalAlpha < 0.002) continue;
 
-        // グレインノイズ: カバレッジが低い場所ほど粒子感が強い
-        var grainAmp = Math.max(3, (1 - effectiveCov) * 24 + 3);
-        var grain = (n2 - 0.5) * grainAmp;
+        // ドット色 + 微小グレイン（各ドットに自然な濃淡）
+        var gr = Math.round((rand01(x, y, SEED+3) - 0.5) * 14);
+        var tR = Math.max(5, Math.min(245, pigR + gr));
+        var tG = Math.max(5, Math.min(240, pigG + gr));
+        var tB = Math.max(5, Math.min(245, pigB + gr));
 
-        // SMP後の色 = SMP色 + グレイン
-        var tR = Math.max(5, Math.min(255, pigR + grain));
-        var tG = Math.max(5, Math.min(255, pigG + grain));
-        var tB = Math.max(5, Math.min(255, pigB + grain));
-
-        // mask値でエッジ自動ブレンド（maskが低い=境界部 → SMP効果薄め）
-        var alpha = effectiveCov * mask;
-        out[i4]   = Math.round(r * (1 - alpha) + tR * alpha);
-        out[i4+1] = Math.round(g * (1 - alpha) + tG * alpha);
-        out[i4+2] = Math.round(b * (1 - alpha) + tB * alpha);
+        out[i4]   = Math.round(r * (1 - finalAlpha) + tR * finalAlpha);
+        out[i4+1] = Math.round(g * (1 - finalAlpha) + tG * finalAlpha);
+        out[i4+2] = Math.round(b * (1 - finalAlpha) + tB * finalAlpha);
       }
     }
 
-    // ─── STEP E: エッジ部分の軽微なぼかし（境界を自然に） ───
+    // ─── STEP G: 非マスクエリア完全復元（顔・背景・exclusionを保護） ───
     ctx.putImageData(outData, 0, 0);
-    var offscreen = document.createElement('canvas');
-    offscreen.width = w; offscreen.height = h;
-    offscreen.getContext('2d').drawImage(cv, 0, 0);
-    try {
-      ctx.filter = 'blur(0.6px)';
-      ctx.globalAlpha = 0.30;
-      ctx.drawImage(offscreen, 0, 0);
-      ctx.filter = 'none';
-      ctx.globalAlpha = 1.0;
-    } catch(e) {}
-
-    // ─── STEP F: マスク外の元画像完全復元 ───
     var finalData = ctx.getImageData(0, 0, w, h);
     var fd = finalData.data;
     for (var y = 0; y < h; y++) {
       for (var x = 0; x < w; x++) {
-        var fi = (y * w + x) * 4;
-        var sm = treatmentMask[y * w + x] || 0;
-        // mask=0の領域（顔・背景・exclusion）は元画像に完全復元
+        var fi = (y*w+x) * 4;
+        var sm = regionMask[y*w+x] || 0;
         if (sm < 0.01) {
-          fd[fi] = orig[fi]; fd[fi+1] = orig[fi+1]; fd[fi+2] = orig[fi+2];
-        } else if (sm < 0.15) {
-          // 境界トランジション: 滑らかなブレンド
-          var blend = sm / 0.15;
-          fd[fi]   = Math.round(fd[fi]   * blend + orig[fi]   * (1 - blend));
-          fd[fi+1] = Math.round(fd[fi+1] * blend + orig[fi+1] * (1 - blend));
-          fd[fi+2] = Math.round(fd[fi+2] * blend + orig[fi+2] * (1 - blend));
+          // 完全復元
+          fd[fi]=orig[fi]; fd[fi+1]=orig[fi+1]; fd[fi+2]=orig[fi+2];
+        } else if (sm < 0.20) {
+          // トランジションゾーン: edgeMask値でブレンド
+          var blend = sm / 0.20;
+          fd[fi]  = Math.round(fd[fi]  *blend + orig[fi]  *(1-blend));
+          fd[fi+1]= Math.round(fd[fi+1]*blend + orig[fi+1]*(1-blend));
+          fd[fi+2]= Math.round(fd[fi+2]*blend + orig[fi+2]*(1-blend));
         }
       }
     }
