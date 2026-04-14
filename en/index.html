@@ -1596,7 +1596,7 @@ function extractDotCount(text) {
 // ===== BA FRAME: show result frame =====
 function drawSMPSimulation(beforeDataURL, conditionType, structured) {
   /*
-   * SMP (Scalp Micropigmentation) Simulation v8-fast
+   * SMP (Scalp Micropigmentation) Simulation v9
    * ══════════════════════════════════════════════════════════════════
    * Production spec: Multi-layer mask separation + deterministic cell-dot blue-noise placement
    *
@@ -1604,15 +1604,16 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
    *  v7: Single treatmentMask served as region + density + edge → paint-like coverage
    *  v8: 3 maps fully separated → circular stipple dots placed directly
    *
+   * v9 additions (per final_smp_ai_simulator_plan.md):
+   *  ① 2-cluster K-means color extraction (hair color + scalp skin color separated)
+   *  ② Saturation correction: C = 1-(1+0.3λ)·exp(-λ) (neg-binomial)
+   *  ③ Scar density penalty 50% (pigment retention rate model)
+   *  ④ Scar-specific pigment color (midpoint between hair and skin tone)
+   *
    * Three-layer masks:
    *  regionMask  – Binary region (inside Gemini polygon=1, outside=0)
    *  densityMap  – Treatment intensity (0-1) = density_hint × luminance exposure factor
    *  edgeMask    – Box-blurred regionMask → boundary feathering
-   *
-   * Dot placement (v8-fast deterministic cell method):
-   *  1 cell = dotDiameter × 2.2 (blue-noise spacing)
-   *  hash32/rand01 deterministically places 1 dot per cell
-   *  density value = probability that a cell contains a dot → local density control
    *
    * Two-layer synthesis:
    *  Layer1 = Poisson saturation coverage (uniform darkening base)
@@ -1778,22 +1779,54 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
       }
     }
 
-    // ─── STEP C: Hair color extraction → SMP pigment color ───
-    var hairR = 0, hairG = 0, hairB = 0, hairN = 0;
-    for (var y = 0; y < h; y += 3) {
-      for (var x = 0; x < w; x += 3) {
-        var idx = y*w+x;
-        if (regionMask[idx] < 0.5) continue;
-        var i4 = idx*4, lum = getLum(i4);
-        if (lum < 0.40) { hairR+=orig[i4]; hairG+=orig[i4+1]; hairB+=orig[i4+2]; hairN++; }
+    // Scar area: retention rate penalty (scar tissue absorbs pigment poorly: 50% density reduction)
+    if (conditionType === 'scar') {
+      for (var ii = 0; ii < densityMap.length; ii++) densityMap[ii] *= 0.55;
+    }
+
+    // ─── STEP C: 2-cluster K-means hair/skin color extraction ───
+    // Sample pixels in treatment region; separate dark cluster (hair) from bright cluster (scalp)
+    var kStep = Math.max(1, Math.round(Math.sqrt(w * h) / 180));
+    var kSamples = [];
+    for (var ky = 0; ky < h; ky += kStep) {
+      for (var kx = 0; kx < w; kx += kStep) {
+        var kidx = ky * w + kx;
+        if (regionMask[kidx] < 0.5) continue;
+        var ki4 = kidx * 4;
+        kSamples.push([orig[ki4], orig[ki4+1], orig[ki4+2]]);
       }
     }
-    if (hairN > 0) { hairR=Math.floor(hairR/hairN); hairG=Math.floor(hairG/hairN); hairB=Math.floor(hairB/hairN); }
-    else { hairR=38; hairG=33; hairB=30; }
-    // SMP pigment = hair color + subtle blue offset (ink characteristic)
+    // K-means 2-cluster iteration (dark=kc0/hair, bright=kc1/scalp skin)
+    var kc0 = [40, 35, 32], kc1 = [180, 155, 140];
+    for (var kiter = 0; kiter < 8; kiter++) {
+      var ks0=[0,0,0], kn0=0, ks1=[0,0,0], kn1=0;
+      for (var ksi = 0; ksi < kSamples.length; ksi++) {
+        var kp = kSamples[ksi];
+        var kd0 = (kp[0]-kc0[0])*(kp[0]-kc0[0])+(kp[1]-kc0[1])*(kp[1]-kc0[1])+(kp[2]-kc0[2])*(kp[2]-kc0[2]);
+        var kd1 = (kp[0]-kc1[0])*(kp[0]-kc1[0])+(kp[1]-kc1[1])*(kp[1]-kc1[1])+(kp[2]-kc1[2])*(kp[2]-kc1[2]);
+        if (kd0 <= kd1) { ks0[0]+=kp[0]; ks0[1]+=kp[1]; ks0[2]+=kp[2]; kn0++; }
+        else            { ks1[0]+=kp[0]; ks1[1]+=kp[1]; ks1[2]+=kp[2]; kn1++; }
+      }
+      if (kn0 > 0) kc0 = [ks0[0]/kn0, ks0[1]/kn0, ks0[2]/kn0];
+      if (kn1 > 0) kc1 = [ks1[0]/kn1, ks1[1]/kn1, ks1[2]/kn1];
+      // Always keep darker centroid as kc0 (hair color)
+      if ((kc0[0]+kc0[1]+kc0[2]) > (kc1[0]+kc1[1]+kc1[2])) { var ktmp=kc0; kc0=kc1; kc1=ktmp; }
+    }
+    var hairR = kSamples.length>0 ? Math.round(kc0[0]) : 38;
+    var hairG = kSamples.length>0 ? Math.round(kc0[1]) : 33;
+    var hairB = kSamples.length>0 ? Math.round(kc0[2]) : 30;
+    var skinR = kSamples.length>0 ? Math.round(kc1[0]) : 180;
+    var skinG = kSamples.length>0 ? Math.round(kc1[1]) : 155;
+    var skinB = kSamples.length>0 ? Math.round(kc1[2]) : 140;
+    kSamples = null; // GC
+    // SMP pigment = hair color base + subtle blue offset (ink characteristic)
     var pigR = Math.max(20, Math.min(88, hairR + 10));
     var pigG = Math.max(16, Math.min(82, hairG +  8));
     var pigB = Math.max(22, Math.min(92, hairB + 13));
+    // Scar pigment color (midpoint between hair and skin → natural camouflage)
+    var scarPigR = Math.max(25, Math.min(95,  Math.round((hairR + skinR) / 2) + 5));
+    var scarPigG = Math.max(20, Math.min(88,  Math.round((hairG + skinG) / 2) + 4));
+    var scarPigB = Math.max(28, Math.min(98,  Math.round((hairB + skinB) / 2) + 8));
 
     // ─── STEP D: Dot parameters (spec: dot_size_rel × head_width_px) ───
     var headW_px = hb ? hb.w * w : w * 0.75;
@@ -1815,8 +1848,9 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
     }
     treatArea = Math.max(1, treatArea);
     var lam = totalDots * dotArea_px / treatArea;
-    var baseCoverage = Math.min(0.94, 1.0 - Math.exp(-lam));
-    console.log('[SMP v8] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px cell=' + cellSize.toFixed(1) + 'px treatPx=' + treatArea + ' λ=' + lam.toFixed(2) + ' cov=' + (baseCoverage*100).toFixed(1) + '%');
+    // Spec: saturation correction C = 1-(1+0.3λ)·exp(-λ) (neg-binomial: suppresses overestimation at low λ)
+    var baseCoverage = Math.min(0.94, 1.0 - (1.0 + 0.3 * lam) * Math.exp(-lam));
+    console.log('[SMP v9] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px cell=' + cellSize.toFixed(1) + 'px treatPx=' + treatArea + ' λ=' + lam.toFixed(2) + ' cov=' + (baseCoverage*100).toFixed(1) + '% hair=[' + hairR+','+hairG+','+hairB+'] skin=['+skinR+','+skinG+','+skinB+']');
 
     // ─── STEP F: Two-layer synthesis (Layer1 Poisson base + Layer2 cell-dot stipple) ───
     var outData = ctx.getImageData(0, 0, w, h);
@@ -1845,10 +1879,14 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
         if (finalAlpha < 0.002) continue;
 
         // Dot color + micro grain (natural variation between dots)
+        // Scar areas use scarPigColor (skin-tone based) for natural camouflage
+        var usePigR = conditionType === 'scar' ? scarPigR : pigR;
+        var usePigG = conditionType === 'scar' ? scarPigG : pigG;
+        var usePigB = conditionType === 'scar' ? scarPigB : pigB;
         var gr = Math.round((rand01(x, y, SEED+3) - 0.5) * 14);
-        var tR = Math.max(5, Math.min(245, pigR + gr));
-        var tG = Math.max(5, Math.min(240, pigG + gr));
-        var tB = Math.max(5, Math.min(245, pigB + gr));
+        var tR = Math.max(5, Math.min(245, usePigR + gr));
+        var tG = Math.max(5, Math.min(240, usePigG + gr));
+        var tB = Math.max(5, Math.min(245, usePigB + gr));
 
         out[i4]   = Math.round(r * (1 - finalAlpha) + tR * finalAlpha);
         out[i4+1] = Math.round(g * (1 - finalAlpha) + tG * finalAlpha);
