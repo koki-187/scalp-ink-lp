@@ -1739,8 +1739,43 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
       }
     }
 
+    // ─── Scar: morphological dilation of regionMask ───
+    // Problem: thin FUT scar polygons (3-10px wide) get edgeMask≈0 from featherR=20px blur
+    // Fix: dilate scar regionMask by ±dilR px before computing edgeMask
+    if (conditionType === 'scar') {
+      var dilR = Math.max(10, Math.round(Math.min(w, h) * 0.018));
+      var dilH = new Float32Array(w * h);
+      for (var dy2 = 0; dy2 < h; dy2++) {
+        for (var dx2 = 0; dx2 < w; dx2++) {
+          var mv = 0;
+          for (var dd = -dilR; dd <= dilR; dd++) {
+            var nx3 = dx2 + dd;
+            if (nx3 >= 0 && nx3 < w) mv = Math.max(mv, regionMask[dy2*w+nx3]);
+          }
+          dilH[dy2*w+dx2] = mv;
+        }
+      }
+      for (var dy2 = 0; dy2 < h; dy2++) {
+        for (var dx2 = 0; dx2 < w; dx2++) {
+          var mv = 0;
+          for (var dd = -dilR; dd <= dilR; dd++) {
+            var ny4 = dy2 + dd;
+            if (ny4 >= 0 && ny4 < h) mv = Math.max(mv, dilH[ny4*w+dx2]);
+          }
+          if (regionMask[dy2*w+dx2] < 0.5 && mv > 0.5) {
+            regionMask[dy2*w+dx2] = mv;
+            densityMap[dy2*w+dx2] = Math.max(densityMap[dy2*w+dx2], mv * 0.85);
+          }
+        }
+      }
+      dilH = null;
+    }
+
     // edgeMask: separable box blur of regionMask → boundary feathering
-    var featherR = Math.max(4, Math.min(20, Math.round(Math.min(w, h) * 0.018)));
+    // Scar: smaller featherR so thin regions survive the blur
+    var featherR = conditionType === 'scar'
+      ? Math.max(3, Math.min(8, Math.round(Math.min(w, h) * 0.006)))
+      : Math.max(4, Math.min(20, Math.round(Math.min(w, h) * 0.018)));
     var edgeMask = new Float32Array(w * h);
     var tempBuf  = new Float32Array(w * h);
     // Horizontal pass
@@ -1779,10 +1814,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
       }
     }
 
-    // Scar area: retention rate penalty (scar tissue absorbs pigment poorly: 50% density reduction)
-    if (conditionType === 'scar') {
-      for (var ii = 0; ii < densityMap.length; ii++) densityMap[ii] *= 0.55;
-    }
+    // Scar density penalty removed: scar must be darkened to match surrounding hair shadow
 
     // ─── STEP C: 2-cluster K-means hair/skin color extraction ───
     // Sample pixels in treatment region; separate dark cluster (hair) from bright cluster (scalp)
@@ -1823,10 +1855,10 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
     var pigR = Math.max(20, Math.min(88, hairR + 10));
     var pigG = Math.max(16, Math.min(82, hairG +  8));
     var pigB = Math.max(22, Math.min(92, hairB + 13));
-    // Scar pigment color (midpoint between hair and skin → natural camouflage)
-    var scarPigR = Math.max(25, Math.min(95,  Math.round((hairR + skinR) / 2) + 5));
-    var scarPigG = Math.max(20, Math.min(88,  Math.round((hairG + skinG) / 2) + 4));
-    var scarPigB = Math.max(28, Math.min(98,  Math.round((hairB + skinB) / 2) + 8));
+    // Scar pigment color = dark hair color (must darken scar to match surrounding hair shadow)
+    var scarPigR = Math.max(15, Math.min(75, hairR + 6));
+    var scarPigG = Math.max(12, Math.min(68, hairG + 5));
+    var scarPigB = Math.max(18, Math.min(78, hairB + 9));
 
     // ─── STEP D: Dot parameters (spec: dot_size_rel × head_width_px) ───
     var headW_px = hb ? hb.w * w : w * 0.75;
@@ -2456,13 +2488,17 @@ function analyze() {
 'treatment_regions: Define treatment areas as polygons ([x,y] arrays, 8-16 points). Multiple regions OK.\n' +
 '  ★ Polygons MUST fully cover all thinning/exposed scalp areas (never underestimate coverage area)\n' +
 '  - Thinning: ALL areas where scalp skin is visible or hair is clearly sparse — be generous\n' +
-'  - Scars: only the scar/wound outline (exclude surrounding healthy hair)\n' +
+'  - Scars (CRITICAL — follow these rules strictly):\n' +
+'    ★ FUT/FUE linear scars: draw polygon covering center of scar ± 3-5% of image height in width (never thin line)\n' +
+'    ★ Shaved head with scar: treat the entire exposed scalp area including scar as one large region\n' +
+'    ★ Multiple scars: use a separate polygon per scar, each at least 3× the scar\'s own width\n' +
+'    ★ White/pink/bright-colored scars: always set density_hint >= 0.90\n' +
 '  - Hairline: only the receded/exposed hairline area\n' +
 '  - Part line: narrow region along the visible part only\n' +
 '  density_hint: scalp exposure level (0.0=dense hair / 1.0=fully exposed)\n' +
 '  ★★ Set density_hint based on actual visible exposure:\n' +
-'     Fully bald/exposed: 0.90-1.00 / Heavy thinning: 0.75-0.90 / Moderate: 0.55-0.75 / Mild: 0.35-0.55\n' +
-'  ★★ Any area where scalp is clearly visible must have density_hint >= 0.75\n' +
+'     Scars (white/pink/bright): 0.90-1.00 / Fully bald: 0.88-0.95 / Heavy thinning: 0.75-0.88 / Moderate: 0.55-0.75 / Mild: 0.35-0.55\n' +
+'  ★★ Any scar or clearly visible scalp area must have density_hint >= 0.85\n' +
 'exclusion_zones: Always specify face (below eyebrows to chin), ears, neck, background as polygons.\n' +
 '  Accurate face contour is critical for frontal and angled photos.\n' +
 'head_bounds: Bounding box of the entire head in normalized coordinates.\n\n' +
