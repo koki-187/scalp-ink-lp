@@ -1774,8 +1774,8 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
         var idx = y*w+x;
         if (regionMask[idx] < 0.5) continue;
         var lum = getLum(idx * 4);
-        var exposeFactor = Math.max(0, Math.min(1, (lum - 0.07) / 0.28));
-        densityMap[idx] *= (0.30 + exposeFactor * 0.70);
+        var exposeFactor = Math.max(0, Math.min(1, (lum - 0.05) / 0.25));
+        densityMap[idx] *= (0.45 + exposeFactor * 0.55);
       }
     }
 
@@ -1830,13 +1830,13 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
 
     // ─── STEP D: Dot parameters (spec: dot_size_rel × head_width_px) ───
     var headW_px = hb ? hb.w * w : w * 0.75;
-    var dot_size_rel = conditionType === 'hairline' ? 0.0038
-                     : conditionType === 'scar'     ? 0.0055
-                     : conditionType === 'patch'    ? 0.0048
-                     : 0.0045;
+    var dot_size_rel = conditionType === 'hairline' ? 0.0055
+                     : conditionType === 'scar'     ? 0.0072
+                     : conditionType === 'patch'    ? 0.0063
+                     : 0.0065; // thinning / default
     var dotRadius_px = (dot_size_rel * headW_px) / 2;
-    dotRadius_px = Math.max(0.9, Math.min(6.5, dotRadius_px));
-    var cellSize   = dotRadius_px * 2.0 * 2.2; // blue-noise spacing
+    dotRadius_px = Math.max(1.5, Math.min(9.0, dotRadius_px)); // min 1.5px for visibility
+    var cellSize   = dotRadius_px * 2.0 * 2.0; // denser blue-noise spacing
     var dotArea_px = Math.PI * dotRadius_px * dotRadius_px;
     var SEED = 0x4d534d50; // 'MSMP' fixed seed → reproducible results
 
@@ -1868,14 +1868,14 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
         var eMask = edgeMask[idx];
 
         // Layer 1: Poisson uniform darkening base (skin color removal)
-        var layer1 = baseCoverage * dMap * 0.80;
+        var layer1 = baseCoverage * dMap * 0.93;
 
         // Layer 2: Deterministic cell dots (circular stipple texture)
         var dotA   = cellDotAlpha(x, y, cellSize, dotRadius_px, dMap, SEED);
-        var layer2 = dotA * 0.55;
+        var layer2 = dotA * 0.75;
 
         // Combine layers, feather at boundaries
-        var finalAlpha = Math.min(0.95, layer1 + layer2) * eMask;
+        var finalAlpha = Math.min(0.97, layer1 + layer2) * eMask;
         if (finalAlpha < 0.002) continue;
 
         // Dot color + micro grain (natural variation between dots)
@@ -2367,6 +2367,16 @@ function analyze() {
   if (ldDots) ldDots.classList.add('on');
   setStep(2);
 
+  // Clear previous results immediately when new analysis starts
+  var oldFrame = document.getElementById('baResultFrame');
+  if (oldFrame) oldFrame.style.display = 'none';
+  var oldCanvas = document.getElementById('smpSimCanvas');
+  if (oldCanvas) { var oc = oldCanvas.getContext('2d'); oc.clearRect(0,0,oldCanvas.width,oldCanvas.height); oldCanvas.width=0; }
+  var adviceBox = document.getElementById('adviceBox');
+  if (adviceBox) adviceBox.style.display = 'none';
+  var scoreRow = document.getElementById('simScoreRow');
+  if (scoreRow) scoreRow.style.display = 'none';
+
   var srcCanvas = resizeForAPI(capCv, 1280);
   var beforeDataURL = srcCanvas.toDataURL('image/jpeg', 0.88);
   var b64 = beforeDataURL.split(',')[1];
@@ -2443,12 +2453,16 @@ function analyze() {
 
 '★★IMPORTANT: Append the following JSON block at the end of your report★★\n' +
 'Coordinates use normalized values (0.0-1.0) relative to image width/height.\n' +
-'treatment_regions: Define treatment areas as polygons ([x,y] arrays, 5-12 points). Multiple regions OK.\n' +
-'  - Thinning: only where scalp is visibly exposed (exclude areas with dense hair)\n' +
+'treatment_regions: Define treatment areas as polygons ([x,y] arrays, 8-16 points). Multiple regions OK.\n' +
+'  ★ Polygons MUST fully cover all thinning/exposed scalp areas (never underestimate coverage area)\n' +
+'  - Thinning: ALL areas where scalp skin is visible or hair is clearly sparse — be generous\n' +
 '  - Scars: only the scar/wound outline (exclude surrounding healthy hair)\n' +
 '  - Hairline: only the receded/exposed hairline area\n' +
 '  - Part line: narrow region along the visible part only\n' +
 '  density_hint: scalp exposure level (0.0=dense hair / 1.0=fully exposed)\n' +
+'  ★★ Set density_hint based on actual visible exposure:\n' +
+'     Fully bald/exposed: 0.90-1.00 / Heavy thinning: 0.75-0.90 / Moderate: 0.55-0.75 / Mild: 0.35-0.55\n' +
+'  ★★ Any area where scalp is clearly visible must have density_hint >= 0.75\n' +
 'exclusion_zones: Always specify face (below eyebrows to chin), ears, neck, background as polygons.\n' +
 '  Accurate face contour is critical for frontal and angled photos.\n' +
 'head_bounds: Bounding box of the entire head in normalized coordinates.\n\n' +

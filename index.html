@@ -1782,8 +1782,10 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
         var idx = y*w+x;
         if (regionMask[idx] < 0.5) continue;
         var lum = getLum(idx * 4);
-        var exposeFactor = Math.max(0, Math.min(1, (lum - 0.07) / 0.28));
-        densityMap[idx] *= (0.30 + exposeFactor * 0.70);
+        // 明るいピクセル（頭皮）: 高露出係数 → 高密度処理
+        // 暗いピクセル（毛髪）: 低露出係数 → 最小値0.45（既存毛髪部分も最低限処理）
+        var exposeFactor = Math.max(0, Math.min(1, (lum - 0.05) / 0.25));
+        densityMap[idx] *= (0.45 + exposeFactor * 0.55);
       }
     }
 
@@ -1838,15 +1840,15 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
 
     // ─── STEP D: ドットパラメータ（仕様書: dot_size_rel × head_width_px） ───
     var headW_px = hb ? hb.w * w : w * 0.75;
-    // 施術種別で dot_size_rel 調整（0.001〜0.01）
-    var dot_size_rel = conditionType === 'hairline' ? 0.0038
-                     : conditionType === 'scar'     ? 0.0055
-                     : conditionType === 'patch'    ? 0.0048
-                     : 0.0045; // thinning / default
+    // 施術種別で dot_size_rel 調整（実際のSMPドット視認性に合わせて拡大）
+    var dot_size_rel = conditionType === 'hairline' ? 0.0055
+                     : conditionType === 'scar'     ? 0.0072
+                     : conditionType === 'patch'    ? 0.0063
+                     : 0.0065; // thinning / default
     var dotRadius_px = (dot_size_rel * headW_px) / 2;
-    dotRadius_px = Math.max(0.9, Math.min(6.5, dotRadius_px));
-    // セルサイズ = 直径 × 2.2（blue-noise 相当の間隔）
-    var cellSize = dotRadius_px * 2.0 * 2.2;
+    dotRadius_px = Math.max(1.5, Math.min(9.0, dotRadius_px)); // 最小1.5px（視認性確保）
+    // セルサイズ = 直径 × 2.0（より密なblue-noise 間隔）
+    var cellSize = dotRadius_px * 2.0 * 2.0;
     var dotArea_px = Math.PI * dotRadius_px * dotRadius_px;
     var SEED = 0x4d534d50; // 'MSMP' 固定シード → 再現性確保
 
@@ -1879,14 +1881,14 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
         var eMask = edgeMask[idx];
 
         // Layer 1: Poisson飽和による均一暗化ベース（肌色を消す）
-        var layer1 = baseCoverage * dMap * 0.80;
+        var layer1 = baseCoverage * dMap * 0.93;
 
         // Layer 2: 決定論的セルドット（点描テクスチャ）
         var dotA = cellDotAlpha(x, y, cellSize, dotRadius_px, dMap, SEED);
-        var layer2 = dotA * 0.55;
+        var layer2 = dotA * 0.75;
 
         // 2層を合算してedgeMaskでフェザリング
-        var finalAlpha = Math.min(0.95, layer1 + layer2) * eMask;
+        var finalAlpha = Math.min(0.97, layer1 + layer2) * eMask;
 
         if (finalAlpha < 0.002) continue;
 
@@ -2398,6 +2400,16 @@ function analyze() {
   if (ldDots) ldDots.classList.add('on');
   setStep(2);
 
+  // 旧結果を即座にクリア（新解析開始時に前回画像が残らないようにする）
+  var oldFrame = document.getElementById('baResultFrame');
+  if (oldFrame) oldFrame.style.display = 'none';
+  var oldCanvas = document.getElementById('smpSimCanvas');
+  if (oldCanvas) { var oc = oldCanvas.getContext('2d'); oc.clearRect(0,0,oldCanvas.width,oldCanvas.height); oldCanvas.width=0; }
+  var adviceBox = document.getElementById('adviceBox');
+  if (adviceBox) adviceBox.style.display = 'none';
+  var scoreRow = document.getElementById('simScoreRow');
+  if (scoreRow) scoreRow.style.display = 'none';
+
   var srcCanvas = resizeForAPI(capCv, 1280);
   var beforeDataURL = srcCanvas.toDataURL('image/jpeg', 0.88);
   var b64 = beforeDataURL.split(',')[1];
@@ -2462,12 +2474,16 @@ function analyze() {
 
 '★★重要：レポート末尾に以下のJSONブロックを必ず追加してください★★\n' +
 '座標は画像の幅・高さを1.0とした正規化座標（0.0〜1.0）で指定してください。\n' +
-'treatment_regions: 施術すべき領域を5〜12点のポリゴン（[x,y]の配列）で囲む。複数領域可。\n' +
-'  - 薄毛: 頭皮が透けて見える部分のみ（髪が密な部分は含めない）\n' +
+'treatment_regions: 施術すべき領域を8〜16点のポリゴン（[x,y]の配列）で正確に囲む。複数領域可。\n' +
+'  ★ ポリゴンは実際の薄毛・頭皮露出エリアを余さず完全にカバーすること（過小評価厳禁）\n' +
+'  - 薄毛: 頭皮が透けて見える・地肌が露出している部分を全て含む（広めに設定）\n' +
 '  - 傷跡: 傷跡・瘢痕の輪郭のみ（周辺の正常な髪は含めない）\n' +
 '  - ヘアライン: 後退した生え際の露出部分のみ\n' +
 '  - 分け目: 分け目ラインに沿った細長い領域のみ\n' +
-'  density_hint: そのエリアの頭皮露出度（0.0=髪密集/1.0=完全露出）\n' +
+'  density_hint: 頭皮露出度（0.0=髪密集/1.0=完全露出）\n' +
+'  ★★ density_hint は必ず実際の露出度に基づいて設定：\n' +
+'     完全露出（地肌のみ）: 0.90〜1.00 / 強い薄毛: 0.75〜0.90 / 中程度: 0.55〜0.75 / 軽度: 0.35〜0.55\n' +
+'  ★★ 頭皮が明らかに見えているエリアのdensity_hintは0.75以上を設定すること\n' +
 'exclusion_zones: 顔（額の下〜顎）、耳、首、背景を必ずポリゴンで指定。\n' +
 '  正面・斜め写真では顔の輪郭を正確に指定することが特に重要。\n' +
 'head_bounds: 画像内の頭部全体のバウンディングボックス。\n\n' +
