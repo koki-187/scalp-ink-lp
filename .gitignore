@@ -12,3 +12,9 @@ desktop.ini
 
 # OMC state
 .omc/
+
+# Node / Next.js
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
