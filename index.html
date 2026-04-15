@@ -1711,16 +1711,107 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       return Math.max(0.0, 1.0 - Math.min(1.0, t));
     }
 
+    // ─── 黄色アウトライン検出（手書きマスク優先） ───
+    // ユーザーが画像に黄色線で施術範囲を描いた場合、Geminiポリゴンをバイパスして直接マスク生成
+    // 検出条件: R>150, G>140, B<110, R-B>80, G-B>60
+    function detectYellowRegion() {
+      // Step1: 黄色ピクセルバイナリマスク
+      var yMask = new Uint8Array(w * h);
+      var yCount = 0;
+      for (var i = 0; i < w * h; i++) {
+        var r = orig[i*4], g = orig[i*4+1], b = orig[i*4+2];
+        if (r > 150 && g > 140 && b < 110 && r - b > 80 && g - b > 60 && r + g > b * 3 + 100) {
+          yMask[i] = 1; yCount++;
+        }
+      }
+      // 全ピクセルの0.04%未満 → アウトラインなしとみなす
+      if (yCount < w * h * 0.0004) return null;
+
+      // Step2: 黄色マスクを4px膨張（ラインの隙間を埋めて閉ループ化）
+      var dilR = 4;
+      var wall = new Uint8Array(w * h);
+      // 水平パス
+      var tmp = new Uint8Array(w * h);
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var found = 0;
+          for (var d = -dilR; d <= dilR && !found; d++) {
+            var nx2 = x + d;
+            if (nx2 >= 0 && nx2 < w && yMask[y*w+nx2]) found = 1;
+          }
+          tmp[y*w+x] = found;
+        }
+      }
+      // 垂直パス
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var found = 0;
+          for (var d = -dilR; d <= dilR && !found; d++) {
+            var ny2 = y + d;
+            if (ny2 >= 0 && ny2 < h && tmp[ny2*w+x]) found = 1;
+          }
+          wall[y*w+x] = found;
+        }
+      }
+
+      // Step3: 4辺から BFS flood fill（壁=wall）→ 外側ピクセルを検出
+      var outside = new Uint8Array(w * h);
+      var queue = new Int32Array(w * h);
+      var qHead = 0, qTail = 0;
+      function enqueue(idx) {
+        if (idx < 0 || idx >= w*h || outside[idx] || wall[idx]) return;
+        outside[idx] = 1; queue[qTail++] = idx;
+      }
+      for (var x = 0; x < w; x++) { enqueue(x); enqueue((h-1)*w+x); }
+      for (var y = 1; y < h-1; y++) { enqueue(y*w); enqueue(y*w+w-1); }
+      while (qHead < qTail) {
+        var idx = queue[qHead++];
+        var qx = idx % w, qy = (idx / w) | 0;
+        if (qy > 0)   enqueue(idx - w);
+        if (qy < h-1) enqueue(idx + w);
+        if (qx > 0)   enqueue(idx - 1);
+        if (qx < w-1) enqueue(idx + 1);
+      }
+
+      // Step4: 内側 = !outside && !yMask → 施術領域
+      var mask = new Float32Array(w * h);
+      var regionPx = 0;
+      for (var i = 0; i < w * h; i++) {
+        if (!outside[i] && !yMask[i]) { mask[i] = 1.0; regionPx++; }
+      }
+      if (regionPx < 200) return null; // 内側が小さすぎる
+
+      console.log('[SMP] 黄色アウトライン検出: ' + yCount + '黄色px, 施術領域' + regionPx + 'px');
+      return { mask: mask, regionPx: regionPx };
+    }
+
     // ─── STEP A: 3層マスク生成 ───
     // regionMask: バイナリ領域（Geminiポリゴン内=1, 外=0）
     // densityMap: 施術強度（density_hint ベース、後で輝度補正）
     var regionMask = new Float32Array(w * h);
     var densityMap  = new Float32Array(w * h);
+
+    // 黄色アウトライン優先チェック
+    var yellowDetected = detectYellowRegion();
     var hasGeminiRegions = !!(structured.treatment_regions && structured.treatment_regions.length > 0);
     var hasExclusions    = !!(structured.exclusion_zones   && structured.exclusion_zones.length   > 0);
     var hb = structured.head_bounds || null;
 
-    if (hasGeminiRegions) {
+    if (yellowDetected) {
+      // 黄色アウトライン検出: Flood fillで得た内側領域をそのまま使用
+      regionMask = yellowDetected.mask;
+      // densityMapは輝度ベースで初期化（後のSTEP Bで再補正される）
+      for (var i = 0; i < w * h; i++) {
+        if (regionMask[i] > 0.5) {
+          var lum0 = getLum(i * 4);
+          densityMap[i] = 0.75 + lum0 * 0.20; // 黄色検出時は高め密度ベース
+        }
+      }
+      hasGeminiRegions = true; // マスク有効扱いでフォールバック楕円をスキップ
+      // SIMラベルに検出バッジを追加
+      var simLbl = document.querySelector('.smp-sim-label');
+      if (simLbl) simLbl.innerHTML = 'SMP シミュレーション <span style="font-size:.7em;background:#d4af37;color:#0a0a0a;padding:1px 5px;border-radius:3px;margin-left:4px;">手書きマスク検出</span>';
+    } else if (hasGeminiRegions) {
       var regions = structured.treatment_regions;
       for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {

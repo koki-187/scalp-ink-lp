@@ -1706,16 +1706,98 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       return Math.max(0.0, 1.0 - Math.min(1.0, t));
     }
 
+    // ─── Yellow outline detection (hand-drawn mask takes priority) ───
+    // If user drew yellow lines on image marking treatment area, detect and use directly
+    function detectYellowRegion() {
+      var yMask = new Uint8Array(w * h);
+      var yCount = 0;
+      for (var i = 0; i < w * h; i++) {
+        var r = orig[i*4], g = orig[i*4+1], b = orig[i*4+2];
+        if (r > 150 && g > 140 && b < 110 && r - b > 80 && g - b > 60 && r + g > b * 3 + 100) {
+          yMask[i] = 1; yCount++;
+        }
+      }
+      if (yCount < w * h * 0.0004) return null;
+
+      // Dilate yellow mask 4px to close line gaps
+      var dilR = 4;
+      var wall = new Uint8Array(w * h);
+      var tmp = new Uint8Array(w * h);
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var found = 0;
+          for (var d = -dilR; d <= dilR && !found; d++) {
+            var nx2 = x + d;
+            if (nx2 >= 0 && nx2 < w && yMask[y*w+nx2]) found = 1;
+          }
+          tmp[y*w+x] = found;
+        }
+      }
+      for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+          var found = 0;
+          for (var d = -dilR; d <= dilR && !found; d++) {
+            var ny2 = y + d;
+            if (ny2 >= 0 && ny2 < h && tmp[ny2*w+x]) found = 1;
+          }
+          wall[y*w+x] = found;
+        }
+      }
+
+      // BFS flood fill from 4 edges (wall = dilated yellow)
+      var outside = new Uint8Array(w * h);
+      var queue = new Int32Array(w * h);
+      var qHead = 0, qTail = 0;
+      function enqueue(idx) {
+        if (idx < 0 || idx >= w*h || outside[idx] || wall[idx]) return;
+        outside[idx] = 1; queue[qTail++] = idx;
+      }
+      for (var x = 0; x < w; x++) { enqueue(x); enqueue((h-1)*w+x); }
+      for (var y = 1; y < h-1; y++) { enqueue(y*w); enqueue(y*w+w-1); }
+      while (qHead < qTail) {
+        var idx = queue[qHead++];
+        var qx = idx % w, qy = (idx / w) | 0;
+        if (qy > 0)   enqueue(idx - w);
+        if (qy < h-1) enqueue(idx + w);
+        if (qx > 0)   enqueue(idx - 1);
+        if (qx < w-1) enqueue(idx + 1);
+      }
+
+      // Interior = !outside && !yMask
+      var mask = new Float32Array(w * h);
+      var regionPx = 0;
+      for (var i = 0; i < w * h; i++) {
+        if (!outside[i] && !yMask[i]) { mask[i] = 1.0; regionPx++; }
+      }
+      if (regionPx < 200) return null;
+
+      console.log('[SMP] Yellow outline detected: ' + yCount + ' yellow px, region ' + regionPx + 'px');
+      return { mask: mask, regionPx: regionPx };
+    }
+
     // ─── STEP A: Three-layer mask generation ───
     // regionMask: binary region (inside Gemini polygon=1, outside=0)
     // densityMap: treatment intensity (density_hint, adjusted later)
     var regionMask = new Float32Array(w * h);
     var densityMap  = new Float32Array(w * h);
+
+    var yellowDetected = detectYellowRegion();
     var hasGeminiRegions = !!(structured.treatment_regions && structured.treatment_regions.length > 0);
     var hasExclusions    = !!(structured.exclusion_zones   && structured.exclusion_zones.length   > 0);
     var hb = structured.head_bounds || null;
 
-    if (hasGeminiRegions) {
+    if (yellowDetected) {
+      regionMask = yellowDetected.mask;
+      for (var i = 0; i < w * h; i++) {
+        if (regionMask[i] > 0.5) {
+          var lum0 = getLum(i * 4);
+          densityMap[i] = 0.75 + lum0 * 0.20;
+        }
+      }
+      hasGeminiRegions = true;
+      var simLbl = document.querySelector('.smp-sim-label');
+      if (simLbl) simLbl.innerHTML = 'SMP Simulation <span style="font-size:.7em;background:#d4af37;color:#0a0a0a;padding:1px 5px;border-radius:3px;margin-left:4px;">Hand-drawn mask detected</span>';
+    } else if (hasGeminiRegions) {
       var regions = structured.treatment_regions;
       for (var y = 0; y < h; y++) {
         for (var x = 0; x < w; x++) {
