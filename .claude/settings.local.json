@@ -5,13 +5,7 @@
       "mcp__c1fc4002-5f49-5f9d-a4e5-93c4ef5d6a75__google_drive_search",
       "Bash(git push origin master)",
       "Bash(git push origin remote/*)",
-      "Bash(git push origin dev)",
-      "Bash(rm \"H:/マイドライブ/★★★プライベート用★★★/😃scalp inc😃/.git/refs/heads/desktop.ini\")",
-      "Bash(rm \"H:/マイドライブ/★★★プライベート用★★★/😃scalp inc😃/.git/refs/remotes/desktop.ini\")",
-      "Bash(rm \"H:/マイドライブ/★★★プライベート用★★★/😃scalp inc😃/.git/refs/remotes/origin/desktop.ini\")",
-      "Bash(git -C \"H:/マイドライブ/★★★プライベート用★★★/😃scalp inc😃\" fetch origin)",
-      "Bash(cat)",
-      "Bash(chmod +x \"H:/マイドライブ/★★★プライベート用★★★/😃scalp inc😃/.git/hooks/pre-fetch\")"
+      "Bash(git push origin dev)"
     ]
   }
 }
