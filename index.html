@@ -1044,6 +1044,19 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           </div>
         </div>
 
+        <!-- 密度スライダー（パッケージ: adjust_dot_count準拠） -->
+        <div id="densitySliderRow" style="display:none;margin:14px 0 4px;text-align:center;">
+          <div style="font-size:.75rem;color:rgba(212,175,55,.85);letter-spacing:.1em;margin-bottom:8px;">ドット密度調整</div>
+          <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
+            <span style="font-size:.72rem;color:#666;">薄め</span>
+            <input type="range" id="densitySlider" min="40" max="180" value="100" step="5"
+              style="width:180px;accent-color:#d4af37;cursor:pointer;"
+              oninput="onDensitySlider(this.value)">
+            <span style="font-size:.72rem;color:#666;">濃め</span>
+            <span id="densitySliderVal" style="font-size:.8rem;color:#d4af37;min-width:36px;font-family:'Bebas Neue',sans-serif;">100%</span>
+          </div>
+        </div>
+
         <!-- スコアバー -->
         <div class="sim-score-row" id="simScoreRow" style="display:none;">
           <div class="sim-score">
@@ -1594,7 +1607,18 @@ function extractDotCount(text) {
 }
 
 // ===== BA FRAME: 結果フレーム表示 =====
-function drawSMPSimulation(beforeDataURL, conditionType, structured) {
+// ─── 密度スライダー: キャッシュ + ハンドラ ───
+var _smpCache = null;
+function onDensitySlider(val) {
+  var pct = parseInt(val, 10);
+  var el = document.getElementById('densitySliderVal');
+  if (el) el.textContent = pct + '%';
+  if (_smpCache) {
+    drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, _smpCache.structured, pct / 100);
+  }
+}
+
+function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMultiplier) {
   /*
    * SMP（スカルプマイクロピグメンテーション）シミュレーション v9
    * ══════════════════════════════════════════════════════════════════
@@ -1630,6 +1654,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
    */
   conditionType = conditionType || 'thinning';
   structured = structured || {};
+  densityMultiplier = densityMultiplier || 1.0;
   var cv = document.getElementById('smpSimCanvas');
   if (!cv) return;
   var img = new Image();
@@ -1889,7 +1914,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured) {
     var SEED = 0x4d534d50; // 'MSMP' 固定シード → 再現性確保
 
     // ─── STEP E: Poisson飽和カバレッジ率（Layer1用） ───
-    var totalDots = (structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
+    var totalDots = Math.round(((structured.treatment_plan && structured.treatment_plan.total_dots) || 129600) * densityMultiplier);
     var treatArea = 0;
     for (var ii = 0; ii < regionMask.length; ii++) {
       if (regionMask[ii] > 0.5) treatArea++;
@@ -2073,7 +2098,14 @@ function showBAResult(beforeDataURL, claudeText) {
   if (frame) frame.style.display = 'block';
 
   // SMP canvas シミュレーション描画（condition-aware + region-aware）
-  drawSMPSimulation(beforeDataURL, condType, structured);
+  _smpCache = { beforeDataURL: beforeDataURL, condType: condType, structured: structured };
+  var sliderRow = document.getElementById('densitySliderRow');
+  var sliderEl  = document.getElementById('densitySlider');
+  var sliderVal = document.getElementById('densitySliderVal');
+  if (sliderRow) sliderRow.style.display = 'block';
+  if (sliderEl)  { sliderEl.value = '100'; }
+  if (sliderVal) sliderVal.textContent = '100%';
+  drawSMPSimulation(beforeDataURL, condType, structured, 1.0);
 
   // スコアバー表示（構造化データ優先、フォールバックは推定値）
   if (scoreRow) {
@@ -2445,6 +2477,9 @@ function analyze() {
   if (adviceBox) adviceBox.style.display = 'none';
   var scoreRow = document.getElementById('simScoreRow');
   if (scoreRow) scoreRow.style.display = 'none';
+  var densityRow = document.getElementById('densitySliderRow');
+  if (densityRow) densityRow.style.display = 'none';
+  _smpCache = null;
 
   var srcCanvas = resizeForAPI(capCv, 1280);
   var beforeDataURL = srcCanvas.toDataURL('image/jpeg', 0.88);
