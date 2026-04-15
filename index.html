@@ -1802,20 +1802,26 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     function cellDotAlpha(x, y, cellSz, dotR, localDensity, seed) {
       var cx = Math.floor(x / cellSz) | 0;
       var cy = Math.floor(y / cellSz) | 0;
-      // 密度閾値判定: ブルーノイズディザリング±10%オフセットでモアレ・段差を軽減
-      var dither = (rand01(cx, cy, seed + 7) - 0.5) * 0.18;
+      // 密度閾値判定: 適応的ディザリング（密度0.5付近で最大ばらつき、端で収束）
+      var ditherAmt = 0.22 * (1.0 - Math.abs(localDensity - 0.5) * 1.2);
+      var dither = (rand01(cx, cy, seed + 7) - 0.5) * ditherAmt;
       if (rand01(cx, cy, seed) > Math.max(0, Math.min(1, localDensity + dither))) return 0.0;
-      // セル内ドット中心（±30%オフセットでblue-noise感）
-      var ox = (rand01(cx, cy, seed + 1) - 0.5) * cellSz * 0.60;
-      var oy = (rand01(cx, cy, seed + 2) - 0.5) * cellSz * 0.60;
+      // セル内ドット中心: 密度適応ジッター（高密度=密集、低密度=分散）
+      var jitterFactor = 0.40 + localDensity * 0.35; // 0.40〜0.75
+      var ox = (rand01(cx, cy, seed + 1) - 0.5) * cellSz * jitterFactor;
+      var oy = (rand01(cx, cy, seed + 2) - 0.5) * cellSz * jitterFactor;
+      // 隣接セル参照による微小シフト（グリッド感を破壊）
+      ox += (rand01(cx+1, cy, seed + 4) - 0.5) * cellSz * 0.08;
+      oy += (rand01(cx, cy+1, seed + 5) - 0.5) * cellSz * 0.08;
       var mx = (cx + 0.5) * cellSz + ox;
       var my = (cy + 0.5) * cellSz + oy;
       var dx = x - mx, dy = y - my;
       var d2 = dx * dx + dy * dy;
       var r2 = dotR * dotR;
       if (d2 <= r2) return 1.0;
-      // ソフトエッジ（ドット輪郭の自然なフェード）
-      var t = (d2 - r2) / (0.30 * r2);
+      // ソフトエッジ（ドット輪郭の自然なフェード、DPI適応）
+      var softZone = 0.25 + 0.10 * (dotR / 4.0); // 大ドット=より広いフェード
+      var t = (d2 - r2) / (softZone * r2);
       return Math.max(0.0, 1.0 - Math.min(1.0, t));
     }
 
@@ -2011,7 +2017,9 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // 1パスボックス → 硬い階段遷移。2パスで自然なベル型フェードを実現。
     // 傷跡: 細い領域が消えないよう featherR を小さく設定
     var featherR = conditionType === 'scar'
-      ? Math.max(3, Math.min(8, Math.round(Math.min(w, h) * 0.006)))
+      ? Math.max(5, Math.min(16, Math.round(Math.min(w, h) * 0.012)))
+      : conditionType === 'hairline'
+      ? Math.max(3, Math.min(14, Math.round(Math.min(w, h) * 0.013)))
       : Math.max(4, Math.min(20, Math.round(Math.min(w, h) * 0.018)));
     var edgeMask = new Float32Array(w * h);
     var tempBuf  = new Float32Array(w * h);
@@ -2136,15 +2144,19 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     var skinG = kSamples.length>0 ? Math.round(kc1[1]) : 155;
     var skinB = kSamples.length>0 ? Math.round(kc1[2]) : 140;
     kSamples = null; // GC
-    // SMP色 = 髪色ベース + 微青補正（インクの実際の色調）
-    var pigR = Math.max(20, Math.min(88, hairR + 10));
-    var pigG = Math.max(16, Math.min(82, hairG +  8));
-    var pigB = Math.max(22, Math.min(92, hairB + 13));
+    // SMP色 = 髪色ベース + 肌色適応補正（Fitzpatrickスケール近似）
+    // 明るい肌(skinLum高)=クール系(青寄り)、暗い肌=ウォーム系(茶寄り)
+    var skinLum = (skinR * 0.299 + skinG * 0.587 + skinB * 0.114) / 255;
+    var warmShift = Math.max(0, 0.5 - skinLum) * 20; // 暗い肌→ウォーム補正
+    var coolShift = Math.max(0, skinLum - 0.5) * 16;  // 明るい肌→クール補正
+    var pigR = Math.max(15, Math.min(110, hairR + 8 + Math.round(warmShift)));
+    var pigG = Math.max(12, Math.min(105, hairG + 6 + Math.round(warmShift * 0.6)));
+    var pigB = Math.max(18, Math.min(115, hairB + 10 + Math.round(coolShift)));
     // 傷跡用インク色 = 髪色ベース（周囲の短髪シャドウと同じ濃さに合わせる）
     // 傷は「明るく見える部分」→ 周囲の毛髪と同じ暗さのドットで埋める
-    var scarPigR = Math.max(15, Math.min(75, hairR + 6));
-    var scarPigG = Math.max(12, Math.min(68, hairG + 5));
-    var scarPigB = Math.max(18, Math.min(78, hairB + 9));
+    var scarPigR = Math.max(12, Math.min(90, hairR + 5 + Math.round(warmShift * 0.7)));
+    var scarPigG = Math.max(10, Math.min(82, hairG + 4 + Math.round(warmShift * 0.4)));
+    var scarPigB = Math.max(15, Math.min(95, hairB + 8 + Math.round(coolShift * 0.7)));
 
     // ─── STEP D: ドットパラメータ（仕様書: dot_size_rel × head_width_px） ───
     var headW_px = hb ? hb.w * w : w * 0.75;
@@ -2169,9 +2181,11 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     treatArea = Math.max(1, treatArea);
     // λ = 平均重なり回数（仕様書準拠ポアソン飽和）
     var lam = totalDots * dotArea_px / treatArea;
-    // 仕様書準拠: 飽和補正 C = 1-(1+0.3λ)·exp(-λ)（neg-binomial補正: 低λ時の過大評価を抑制）
-    var baseCoverage = Math.min(0.94, 1.0 - (1.0 + 0.3 * lam) * Math.exp(-lam));
-    console.log('[SMP v9] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px cell=' + cellSize.toFixed(1) + 'px treatPx=' + treatArea + ' λ=' + lam.toFixed(2) + ' cov=' + (baseCoverage*100).toFixed(1) + '% hair=[' + hairR+','+hairG+','+hairB+'] skin=['+skinR+','+skinG+','+skinB+']');
+    // Poisson飽和補正 v9.4: C = 1-(1+kλ)·exp(-λ)
+    // k=0.25（低λ時の過大評価抑制を緩和し、中λ域の立ち上がりを改善）
+    // 上限0.92: 実際のSMP施術では完全均一化はあり得ない（自然な地肌感を残す）
+    var baseCoverage = Math.min(0.92, 1.0 - (1.0 + 0.25 * lam) * Math.exp(-lam));
+    console.log('[SMP v9.4] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px cell=' + cellSize.toFixed(1) + 'px treatPx=' + treatArea + ' λ=' + lam.toFixed(2) + ' cov=' + (baseCoverage*100).toFixed(1) + '% hair=[' + hairR+','+hairG+','+hairB+'] skin=['+skinR+','+skinG+','+skinB+']');
 
     // ─── STEP F: 2層合成（Layer1 Poisson均一化 + Layer2 セルドット点描） ───
     var outData = ctx.getImageData(0, 0, w, h);
@@ -2189,23 +2203,35 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         var eMask = edgeMask[idx];
 
         // Layer 1: Poisson飽和による均一暗化ベース（肌色を消す）
-        var layer1 = baseCoverage * dMap * 0.93;
+        // 条件別ベースウェイト: scar=強め、hairline=控えめ、thinning=標準
+        var l1Weight = conditionType === 'scar' ? 0.96
+                     : conditionType === 'hairline' ? 0.88
+                     : 0.93;
+        var layer1 = baseCoverage * dMap * l1Weight;
 
         // Layer 2: 決定論的セルドット（点描テクスチャ）
         var dotA = cellDotAlpha(x, y, cellSize, dotRadius_px, dMap, SEED);
-        var layer2 = dotA * 0.75;
+        var l2Weight = conditionType === 'scar' ? 0.82
+                     : conditionType === 'hairline' ? 0.68
+                     : 0.75;
+        var layer2 = dotA * l2Weight;
 
         // 2層を合算してedgeMaskでフェザリング
-        var finalAlpha = Math.min(0.97, layer1 + layer2) * eMask;
+        // 条件別上限: hairline=自然に、scar=しっかり
+        var alphaCap = conditionType === 'scar' ? 0.96
+                     : conditionType === 'hairline' ? 0.92
+                     : 0.95;
+        var finalAlpha = Math.min(alphaCap, layer1 + layer2) * eMask;
 
         if (finalAlpha < (conditionType === 'scar' ? 0.004 : 0.002)) continue;
 
-        // ドット色 + 微小グレイン（各ドットに自然な濃淡）
+        // ドット色 + 適応的グレイン（高密度=均一、低密度=ばらつき大）
         // 傷跡エリアは scarPigColor（頭皮色ベース）を使用 → 自然な仕上がり
         var usePigR = conditionType === 'scar' ? scarPigR : pigR;
         var usePigG = conditionType === 'scar' ? scarPigG : pigG;
         var usePigB = conditionType === 'scar' ? scarPigB : pigB;
-        var gr = Math.round((rand01(x, y, SEED+3) - 0.5) * 14);
+        var grainAmt = Math.round(8 + (1.0 - dMap) * 10); // 密度低→±13、高→±8
+        var gr = Math.round((rand01(x, y, SEED+3) - 0.5) * grainAmt);
         var tR = Math.max(5, Math.min(245, usePigR + gr));
         var tG = Math.max(5, Math.min(240, usePigG + gr));
         var tB = Math.max(5, Math.min(245, usePigB + gr));
