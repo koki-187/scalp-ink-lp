@@ -1694,8 +1694,9 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     function cellDotAlpha(x, y, cellSz, dotR, localDensity, seed) {
       var cx = Math.floor(x / cellSz) | 0;
       var cy = Math.floor(y / cellSz) | 0;
-      // 密度に基づく確率的ドット存在判定
-      if (rand01(cx, cy, seed) > localDensity) return 0.0;
+      // 密度閾値判定: ブルーノイズディザリング±10%オフセットでモアレ・段差を軽減
+      var dither = (rand01(cx, cy, seed + 7) - 0.5) * 0.18;
+      if (rand01(cx, cy, seed) > Math.max(0, Math.min(1, localDensity + dither))) return 0.0;
       // セル内ドット中心（±30%オフセットでblue-noise感）
       var ox = (rand01(cx, cy, seed + 1) - 0.5) * cellSz * 0.60;
       var oy = (rand01(cx, cy, seed + 2) - 0.5) * cellSz * 0.60;
@@ -1794,47 +1795,85 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
             var ny4 = dy2 + dd;
             if (ny4 >= 0 && ny4 < h) mv = Math.max(mv, dilH[ny4*w+dx2]);
           }
-          // 元の regionMask に無かった膨張ピクセルには密度0.85を設定
+          // 膨張ピクセル: 一律0.85ではなく実際のRGB輝度からexposeFactor計算で光輪を防止
           if (regionMask[dy2*w+dx2] < 0.5 && mv > 0.5) {
             regionMask[dy2*w+dx2] = mv;
-            densityMap[dy2*w+dx2] = Math.max(densityMap[dy2*w+dx2], mv * 0.85);
+            var dilLum = getLum((dy2*w+dx2) * 4);
+            var dilExp = Math.pow(Math.max(0, Math.min(1, (dilLum - 0.05) / 0.45)), 0.55);
+            var dilDens = mv * 0.88 * (0.42 + dilExp * 0.58);
+            densityMap[dy2*w+dx2] = Math.max(densityMap[dy2*w+dx2], dilDens);
           }
         }
       }
       dilH = null;
     }
 
-    // edgeMask: regionMaskのセパラブルボックスブラー（境界フェザリング）
-    // 内部=1.0、境界から featherR px以内で 0→1 にフェード
+    // edgeMask: テントフィルタ（2パスボックスブラー = ガウス近似, σ≈featherR/1.22）
+    // 1パスボックス → 硬い階段遷移。2パスで自然なベル型フェードを実現。
     // 傷跡: 細い領域が消えないよう featherR を小さく設定
     var featherR = conditionType === 'scar'
       ? Math.max(3, Math.min(8, Math.round(Math.min(w, h) * 0.006)))
       : Math.max(4, Math.min(20, Math.round(Math.min(w, h) * 0.018)));
     var edgeMask = new Float32Array(w * h);
     var tempBuf  = new Float32Array(w * h);
-    // 水平ブラー
+    var tempBuf2 = new Float32Array(w * h);
+    // ── 1パス目: 水平ボックスブラー（regionMask → tempBuf） ──
     for (var y = 0; y < h; y++) {
-      for (var x = 0; x < w; x++) {
-        var sum = 0, cnt = 0;
-        for (var dx = -featherR; dx <= featherR; dx++) {
-          var nx2 = x + dx;
-          if (nx2 >= 0 && nx2 < w) { sum += regionMask[y*w+nx2]; cnt++; }
-        }
+      var sum = 0, cnt = 0;
+      // スライディングウィンドウで O(w) に高速化
+      for (var dx2 = -featherR; dx2 <= featherR; dx2++) {
+        if (dx2 >= 0 && dx2 < w) { sum += regionMask[y*w+dx2]; cnt++; }
+      }
+      tempBuf[y*w+0] = cnt > 0 ? sum / cnt : 0;
+      for (var x = 1; x < w; x++) {
+        var add = x + featherR, rem = x - featherR - 1;
+        if (add < w) { sum += regionMask[y*w+add]; cnt++; }
+        if (rem >= 0) { sum -= regionMask[y*w+rem]; cnt--; }
         tempBuf[y*w+x] = cnt > 0 ? sum / cnt : 0;
       }
     }
-    // 垂直ブラー
-    for (var y = 0; y < h; y++) {
-      for (var x = 0; x < w; x++) {
-        var sum = 0, cnt = 0;
-        for (var dy = -featherR; dy <= featherR; dy++) {
-          var ny3 = y + dy;
-          if (ny3 >= 0 && ny3 < h) { sum += tempBuf[ny3*w+x]; cnt++; }
-        }
+    // ── 1パス目: 垂直ボックスブラー（tempBuf → edgeMask） ──
+    for (var x = 0; x < w; x++) {
+      var sum = 0, cnt = 0;
+      for (var dy2 = -featherR; dy2 <= featherR; dy2++) {
+        if (dy2 >= 0 && dy2 < h) { sum += tempBuf[dy2*w+x]; cnt++; }
+      }
+      edgeMask[0*w+x] = cnt > 0 ? sum / cnt : 0;
+      for (var y = 1; y < h; y++) {
+        var add = y + featherR, rem = y - featherR - 1;
+        if (add < h) { sum += tempBuf[add*w+x]; cnt++; }
+        if (rem >= 0) { sum -= tempBuf[rem*w+x]; cnt--; }
         edgeMask[y*w+x] = cnt > 0 ? sum / cnt : 0;
       }
     }
-    tempBuf = null; // GC
+    // ── 2パス目: edgeMask → tempBuf2（水平）→ edgeMask（垂直）でテント化 ──
+    for (var y = 0; y < h; y++) {
+      var sum = 0, cnt = 0;
+      for (var dx2 = -featherR; dx2 <= featherR; dx2++) {
+        if (dx2 >= 0 && dx2 < w) { sum += edgeMask[y*w+dx2]; cnt++; }
+      }
+      tempBuf2[y*w+0] = cnt > 0 ? sum / cnt : 0;
+      for (var x = 1; x < w; x++) {
+        var add = x + featherR, rem = x - featherR - 1;
+        if (add < w) { sum += edgeMask[y*w+add]; cnt++; }
+        if (rem >= 0) { sum -= edgeMask[y*w+rem]; cnt--; }
+        tempBuf2[y*w+x] = cnt > 0 ? sum / cnt : 0;
+      }
+    }
+    for (var x = 0; x < w; x++) {
+      var sum = 0, cnt = 0;
+      for (var dy2 = -featherR; dy2 <= featherR; dy2++) {
+        if (dy2 >= 0 && dy2 < h) { sum += tempBuf2[dy2*w+x]; cnt++; }
+      }
+      edgeMask[0*w+x] = cnt > 0 ? sum / cnt : 0;
+      for (var y = 1; y < h; y++) {
+        var add = y + featherR, rem = y - featherR - 1;
+        if (add < h) { sum += tempBuf2[add*w+x]; cnt++; }
+        if (rem >= 0) { sum -= tempBuf2[rem*w+x]; cnt--; }
+        edgeMask[y*w+x] = cnt > 0 ? sum / cnt : 0;
+      }
+    }
+    tempBuf = null; tempBuf2 = null; // GC
 
     // ─── STEP B: densityMap を輝度露出係数で補正 ───
     // SMP施術 = 毛穴間の明るい頭皮（exposed scalp）を暗くする
@@ -1844,10 +1883,11 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         var idx = y*w+x;
         if (regionMask[idx] < 0.5) continue;
         var lum = getLum(idx * 4);
-        // 明るいピクセル（頭皮）: 高露出係数 → 高密度処理
-        // 暗いピクセル（毛髪）: 低露出係数 → 最小値0.45（既存毛髪部分も最低限処理）
-        var exposeFactor = Math.max(0, Math.min(1, (lum - 0.05) / 0.25));
-        densityMap[idx] *= (0.45 + exposeFactor * 0.55);
+        // ガンマ補正: rawExp を 0.55乗で知覚的に線形化（高輝度側の飽和を防ぐ）
+        // レンジ拡大: [0.05, 0.50] → 暗めの頭皮（濃い毛髪）にも適切に反応
+        var rawExp = Math.max(0, Math.min(1, (lum - 0.05) / 0.45));
+        var exposeFactor = Math.pow(rawExp, 0.55);
+        densityMap[idx] *= (0.42 + exposeFactor * 0.58);
       }
     }
 
@@ -1867,8 +1907,16 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       }
     }
     // 2クラスターK-meansイテレーション（暗クラスタ=kc0/髪, 明クラスタ=kc1/頭皮）
-    var kc0 = [40, 35, 32], kc1 = [180, 155, 140];
-    for (var kiter = 0; kiter < 8; kiter++) {
+    // 画像適応初期値: サンプル平均の±40%オフセット（金髪・白髪・黒髪すべてに対応）
+    var kmInitR = 128, kmInitG = 110, kmInitB = 100;
+    if (kSamples.length > 0) {
+      var kmSR = 0, kmSG = 0, kmSB = 0;
+      for (var ksi0 = 0; ksi0 < kSamples.length; ksi0++) { kmSR += kSamples[ksi0][0]; kmSG += kSamples[ksi0][1]; kmSB += kSamples[ksi0][2]; }
+      kmInitR = kmSR / kSamples.length; kmInitG = kmSG / kSamples.length; kmInitB = kmSB / kSamples.length;
+    }
+    var kc0 = [kmInitR * 0.55, kmInitG * 0.55, kmInitB * 0.55]; // 暗クラスタ初期値
+    var kc1 = [Math.min(255, kmInitR * 1.45), Math.min(255, kmInitG * 1.45), Math.min(255, kmInitB * 1.45)]; // 明クラスタ初期値
+    for (var kiter = 0; kiter < 10; kiter++) {
       var ks0=[0,0,0], kn0=0, ks1=[0,0,0], kn1=0;
       for (var ksi = 0; ksi < kSamples.length; ksi++) {
         var kp = kSamples[ksi];
@@ -1951,7 +1999,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         // 2層を合算してedgeMaskでフェザリング
         var finalAlpha = Math.min(0.97, layer1 + layer2) * eMask;
 
-        if (finalAlpha < 0.002) continue;
+        if (finalAlpha < (conditionType === 'scar' ? 0.004 : 0.002)) continue;
 
         // ドット色 + 微小グレイン（各ドットに自然な濃淡）
         // 傷跡エリアは scarPigColor（頭皮色ベース）を使用 → 自然な仕上がり
