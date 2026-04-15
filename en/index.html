@@ -998,6 +998,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <video id="vidEl" autoplay playsinline webkit-playsinline muted style="display:none;position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;object-fit:cover;z-index:3;"></video>
         <img id="previewImg" alt="">
         <canvas id="capCv"></canvas>
+        <!-- Yellow pen drawing overlay -->
+        <canvas id="drawingCanvas" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;cursor:crosshair;touch-action:none;"></canvas>
         <!-- iOS/Android native camera capture (hidden) -->
         <input type="file" accept="image/*" capture="environment" id="camCapture" style="display:none;" onchange="handleUp(event)">
       </div>
@@ -1006,8 +1008,22 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <button class="btn-p" id="capSnap" style="display:none;" onclick="captureDesktopPhoto()">&#128248; Take Photo</button>
         <button class="btn-o" id="stopCam" style="display:none;" onclick="stopDesktopCamera(false)">&#9632; Stop</button>
         <!-- Post-image controls -->
-        <button class="btn-p" id="capBtn" style="display:none;" onclick="analyze()">&#9654;&nbsp; Start AI Analysis</button>
+        <button class="btn-p" id="capBtn" style="display:none;" onclick="analyze()">&#9654;&nbsp; Start SMP Simulation</button>
         <button class="btn-o" id="rstBtn" style="display:none;" onclick="resetSim()">Try Again</button>
+      </div>
+      <!-- Drawing tool controls -->
+      <div id="drawingControls" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(15,13,8,0.85);border:1px solid rgba(212,175,55,0.35);border-radius:10px;">
+        <div style="font-size:.72rem;color:#d4af37;letter-spacing:.1em;text-align:center;margin-bottom:9px;">&#9999; Draw yellow outline around the treatment area</div>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+          <button id="penBtn" class="btn-o" onclick="setDrawMode('pen')" style="padding:6px 14px;font-size:.7rem;background:rgba(212,175,55,0.25);border-color:#d4af37;">&#9999; Pen</button>
+          <button id="eraserBtn" class="btn-o" onclick="setDrawMode('eraser')" style="padding:6px 14px;font-size:.7rem;">Eraser</button>
+          <button class="btn-o" onclick="clearDrawing()" style="padding:6px 14px;font-size:.7rem;">Clear</button>
+          <div style="display:flex;align-items:center;gap:5px;">
+            <span style="font-size:.68rem;color:#888;">Size</span>
+            <input type="range" id="brushSize" min="4" max="32" value="14" style="width:72px;accent-color:#d4af37;">
+          </div>
+        </div>
+        <div style="font-size:.65rem;color:#555;text-align:center;margin-top:7px;">Use eraser to correct any mistakes</div>
       </div>
       <div class="ld-dots" id="ldDots">
         <div class="ld-d"></div><div class="ld-d"></div><div class="ld-d"></div>
@@ -1019,7 +1035,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <div class="ba-frame" style="margin-top:24px;border-color:var(--gd);">
           <div class="ba-header">
             <span class="ba-lbl">BEFORE</span>
-            <span class="ba-lbl">AFTER (AI Simulation)</span>
+            <span class="ba-lbl">AFTER (SMP Simulation)</span>
           </div>
           <div class="ba-imgs" style="position:relative;">
             <div class="ba-side">
@@ -1034,21 +1050,23 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
             <div class="ba-sep"></div>
           </div>
           <div class="ba-footer">
-            <div class="ba-footer-logo">THE SCALP INK<small>by CIMA — AI Simulation</small></div>
+            <div class="ba-footer-logo">THE SCALP INK<small>by CIMA — SMP Simulation</small></div>
             <div id="baDotCount" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--gd);letter-spacing:.06em;"></div>
           </div>
         </div>
 
-        <!-- Density slider (package: adjust_dot_count logic) -->
+        <!-- Dot count adjustment slider (±30,000 dots absolute) -->
         <div id="densitySliderRow" style="display:none;margin:14px 0 4px;text-align:center;">
-          <div style="font-size:.75rem;color:rgba(212,175,55,.85);letter-spacing:.1em;margin-bottom:8px;">DOT DENSITY ADJUSTMENT</div>
+          <div style="font-size:.75rem;color:rgba(212,175,55,.85);letter-spacing:.1em;margin-bottom:6px;">DOT COUNT ADJUSTMENT</div>
           <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
-            <span style="font-size:.72rem;color:#666;">Lighter</span>
-            <input type="range" id="densitySlider" min="40" max="180" value="100" step="5"
+            <span style="font-size:.72rem;color:#666;">-30k</span>
+            <input type="range" id="densitySlider" min="-30000" max="30000" value="0" step="5000"
               style="width:180px;accent-color:#d4af37;cursor:pointer;"
               oninput="onDensitySlider(this.value)">
-            <span style="font-size:.72rem;color:#666;">Denser</span>
-            <span id="densitySliderVal" style="font-size:.8rem;color:#d4af37;min-width:36px;font-family:'Bebas Neue',sans-serif;">100%</span>
+            <span style="font-size:.72rem;color:#666;">+30k</span>
+          </div>
+          <div style="font-size:.78rem;color:#d4af37;margin-top:4px;">
+            Total <span id="densitySliderVal" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;">—</span> dots
           </div>
         </div>
 
@@ -1607,14 +1625,104 @@ function extractDotCount(text) {
 }
 
 // ===== BA FRAME: show result frame =====
+// ─── Yellow pen drawing tool ───
+var _drawMode = 'pen';
+var _isDrawing = false;
+var _lastDrawX = 0, _lastDrawY = 0;
+var _drawCtx = null;
+
+function initDrawingCanvas() {
+  var photo = document.getElementById('capCv');
+  var dc = document.getElementById('drawingCanvas');
+  if (!photo || !dc) return;
+  dc.width = photo.width;
+  dc.height = photo.height;
+  _drawCtx = dc.getContext('2d');
+  _drawCtx.clearRect(0, 0, dc.width, dc.height);
+  dc.style.display = 'block';
+  dc.onmousedown  = onDrawStart;
+  dc.onmousemove  = onDrawMove;
+  dc.onmouseup    = onDrawEnd;
+  dc.onmouseleave = onDrawEnd;
+  dc.ontouchstart = function(e) { e.preventDefault(); onDrawStart(e); };
+  dc.ontouchmove  = function(e) { e.preventDefault(); onDrawMove(e); };
+  dc.ontouchend   = onDrawEnd;
+  var drawControls = document.getElementById('drawingControls');
+  if (drawControls) drawControls.style.display = 'block';
+}
+
+function getDrawPos(e, canvas) {
+  var rect = canvas.getBoundingClientRect();
+  var scaleX = canvas.width / rect.width;
+  var scaleY = canvas.height / rect.height;
+  var src = e.touches ? e.touches[0] : e;
+  return [(src.clientX - rect.left) * scaleX, (src.clientY - rect.top) * scaleY];
+}
+
+function onDrawStart(e) {
+  _isDrawing = true;
+  var dc = document.getElementById('drawingCanvas');
+  var pos = getDrawPos(e, dc);
+  _lastDrawX = pos[0]; _lastDrawY = pos[1];
+  applyBrush(pos[0], pos[1], pos[0], pos[1]);
+}
+
+function onDrawMove(e) {
+  if (!_isDrawing) return;
+  var dc = document.getElementById('drawingCanvas');
+  var pos = getDrawPos(e, dc);
+  applyBrush(_lastDrawX, _lastDrawY, pos[0], pos[1]);
+  _lastDrawX = pos[0]; _lastDrawY = pos[1];
+}
+
+function onDrawEnd() { _isDrawing = false; }
+
+function applyBrush(x1, y1, x2, y2) {
+  if (!_drawCtx) return;
+  var sz = parseInt(document.getElementById('brushSize').value) || 14;
+  if (_drawMode === 'eraser') {
+    var r = sz * 1.5;
+    _drawCtx.clearRect(x2 - r, y2 - r, r * 2, r * 2);
+  } else {
+    _drawCtx.beginPath();
+    _drawCtx.strokeStyle = 'rgba(255, 215, 0, 0.92)';
+    _drawCtx.lineWidth = sz;
+    _drawCtx.lineCap = 'round';
+    _drawCtx.lineJoin = 'round';
+    _drawCtx.moveTo(x1, y1);
+    _drawCtx.lineTo(x2, y2);
+    _drawCtx.stroke();
+  }
+}
+
+function setDrawMode(mode) {
+  _drawMode = mode;
+  var dc = document.getElementById('drawingCanvas');
+  if (dc) dc.style.cursor = mode === 'eraser' ? 'cell' : 'crosshair';
+  var penBtn = document.getElementById('penBtn');
+  var eraserBtn = document.getElementById('eraserBtn');
+  if (penBtn) penBtn.style.background = mode === 'pen' ? 'rgba(212,175,55,0.25)' : '';
+  if (eraserBtn) eraserBtn.style.background = mode === 'eraser' ? 'rgba(212,175,55,0.25)' : '';
+}
+
+function clearDrawing() {
+  var dc = document.getElementById('drawingCanvas');
+  if (dc && _drawCtx) _drawCtx.clearRect(0, 0, dc.width, dc.height);
+}
+
 // ─── Density slider: cache + handler ───
 var _smpCache = null;
+var _baseDotsCache = 129600; // default
 function onDensitySlider(val) {
-  var pct = parseInt(val, 10);
+  var offset = parseInt(val, 10);
+  var totalDots = Math.max(10000, _baseDotsCache + offset);
   var el = document.getElementById('densitySliderVal');
-  if (el) el.textContent = pct + '%';
+  if (el) el.textContent = (totalDots >= 10000 ? Math.round(totalDots/1000) + 'k' : totalDots);
   if (_smpCache) {
-    drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, _smpCache.structured, pct / 100);
+    var fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured));
+    if (!fakeStructured.treatment_plan) fakeStructured.treatment_plan = {};
+    fakeStructured.treatment_plan.total_dots = totalDots;
+    drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, fakeStructured, 1.0);
   }
 }
 
@@ -1772,7 +1880,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       if (regionPx < 200) return null;
 
       console.log('[SMP] Yellow outline detected: ' + yCount + ' yellow px, region ' + regionPx + 'px');
-      return { mask: mask, regionPx: regionPx };
+      return { mask: mask, regionPx: regionPx, yellowMask: yMask };
     }
 
     // ─── STEP A: Three-layer mask generation ───
@@ -2104,6 +2212,29 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     }
     ctx.putImageData(finalData, 0, 0);
 
+    // ─── Yellow line removal: overwrite yellow annotations with original photo pixels ───
+    if (yellowDetected && yellowDetected.yellowMask && window._cleanPhotoPixels) {
+      var yFinalData = ctx.getImageData(0, 0, w, h);
+      var cleanPx = window._cleanPhotoPixels.data;
+      var cleanW = window._cleanPhotoPixels.width;
+      var cleanH = window._cleanPhotoPixels.height;
+      var yMaskFinal = yellowDetected.yellowMask;
+      for (var yfi = 0; yfi < w * h; yfi++) {
+        if (yMaskFinal[yfi]) {
+          var yfiX = yfi % w, yfiY = (yfi / w) | 0;
+          var cX = Math.min(cleanW - 1, Math.round(yfiX * cleanW / w));
+          var cY = Math.min(cleanH - 1, Math.round(yfiY * cleanH / h));
+          var cIdx = (cY * cleanW + cX) * 4;
+          var si = yfi * 4;
+          yFinalData.data[si]     = cleanPx[cIdx];
+          yFinalData.data[si + 1] = cleanPx[cIdx + 1];
+          yFinalData.data[si + 2] = cleanPx[cIdx + 2];
+          yFinalData.data[si + 3] = 255;
+        }
+      }
+      ctx.putImageData(yFinalData, 0, 0);
+    }
+
     img.onload = null; img.src = '';
   };
   img.src = beforeDataURL;
@@ -2189,7 +2320,20 @@ function showBAResult(beforeDataURL, claudeText) {
   }
 
   if (beforeImg) beforeImg.src = beforeDataURL;
-  if (dotCountEl) dotCountEl.textContent = dotCount || '';
+  // Area calculation (head width 19cm baseline)
+  var areaInfo = '';
+  if (structured && structured.head_bounds && structured.treatment_plan) {
+    var hbW = structured.head_bounds.w;
+    var capCvEl = document.getElementById('capCv');
+    if (capCvEl && capCvEl.width && hbW > 0) {
+      var headPxW = hbW * capCvEl.width;
+      var pxPerCm = headPxW / 19;
+      var tDots = (structured.treatment_plan.total_dots || 0);
+      var estimatedCm2 = tDots > 0 ? Math.round(tDots / 3 / 500) : 0;
+      if (estimatedCm2 > 0) areaInfo = 'Est. area \u2248' + estimatedCm2 + 'cm\u00B2 / 500 dots\u00D73 sessions';
+    }
+  }
+  if (dotCountEl) dotCountEl.textContent = (dotCount ? dotCount : '') + (areaInfo ? '  ' + areaInfo : '');
   if (claudeTextEl) claudeTextEl.innerHTML = renderMarkdown(displayText);
   if (adviceBox) adviceBox.style.display = 'block';
   if (frame) frame.style.display = 'block';
@@ -2200,8 +2344,10 @@ function showBAResult(beforeDataURL, claudeText) {
   var sliderEl  = document.getElementById('densitySlider');
   var sliderVal = document.getElementById('densitySliderVal');
   if (sliderRow) sliderRow.style.display = 'block';
-  if (sliderEl)  { sliderEl.value = '100'; }
-  if (sliderVal) sliderVal.textContent = '100%';
+  if (sliderEl)  { sliderEl.value = '0'; }
+  var baseDots = (structured && structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
+  _baseDotsCache = baseDots;
+  if (sliderVal) sliderVal.textContent = Math.round(baseDots/1000) + 'k';
   drawSMPSimulation(beforeDataURL, condType, structured, 1.0);
 
   // Score bar display (structured data preferred, fallback to estimates)
@@ -2399,6 +2545,7 @@ function captureDesktopPhoto() {
   if (rstBtn) rstBtn.style.display = 'inline-block';
   var pg = document.getElementById('photoGuide');
   if (pg) pg.style.display = 'none';
+  initDrawingCanvas();
   setStep(1);
 }
 
@@ -2460,6 +2607,7 @@ function loadImageFile(file) {
       if (capBtn) capBtn.style.display = 'inline-block';
       if (rstBtn) rstBtn.style.display = 'inline-block';
       if (pg)    pg.style.display = 'none';
+      initDrawingCanvas();
       setStep(1);
     };
     img.src = ev.target.result;
@@ -2577,7 +2725,18 @@ function analyze() {
   if (densityRow) densityRow.style.display = 'none';
   _smpCache = null;
 
-  var srcCanvas = resizeForAPI(capCv, 1280);
+  // Merge drawing canvas (if yellow pen drawing exists, composite it)
+  var dc = document.getElementById('drawingCanvas');
+  var mergedCv = document.createElement('canvas');
+  mergedCv.width = capCv.width; mergedCv.height = capCv.height;
+  var mCtx = mergedCv.getContext('2d');
+  mCtx.drawImage(capCv, 0, 0);
+  if (dc && dc.width === capCv.width && dc.style.display !== 'none') {
+    mCtx.drawImage(dc, 0, 0);
+  }
+  // Save clean photo data (used for yellow line removal)
+  window._cleanPhotoPixels = capCv.getContext('2d').getImageData(0, 0, capCv.width, capCv.height);
+  var srcCanvas = resizeForAPI(mergedCv, 1280);
   var beforeDataURL = srcCanvas.toDataURL('image/jpeg', 0.88);
   var b64 = beforeDataURL.split(',')[1];
   var prompt = 'You are a senior SMP specialist at THE SCALP INK by CIMA.\n' +
@@ -2799,6 +2958,11 @@ function resetSim() {
   var imgUp    = document.getElementById('imgUp');
   var camCap   = document.getElementById('camCapture');
   if (capCv)   { capCv.width=0; capCv.height=0; }
+  var dc = document.getElementById('drawingCanvas');
+  if (dc) { dc.style.display = 'none'; if (_drawCtx) _drawCtx.clearRect(0,0,dc.width,dc.height); }
+  var drawControls = document.getElementById('drawingControls');
+  if (drawControls) drawControls.style.display = 'none';
+  window._cleanPhotoPixels = null;
   if (prev)    { prev.src=''; prev.style.display='none'; }
   if (zone)    zone.classList.remove('has-image','drag-over','camera-active');
   if (capBtn)  capBtn.style.display='none';
