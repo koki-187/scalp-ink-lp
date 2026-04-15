@@ -1,0 +1,16 @@
+.footer {
+  background: var(--color-primary);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 24px 0;
+  text-align: center;
+}
+
+.inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.copyright {
+  font-size: 0.85rem;
+}
