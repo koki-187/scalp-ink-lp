@@ -10,7 +10,7 @@
   gtag('js', new Date());
   gtag('config', 'G-17MPNMJ5GN');
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#080808">
@@ -1012,8 +1012,9 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <button class="btn-o" id="rstBtn" style="display:none;" onclick="resetSim()">Try Again</button>
       </div>
       <!-- Drawing tool controls -->
-      <div id="drawingControls" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(15,13,8,0.85);border:1px solid rgba(212,175,55,0.35);border-radius:10px;">
-        <div style="font-size:.72rem;color:#d4af37;letter-spacing:.1em;text-align:center;margin-bottom:9px;">&#9999; Draw yellow outline around the treatment area</div>
+      <div id="drawingControls" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(15,13,8,0.92);border:1px solid rgba(212,175,55,0.35);border-radius:10px;">
+        <div style="font-size:.72rem;color:#d4af37;letter-spacing:.1em;text-align:center;margin-bottom:6px;">&#9999; Draw a yellow outline around the treatment area <span style="color:rgba(245,245,240,.35);font-size:.9em;">(optional)</span></div>
+        <div style="font-size:.6rem;color:rgba(245,245,240,.38);text-align:center;margin-bottom:9px;letter-spacing:.04em;">You can skip this — AI will automatically detect the treatment area</div>
         <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
           <button id="penBtn" class="btn-o" onclick="setDrawMode('pen')" style="padding:6px 14px;font-size:.7rem;background:rgba(212,175,55,0.25);border-color:#d4af37;">&#9999; Pen</button>
           <button id="eraserBtn" class="btn-o" onclick="setDrawMode('eraser')" style="padding:6px 14px;font-size:.7rem;">Eraser</button>
@@ -1023,11 +1024,11 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
             <input type="range" id="brushSize" min="4" max="32" value="14" style="width:72px;accent-color:#d4af37;">
           </div>
         </div>
-        <div style="font-size:.65rem;color:#555;text-align:center;margin-top:7px;">Use eraser to correct any mistakes</div>
+        <div style="font-size:.6rem;color:rgba(245,245,240,.3);text-align:center;margin-top:7px;">Use eraser to correct mistakes</div>
       </div>
       <div class="ld-dots" id="ldDots">
         <div class="ld-d"></div><div class="ld-d"></div><div class="ld-d"></div>
-        <div class="ld-msg">AI analyzing... approx. 30-60 seconds</div>
+        <div class="ld-msg">Simulation in progress... approx. 30-60 seconds</div>
       </div>
 
       <!-- BAフレーム結果表示 -->
@@ -1057,7 +1058,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 
         <!-- Dot count adjustment slider (±30,000 dots absolute) -->
         <div id="densitySliderRow" style="display:none;margin:14px 0 4px;text-align:center;">
-          <div style="font-size:.75rem;color:rgba(212,175,55,.85);letter-spacing:.1em;margin-bottom:6px;">DOT COUNT ADJUSTMENT</div>
+          <div style="font-size:.75rem;color:rgba(212,175,55,.85);letter-spacing:.1em;margin-bottom:3px;">DOT COUNT ADJUSTMENT</div>
+          <div style="font-size:.6rem;color:rgba(245,245,240,.32);letter-spacing:.04em;margin-bottom:8px;">Higher dot count = denser, darker result</div>
           <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
             <span style="font-size:.72rem;color:#666;">-30k</span>
             <input type="range" id="densitySlider" min="-30000" max="30000" value="0" step="5000"
@@ -1317,7 +1319,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
             </select>
           </div>
           <div class="fg"><label class="flbl">Message (optional)</label><textarea class="finp" placeholder="Please enter any questions or requests"></textarea></div>
-          <button class="btn-p" style="width:100%;padding:14px;" onclick="alert('Message sent! We will get back to you shortly.');">Send</button>
+          <button class="btn-p" style="width:100%;padding:14px;" onclick="showToast('Message sent! We will get back to you shortly.', 'info');">Send</button>
         </div>
       </div>
     </div>
@@ -1710,20 +1712,46 @@ function clearDrawing() {
   if (dc && _drawCtx) _drawCtx.clearRect(0, 0, dc.width, dc.height);
 }
 
-// ─── Density slider: cache + handler ───
+// ─── Styled toast notification ───
+function showToast(msg, type) {
+  var existing = document.getElementById('simToast');
+  if (existing) existing.remove();
+  var toast = document.createElement('div');
+  toast.id = 'simToast';
+  var color = type === 'error' ? '#ff6b6b' : '#d4af37';
+  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
+    'background:rgba(10,10,10,0.96);border:1px solid ' + color + ';color:' + color + ';' +
+    'padding:12px 24px;font-size:.78rem;letter-spacing:.08em;z-index:9999;' +
+    'pointer-events:none;border-radius:2px;backdrop-filter:blur(8px);' +
+    'box-shadow:0 4px 20px rgba(0,0,0,0.6);font-family:"Noto Sans JP",sans-serif;' +
+    'opacity:0;transition:opacity .25s;max-width:90vw;text-align:center;';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  requestAnimationFrame(function(){ toast.style.opacity = '1'; });
+  setTimeout(function(){
+    toast.style.opacity = '0';
+    setTimeout(function(){ if (toast.parentNode) toast.remove(); }, 300);
+  }, 3200);
+}
+
+// ─── Density slider: cache + handler (with debounce) ───
 var _smpCache = null;
 var _baseDotsCache = 129600; // default
+var _sliderTimer = null;
 function onDensitySlider(val) {
   var offset = parseInt(val, 10);
   var totalDots = Math.max(10000, _baseDotsCache + offset);
   var el = document.getElementById('densitySliderVal');
   if (el) el.textContent = (totalDots >= 10000 ? Math.round(totalDots/1000) + 'k' : totalDots);
+  clearTimeout(_sliderTimer);
+  _sliderTimer = setTimeout(function() {
   if (_smpCache) {
     var fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured));
     if (!fakeStructured.treatment_plan) fakeStructured.treatment_plan = {};
     fakeStructured.treatment_plan.total_dots = totalDots;
     drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, fakeStructured, 1.0);
   }
+  }, 150);
 }
 
 function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMultiplier) {
@@ -2586,7 +2614,7 @@ function loadImageFile(file) {
   var reader = new FileReader();
   reader.onload = function(ev) {
     var img = new Image();
-    img.onerror = function() { alert('Failed to load image. Please try JPG, PNG, or WebP format.'); };
+    img.onerror = function() { showToast('Failed to load image. Please try JPG, PNG, or WebP format.', 'error'); };
     img.onload = function() {
       var cv = document.getElementById('capCv');
       if (!cv) return;
@@ -2699,11 +2727,11 @@ function saveApiKey() {
 function analyze() {
   var key = getSimApiKey();
   if (!key) {
-    alert('API key is not set.');
+    showToast('API key is not set.', 'error');
     return;
   }
   var capCv = document.getElementById('capCv');
-  if (!capCv || !capCv.width) { alert('Please upload a photo first.'); return; }
+  if (!capCv || !capCv.width) { showToast('Please upload a photo first.', 'error'); return; }
 
   var capBtn=document.getElementById('capBtn'),rstBtn=document.getElementById('rstBtn');
   var ldDots=document.getElementById('ldDots');

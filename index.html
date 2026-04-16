@@ -10,7 +10,7 @@
   gtag('js', new Date());
   gtag('config', 'G-17MPNMJ5GN');
 </script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#080808">
@@ -1017,8 +1017,9 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <button class="btn-o" id="rstBtn" style="display:none;" onclick="resetSim()">やり直す</button>
       </div>
       <!-- 描画ツールコントロール -->
-      <div id="drawingControls" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(15,13,8,0.85);border:1px solid rgba(212,175,55,0.35);border-radius:10px;">
-        <div style="font-size:.72rem;color:#d4af37;letter-spacing:.1em;text-align:center;margin-bottom:9px;">&#9999; 施術範囲を黄色ペンで囲んでください</div>
+      <div id="drawingControls" style="display:none;margin-top:10px;padding:12px 14px;background:rgba(15,13,8,0.92);border:1px solid rgba(212,175,55,0.35);border-radius:10px;">
+        <div style="font-size:.72rem;color:#d4af37;letter-spacing:.1em;text-align:center;margin-bottom:6px;">&#9999; 施術を希望する範囲を黄色ペンで囲んでください <span style="color:rgba(245,245,240,.35);font-size:.9em;">（任意）</span></div>
+        <div style="font-size:.6rem;color:rgba(245,245,240,.38);text-align:center;margin-bottom:9px;letter-spacing:.04em;">囲まずに「シミュレーション開始」を押すと、AIが自動で範囲を判定します</div>
         <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
           <button id="penBtn" class="btn-o" onclick="setDrawMode('pen')" style="padding:6px 14px;font-size:.7rem;background:rgba(212,175,55,0.25);border-color:#d4af37;">&#9999; ペン</button>
           <button id="eraserBtn" class="btn-o" onclick="setDrawMode('eraser')" style="padding:6px 14px;font-size:.7rem;">消しゴム</button>
@@ -1028,11 +1029,11 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
             <input type="range" id="brushSize" min="4" max="32" value="14" style="width:72px;accent-color:#d4af37;">
           </div>
         </div>
-        <div style="font-size:.65rem;color:#555;text-align:center;margin-top:7px;">囲み忘れた箇所は消しゴムで修正できます</div>
+        <div style="font-size:.6rem;color:rgba(245,245,240,.3);text-align:center;margin-top:7px;">囲み忘れた箇所は消しゴムで修正できます</div>
       </div>
       <div class="ld-dots" id="ldDots">
         <div class="ld-d"></div><div class="ld-d"></div><div class="ld-d"></div>
-        <div class="ld-msg">AI解析中... 約30〜60秒お待ちください</div>
+        <div class="ld-msg">施術シミュレーション中... 約30〜60秒お待ちください</div>
       </div>
 
       <!-- BAフレーム結果表示 -->
@@ -1062,7 +1063,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 
         <!-- ドット数調整スライダー（±30,000ドット絶対値） -->
         <div id="densitySliderRow" style="display:none;margin:14px 0 4px;text-align:center;">
-          <div style="font-size:.75rem;color:rgba(212,175,55,.85);letter-spacing:.1em;margin-bottom:6px;">ドット数調整</div>
+          <div style="font-size:.75rem;color:rgba(212,175,55,.85);letter-spacing:.1em;margin-bottom:3px;">ドット数調整</div>
+          <div style="font-size:.6rem;color:rgba(245,245,240,.32);letter-spacing:.04em;margin-bottom:8px;">数値が多いほど密度が上がり、仕上がりが濃くなります</div>
           <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
             <span style="font-size:.72rem;color:#666;">-3万</span>
             <input type="range" id="densitySlider" min="-30000" max="30000" value="0" step="5000"
@@ -1319,7 +1321,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
             </select>
           </div>
           <div class="fg"><label class="flbl">メッセージ（任意）</label><textarea class="finp" placeholder="ご質問・ご要望などをご記入ください"></textarea></div>
-          <button class="btn-p" style="width:100%;padding:14px;" onclick="alert('送信完了！近日中にご連絡いたします。')">送信する</button>
+          <button class="btn-p" style="width:100%;padding:14px;" onclick="showToast('送信完了！近日中にご連絡いたします。', 'info')">送信する</button>
         </div>
       </div>
     </div>
@@ -1710,20 +1712,47 @@ function clearDrawing() {
   if (dc && _drawCtx) _drawCtx.clearRect(0, 0, dc.width, dc.height);
 }
 
-// ─── 密度スライダー: キャッシュ + ハンドラ ───
+// ─── スタイル付きトースト通知 ───
+function showToast(msg, type) {
+  var existing = document.getElementById('simToast');
+  if (existing) existing.remove();
+  var toast = document.createElement('div');
+  toast.id = 'simToast';
+  var color = type === 'error' ? '#ff6b6b' : '#d4af37';
+  toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
+    'background:rgba(10,10,10,0.96);border:1px solid ' + color + ';color:' + color + ';' +
+    'padding:12px 24px;font-size:.78rem;letter-spacing:.08em;z-index:9999;' +
+    'pointer-events:none;border-radius:2px;backdrop-filter:blur(8px);' +
+    'box-shadow:0 4px 20px rgba(0,0,0,0.6);font-family:"Noto Sans JP",sans-serif;' +
+    'opacity:0;transition:opacity .25s;max-width:90vw;text-align:center;';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  requestAnimationFrame(function(){ toast.style.opacity = '1'; });
+  setTimeout(function(){
+    toast.style.opacity = '0';
+    setTimeout(function(){ if (toast.parentNode) toast.remove(); }, 300);
+  }, 3200);
+}
+
+// ─── 密度スライダー: キャッシュ + ハンドラ（debounce付き） ───
 var _smpCache = null;
 var _baseDotsCache = 129600; // デフォルト
+var _sliderTimer = null;
 function onDensitySlider(val) {
   var offset = parseInt(val, 10);
   var totalDots = Math.max(10000, _baseDotsCache + offset);
   var el = document.getElementById('densitySliderVal');
   if (el) el.textContent = Math.round(totalDots / 10000) + '万';
-  if (_smpCache) {
-    var fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured));
-    if (!fakeStructured.treatment_plan) fakeStructured.treatment_plan = {};
-    fakeStructured.treatment_plan.total_dots = totalDots;
-    drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, fakeStructured, 1.0);
-  }
+  // 150ms debounce: 連続スライド中は描画をスキップしパフォーマンス向上
+  clearTimeout(_sliderTimer);
+  _sliderTimer = setTimeout(function() {
+    if (_smpCache) {
+      var fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured));
+      if (!fakeStructured.treatment_plan) fakeStructured.treatment_plan = {};
+      fakeStructured.treatment_plan.total_dots = totalDots;
+      drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, fakeStructured, 1.0);
+    }
+  }, 150);
 }
 
 function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMultiplier) {
@@ -2656,7 +2685,7 @@ function loadImageFile(file) {
   var reader = new FileReader();
   reader.onload = function(ev) {
     var img = new Image();
-    img.onerror = function() { alert('画像の読み込みに失敗しました。JPG・PNG・WebP形式をお試しください。'); };
+    img.onerror = function() { showToast('画像の読み込みに失敗しました。JPG・PNG・WebP形式をお試しください。', 'error'); };
     img.onload = function() {
       var cv = document.getElementById('capCv');
       if (!cv) return;
@@ -2770,11 +2799,11 @@ function saveApiKey() {
 function analyze() {
   var key = getSimApiKey();
   if (!key) {
-    alert('APIキーが設定されていません。');
+    showToast('APIキーが設定されていません。', 'error');
     return;
   }
   var capCv = document.getElementById('capCv');
-  if (!capCv || !capCv.width) { alert('先に写真をアップロードしてください'); return; }
+  if (!capCv || !capCv.width) { showToast('先に写真をアップロードしてください', 'error'); return; }
 
   var capBtn=document.getElementById('capBtn'),rstBtn=document.getElementById('rstBtn');
   var ldDots=document.getElementById('ldDots');
