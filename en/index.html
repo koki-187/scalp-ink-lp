@@ -857,23 +857,6 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
     </div>
     <div class="sim-box rv">
 
-      <!-- API Key Settings (admin only - hidden by default) -->
-      <div class="api-key-area" id="apiKeyArea" style="display:none;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-          <span style="font-size:.65rem;letter-spacing:.1em;color:var(--gd);">&#128273; API Settings (Admin)</span>
-          <button class="btn-o" style="font-size:.55rem;padding:4px 10px;margin-left:auto;" onclick="toggleApiKey()">Open Settings</button>
-        </div>
-        <div id="apiKeyPanel" style="display:none;">
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input type="password" id="apiKeyInput" placeholder="AIza..."
-              style="flex:1;background:#111;border:1px solid rgba(201,168,76,.25);color:var(--wh);padding:8px 12px;font-size:.7rem;font-family:monospace;border-radius:0;outline:none;"
-              value="">
-            <button class="btn-p" style="font-size:.6rem;padding:7px 14px;white-space:nowrap;" onclick="saveApiKey()">Save</button>
-          </div>
-          <div id="apiKeyStatus" style="font-size:.55rem;margin-top:6px;color:rgba(245,245,240,.35);"></div>
-        </div>
-      </div>
-
       <!-- 撮影ガイド -->
       <div class="photo-guide" id="photoGuide">
         <div class="pg-title">Photo Angle Guide — Please shoot from 3 angles</div>
@@ -1018,6 +1001,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
           <button id="penBtn" class="btn-o" onclick="setDrawMode('pen')" style="padding:6px 14px;font-size:.7rem;background:rgba(212,175,55,0.25);border-color:#d4af37;">&#9999; Pen</button>
           <button id="eraserBtn" class="btn-o" onclick="setDrawMode('eraser')" style="padding:6px 14px;font-size:.7rem;">Eraser</button>
+          <button id="undoBtn" class="btn-o" onclick="undoDrawing()" style="padding:6px 14px;font-size:.7rem;" title="Undo (Ctrl+Z)">↩ Undo</button>
           <button class="btn-o" onclick="clearDrawing()" style="padding:6px 14px;font-size:.7rem;">Clear</button>
           <div style="display:flex;align-items:center;gap:5px;">
             <span style="font-size:.68rem;color:#888;">Size</span>
@@ -1632,6 +1616,8 @@ var _drawMode = 'pen';
 var _isDrawing = false;
 var _lastDrawX = 0, _lastDrawY = 0;
 var _drawCtx = null;
+var _drawHistory = [];   // Undo history (ImageData array)
+var _HISTORY_MAX = 20;   // Max undo steps
 
 function initDrawingCanvas() {
   var photo = document.getElementById('capCv');
@@ -1641,6 +1627,7 @@ function initDrawingCanvas() {
   dc.height = photo.height;
   _drawCtx = dc.getContext('2d');
   _drawCtx.clearRect(0, 0, dc.width, dc.height);
+  _drawHistory = [];
   dc.style.display = 'block';
   dc.onmousedown  = onDrawStart;
   dc.onmousemove  = onDrawMove;
@@ -1649,8 +1636,32 @@ function initDrawingCanvas() {
   dc.ontouchstart = function(e) { e.preventDefault(); onDrawStart(e); };
   dc.ontouchmove  = function(e) { e.preventDefault(); onDrawMove(e); };
   dc.ontouchend   = onDrawEnd;
+  document.addEventListener('keydown', onDrawKeydown);
   var drawControls = document.getElementById('drawingControls');
   if (drawControls) drawControls.style.display = 'block';
+}
+
+function onDrawKeydown(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    e.preventDefault();
+    undoDrawing();
+  }
+}
+
+function saveDrawState() {
+  var dc = document.getElementById('drawingCanvas');
+  if (!dc || !_drawCtx) return;
+  var snap = _drawCtx.getImageData(0, 0, dc.width, dc.height);
+  _drawHistory.push(snap);
+  if (_drawHistory.length > _HISTORY_MAX) _drawHistory.shift();
+}
+
+function undoDrawing() {
+  if (!_drawCtx || _drawHistory.length === 0) {
+    showToast('Nothing more to undo', 'info'); return;
+  }
+  var snap = _drawHistory.pop();
+  _drawCtx.putImageData(snap, 0, 0);
 }
 
 function getDrawPos(e, canvas) {
@@ -1662,6 +1673,7 @@ function getDrawPos(e, canvas) {
 }
 
 function onDrawStart(e) {
+  saveDrawState();
   _isDrawing = true;
   var dc = document.getElementById('drawingCanvas');
   var pos = getDrawPos(e, dc);
@@ -1708,6 +1720,7 @@ function setDrawMode(mode) {
 }
 
 function clearDrawing() {
+  saveDrawState();
   var dc = document.getElementById('drawingCanvas');
   if (dc && _drawCtx) _drawCtx.clearRect(0, 0, dc.width, dc.height);
 }
@@ -2685,51 +2698,13 @@ function setStep(n) {
   }
 }
 
-// ===== Gemini API (Google AI) =====
-// API key stored obfuscated (GitHub Secret Scanner protection)
-var _GEMINI_KEY_ENC = 'NDJzZGZtTTZsRkxXYXlQM2h2MUlXZ1FGYjlXNWtlNWxCeVNheklB';
-function _decK(e){try{return atob(e).split('').reverse().join('')}catch(x){return ''}}
+// ===== Gemini API (via Cloudflare Worker proxy) =====
+// API key is securely stored server-side — never exposed to the browser
+var _GEMINI_PROXY_URL = 'https://gemini-proxy.navigator-187.workers.dev';
 // Model fallback chain (free tier: lite=1000RPD, flash=250RPD, pro=100RPD)
 var _GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.5-pro'];
 
-function getSimApiKey() {
-  try { return localStorage.getItem('scalp_ink_gemini_key') || _decK(_GEMINI_KEY_ENC); } catch(e) { return _decK(_GEMINI_KEY_ENC); }
-}
-function toggleApiKey() {
-  var panel = document.getElementById('apiKeyPanel');
-  if (!panel) return;
-  var isHidden = panel.style.display === 'none';
-  panel.style.display = isHidden ? 'block' : 'none';
-  if (isHidden) {
-    var inp = document.getElementById('apiKeyInput');
-    var saved = getSimApiKey();
-    if (inp && saved && saved !== _decK(_GEMINI_KEY_ENC)) inp.value = saved;
-  }
-}
-function saveApiKey() {
-  var inp = document.getElementById('apiKeyInput');
-  var key = inp ? inp.value.trim() : '';
-  var status = document.getElementById('apiKeyStatus');
-  if (!key || !key.startsWith('AIza')) {
-    if (status) { status.style.color = '#ff6b6b'; status.textContent = '⚠ Please enter a valid Gemini API key'; }
-    return;
-  }
-  try { localStorage.setItem('scalp_ink_gemini_key', key); } catch(e) {}
-  if (status) { status.style.color = '#4caf50'; status.textContent = '✓ API key saved'; }
-  var area = document.getElementById('apiKeyArea');
-  if (area) area.classList.add('key-ok');
-  setTimeout(function() {
-    var panel = document.getElementById('apiKeyPanel');
-    if (panel) panel.style.display = 'none';
-  }, 1500);
-}
-
 function analyze() {
-  var key = getSimApiKey();
-  if (!key) {
-    showToast('API key is not set.', 'error');
-    return;
-  }
   var capCv = document.getElementById('capCv');
   if (!capCv || !capCv.width) { showToast('Please upload a photo first.', 'error'); return; }
 
@@ -2925,12 +2900,11 @@ function analyze() {
       return;
     }
     var model = _GEMINI_MODELS[modelIndex];
-    var geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(key);
-
-    fetch(geminiUrl, {
+    // Call Cloudflare Worker proxy — API key never touches the browser
+    fetch(_GEMINI_PROXY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: requestBody
+      body: JSON.stringify({ model: model, body: JSON.parse(requestBody) })
     })
     .then(function(res){
       if (!res.ok) return res.json().then(function(e){
