@@ -1327,16 +1327,16 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 
 // ===== DOTS CANVAS =====
 (function() {
-  var dc = document.getElementById('dot-c');
+  const dc = document.getElementById('dot-c');
   if (!dc) return;
-  var ctx = dc.getContext('2d');
-  var dots = [];
-  var animating = true;
+  const ctx = dc.getContext('2d');
+  const dots = [];
+  let animating = true;
   dc.style.willChange = 'transform';
   function resize() { dc.width = window.innerWidth; dc.height = window.innerHeight; }
   resize();
   window.addEventListener('resize', resize);
-  for (var i = 0; i < 160; i++) {
+  for (let i = 0; i < 160; i++) {
     dots.push({ x:Math.random()*dc.width, y:Math.random()*dc.height,
       r:Math.random()*1.2+0.3, vx:(Math.random()-0.5)*0.22, vy:(Math.random()-0.5)*0.22,
       op:Math.random()*0.5+0.1, g:Math.random()>0.65 });
@@ -1344,8 +1344,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
   function draw() {
     if (!animating) return;
     ctx.clearRect(0,0,dc.width,dc.height);
-    for (var j=0;j<dots.length;j++) {
-      var d=dots[j]; d.x+=d.vx; d.y+=d.vy;
+    for (let j=0;j<dots.length;j++) {
+      const d=dots[j]; d.x+=d.vx; d.y+=d.vy;
       if(d.x<0||d.x>dc.width) d.vx*=-1;
       if(d.y<0||d.y>dc.height) d.vy*=-1;
       ctx.beginPath(); ctx.arc(d.x,d.y,d.r,0,Math.PI*2);
@@ -1356,7 +1356,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
   }
   draw();
   // Pause when hero section is off-screen
-  var hero = document.getElementById('hero');
+  const hero = document.getElementById('hero');
   if (hero && 'IntersectionObserver' in window) {
     new IntersectionObserver(function(entries) {
       animating = entries[0].isIntersecting;
@@ -1372,30 +1372,30 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 
 // ===== SCROLL REVEAL =====
 (function() {
-  var els = document.querySelectorAll('.rv');
+  const els = document.querySelectorAll('.rv');
   if (!('IntersectionObserver' in window)) {
-    for (var i=0;i<els.length;i++) els[i].classList.add('on');
+    for (let i=0;i<els.length;i++) els[i].classList.add('on');
     return;
   }
-  var ob = new IntersectionObserver(function(entries) {
-    for (var i=0;i<entries.length;i++) {
+  const ob = new IntersectionObserver(function(entries) {
+    for (let i=0;i<entries.length;i++) {
       if (entries[i].isIntersecting) { entries[i].target.classList.add('on'); ob.unobserve(entries[i].target); }
     }
   }, {threshold:0.08});
-  for (var i=0;i<els.length;i++) ob.observe(els[i]);
+  for (let i=0;i<els.length;i++) ob.observe(els[i]);
 })();
 
 // ===== HERO VIDEO: handled in the bottom IIFE =====
 
 // ===== NAV SCROLL =====
 window.addEventListener('scroll', function() {
-  var nav = document.getElementById('mainNav');
+  const nav = document.getElementById('mainNav');
   if (nav) nav.style.borderBottomColor = window.scrollY>50 ? 'rgba(201,168,76,0.22)' : 'rgba(201,168,76,0.1)';
 });
 
 // ===== MOBILE MENU =====
 function toggleMenu() {
-  var m = document.querySelector('.nav-menu');
+  const m = document.querySelector('.nav-menu');
   if (!m) return;
   if (m.style.display === 'flex') {
     m.style.display = 'none';
@@ -1406,22 +1406,22 @@ function toggleMenu() {
 
 // ===== FAQ =====
 function tFaq(btn) {
-  var item = btn.parentElement;
-  var isOpen = item.classList.contains('open');
-  var all = document.querySelectorAll('.faq-item');
-  for (var i=0;i<all.length;i++) all[i].classList.remove('open');
+  const item = btn.parentElement;
+  const isOpen = item.classList.contains('open');
+  const all = document.querySelectorAll('.faq-item');
+  for (let i=0;i<all.length;i++) all[i].classList.remove('open');
   if (!isOpen) item.classList.add('open');
 }
 
 // ===== PHOTO GUIDE GENDER TOGGLE =====
-var _pgGender = 'male';
-var _pgAutoTimer = null;
+let _pgGender = 'male';
+let _pgAutoTimer = null;
 function setPgGender(g) {
   _pgGender = g;
-  var mc = document.getElementById('pgMaleCards');
-  var fc = document.getElementById('pgFemaleCards');
-  var mb = document.getElementById('pgMaleBtn');
-  var fb = document.getElementById('pgFemaleBtn');
+  const mc = document.getElementById('pgMaleCards');
+  const fc = document.getElementById('pgFemaleCards');
+  const mb = document.getElementById('pgMaleBtn');
+  const fb = document.getElementById('pgFemaleBtn');
   if (!mc || !fc) return;
   mc.classList.toggle('pg-hidden', g !== 'male');
   fc.classList.toggle('pg-hidden', g !== 'female');
@@ -1437,18 +1437,18 @@ function _startPgAuto() {
 window.addEventListener('DOMContentLoaded', function() {
   _startPgAuto();
   // APIキー自動セット
-  var k = document.getElementById('apiKey');
+  const k = document.getElementById('apiKey');
   if (k && !k.value) k.value = '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';
 });
 
 // ===== RESULTS TAB =====
 function swTab(btn) {
-  var tabs = document.querySelectorAll('.tab-btn');
-  for (var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
+  const tabs = document.querySelectorAll('.tab-btn');
+  for (let i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
   btn.classList.add('active');
-  var cat = btn.getAttribute('data-cat');
+  const cat = btn.getAttribute('data-cat');
   ['hair','hairline','scar'].forEach(function(c) {
-    var el = document.getElementById('ba-'+c);
+    const el = document.getElementById('ba-'+c);
     if (el) el.style.display = (c===cat) ? 'block' : 'none';
   });
 }
@@ -1456,23 +1456,23 @@ function swTab(btn) {
 // ===== MARKDOWN RENDERER =====
 function renderMarkdown(text) {
   // Escape HTML entities for safety
-  var s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
   // Code blocks ``` ... ```
   s = s.replace(/```[\s\S]*?```/g, function(m) {
-    var code = m.replace(/^```\w*\n?/,'').replace(/\n?```$/,'');
+    const code = m.replace(/^```\w*\n?/,'').replace(/\n?```$/,'');
     return '\n<div class="rpt-code">' + code + '</div>\n';
   });
 
-  var lines = s.split('\n');
-  var out = [];
-  var inTable = false;
-  var inList = false;
-  var headerRowDone = false;
+  const lines = s.split('\n');
+  const out = [];
+  let inTable = false;
+  let inList = false;
+  let headerRowDone = false;
 
-  for (var i = 0; i < lines.length; i++) {
-    var ln = lines[i];
-    var trimmed = ln.trim();
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i];
+    const trimmed = ln.trim();
 
     // Separator line in table (|---|---|)
     if (/^\|[\s\-:]+\|/.test(trimmed) && !/[a-zA-Z0-9\u3000-\u9fff]/.test(trimmed)) {
@@ -1488,10 +1488,10 @@ function renderMarkdown(text) {
         inTable = true;
         headerRowDone = false;
       }
-      var cells = trimmed.replace(/^\||\|$/g,'').split('|');
-      var tag = (!headerRowDone) ? 'th' : 'td';
-      var row = '<tr>';
-      for (var c = 0; c < cells.length; c++) {
+      const cells = trimmed.replace(/^\||\|$/g,'').split('|');
+      const tag = (!headerRowDone) ? 'th' : 'td';
+      let row = '<tr>';
+      for (let c = 0; c < cells.length; c++) {
         row += '<' + tag + '>' + cells[c].trim() + '</' + tag + '>';
       }
       row += '</tr>';
@@ -1550,7 +1550,7 @@ function renderMarkdown(text) {
   if (inTable) out.push('</table>');
   if (inList) out.push('</ul>');
 
-  var result = out.join('\n');
+  let result = out.join('\n');
 
   // Inline formatting: bold then italic
   result = result.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
@@ -1561,12 +1561,12 @@ function renderMarkdown(text) {
 
 // ===== CONDITION TYPE DETECTION =====
 function detectConditionType(text) {
-  var hasScar = /傷跡|瘢痕|手術跡|外傷|移植痕|scar/i.test(text);
-  var hasHairline = /ヘアライン|生え際|M字|後退|hairline/i.test(text);
-  var hasThinning = /薄毛|びまん|頭頂部|AGA|密度不足|全体型/i.test(text);
-  var hasPatch = /円形脱毛|パッチ|局所|脱毛パッチ/i.test(text);
+  const hasScar = /傷跡|瘢痕|手術跡|外傷|移植痕|scar/i.test(text);
+  const hasHairline = /ヘアライン|生え際|M字|後退|hairline/i.test(text);
+  const hasThinning = /薄毛|びまん|頭頂部|AGA|密度不足|全体型/i.test(text);
+  const hasPatch = /円形脱毛|パッチ|局所|脱毛パッチ/i.test(text);
 
-  var count = (hasScar?1:0) + (hasHairline?1:0) + (hasThinning?1:0) + (hasPatch?1:0);
+  const count = (hasScar?1:0) + (hasHairline?1:0) + (hasThinning?1:0) + (hasPatch?1:0);
   if (count >= 2) return 'combined';
   if (hasScar) return 'scar';
   if (hasHairline) return 'hairline';
@@ -1577,51 +1577,51 @@ function detectConditionType(text) {
 // ===== BA FRAME: ドットカウント抽出 =====
 function extractDotCount(text) {
   // 1. Try to find total dot count patterns
-  var totalPatterns = [
+  const totalPatterns = [
     /推定総ドット数[：:]?\s*約?([0-9,０-９]+)\s*万/,
     /総ドット数[：:]?\s*約?([0-9,０-９]+)\s*万/,
     /合計[：:]?\s*約?([0-9,０-９]+)\s*万/
   ];
-  for (var i = 0; i < totalPatterns.length; i++) {
-    var m = text.match(totalPatterns[i]);
+  for (let i = 0; i < totalPatterns.length; i++) {
+    const m = text.match(totalPatterns[i]);
     if (m) {
-      var num = m[1].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); });
+      const num = m[1].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); });
       return '約' + num + '万ドット（推定）';
     }
   }
   // 2. Sum up individual area dot counts
-  var dotNums = [];
-  var areaPattern = /約?([0-9,０-９]+)[,、〜~～\-ー]*([0-9,０-９]*)\s*ドット/g;
-  var match;
+  const dotNums = [];
+  const areaPattern = /約?([0-9,０-９]+)[,、〜~～\-ー]*([0-9,０-９]*)\s*ドット/g;
+  let match;
   while ((match = areaPattern.exec(text)) !== null) {
-    var n1 = match[1].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/,/g, '');
-    var n2 = match[2] ? match[2].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/,/g, '') : '';
-    var val = n2 ? parseInt(n2) : parseInt(n1);
+    const n1 = match[1].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/,/g, '');
+    const n2 = match[2] ? match[2].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/,/g, '') : '';
+    const val = n2 ? parseInt(n2) : parseInt(n1);
     if (!isNaN(val) && val > 100) dotNums.push(val);
   }
   if (dotNums.length > 0) {
-    var total = dotNums.reduce(function(a, b) { return a + b; }, 0);
+    const total = dotNums.reduce(function(a, b) { return a + b; }, 0);
     if (total >= 10000) return '約' + Math.round(total / 10000) + '万ドット（推定）';
     return '約' + total.toLocaleString() + 'ドット（推定）';
   }
   // 3. Fallback: condition-based estimate
-  var condType = detectConditionType(text);
-  var defaultDots = { thinning: '約3万ドット（推定）', scar: '約1万ドット（推定）', hairline: '約2万ドット（推定）', patch: '約1.5万ドット（推定）', combined: '約3万ドット（推定）' };
+  const condType = detectConditionType(text);
+  const defaultDots = { thinning: '約3万ドット（推定）', scar: '約1万ドット（推定）', hairline: '約2万ドット（推定）', patch: '約1.5万ドット（推定）', combined: '約3万ドット（推定）' };
   return defaultDots[condType] || '約3万ドット（推定）';
 }
 
 // ===== BA FRAME: 結果フレーム表示 =====
 // ─── 黄色ペン描画ツール（②③） ───
-var _drawMode = 'pen';
-var _isDrawing = false;
-var _lastDrawX = 0, _lastDrawY = 0;
-var _drawCtx = null;
-var _drawHistory = [];   // Undo履歴（ImageData配列）
-var _HISTORY_MAX = 20;   // 最大undo段数
+let _drawMode = 'pen';
+let _isDrawing = false;
+let _lastDrawX = 0, _lastDrawY = 0;
+let _drawCtx = null;
+let _drawHistory = [];   // Undo履歴（ImageData配列）
+const _HISTORY_MAX = 20;   // 最大undo段数
 
 function initDrawingCanvas() {
-  var photo = document.getElementById('capCv');
-  var dc = document.getElementById('drawingCanvas');
+  const photo = document.getElementById('capCv');
+  const dc = document.getElementById('drawingCanvas');
   if (!photo || !dc) return;
   dc.width = photo.width;
   dc.height = photo.height;
@@ -1636,7 +1636,7 @@ function initDrawingCanvas() {
   dc.ontouchstart = function(e) { e.preventDefault(); onDrawStart(e); };
   dc.ontouchmove  = function(e) { e.preventDefault(); onDrawMove(e); };
   dc.ontouchend   = onDrawEnd;
-  var drawControls = document.getElementById('drawingControls');
+  const drawControls = document.getElementById('drawingControls');
   if (drawControls) drawControls.style.display = 'block';
   // Ctrl+Z / Cmd+Z でundo
   document.addEventListener('keydown', onDrawKeydown);
@@ -1651,9 +1651,9 @@ function onDrawKeydown(e) {
 
 function saveDrawState() {
   if (!_drawCtx) return;
-  var dc = document.getElementById('drawingCanvas');
+  const dc = document.getElementById('drawingCanvas');
   if (!dc) return;
-  var snap = _drawCtx.getImageData(0, 0, dc.width, dc.height);
+  const snap = _drawCtx.getImageData(0, 0, dc.width, dc.height);
   _drawHistory.push(snap);
   if (_drawHistory.length > _HISTORY_MAX) _drawHistory.shift();
 }
@@ -1662,31 +1662,31 @@ function undoDrawing() {
   if (!_drawCtx || _drawHistory.length === 0) {
     showToast('これ以上戻せません', 'info'); return;
   }
-  var snap = _drawHistory.pop();
+  const snap = _drawHistory.pop();
   _drawCtx.putImageData(snap, 0, 0);
 }
 
 function getDrawPos(e, canvas) {
-  var rect = canvas.getBoundingClientRect();
-  var scaleX = canvas.width / rect.width;
-  var scaleY = canvas.height / rect.height;
-  var src = e.touches ? e.touches[0] : e;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const src = e.touches ? e.touches[0] : e;
   return [(src.clientX - rect.left) * scaleX, (src.clientY - rect.top) * scaleY];
 }
 
 function onDrawStart(e) {
   saveDrawState(); // ストローク開始前に状態保存
   _isDrawing = true;
-  var dc = document.getElementById('drawingCanvas');
-  var pos = getDrawPos(e, dc);
+  const dc = document.getElementById('drawingCanvas');
+  const pos = getDrawPos(e, dc);
   _lastDrawX = pos[0]; _lastDrawY = pos[1];
   applyBrush(pos[0], pos[1], pos[0], pos[1]);
 }
 
 function onDrawMove(e) {
   if (!_isDrawing) return;
-  var dc = document.getElementById('drawingCanvas');
-  var pos = getDrawPos(e, dc);
+  const dc = document.getElementById('drawingCanvas');
+  const pos = getDrawPos(e, dc);
   applyBrush(_lastDrawX, _lastDrawY, pos[0], pos[1]);
   _lastDrawX = pos[0]; _lastDrawY = pos[1];
 }
@@ -1695,9 +1695,9 @@ function onDrawEnd() { _isDrawing = false; }
 
 function applyBrush(x1, y1, x2, y2) {
   if (!_drawCtx) return;
-  var sz = parseInt(document.getElementById('brushSize').value) || 14;
+  const sz = parseInt(document.getElementById('brushSize').value) || 14;
   if (_drawMode === 'eraser') {
-    var r = sz * 1.5;
+    const r = sz * 1.5;
     _drawCtx.clearRect(x2 - r, y2 - r, r * 2, r * 2);
   } else {
     _drawCtx.beginPath();
@@ -1713,27 +1713,27 @@ function applyBrush(x1, y1, x2, y2) {
 
 function setDrawMode(mode) {
   _drawMode = mode;
-  var dc = document.getElementById('drawingCanvas');
+  const dc = document.getElementById('drawingCanvas');
   if (dc) dc.style.cursor = mode === 'eraser' ? 'cell' : 'crosshair';
-  var penBtn = document.getElementById('penBtn');
-  var eraserBtn = document.getElementById('eraserBtn');
+  const penBtn = document.getElementById('penBtn');
+  const eraserBtn = document.getElementById('eraserBtn');
   if (penBtn) penBtn.style.background = mode === 'pen' ? 'rgba(212,175,55,0.25)' : '';
   if (eraserBtn) eraserBtn.style.background = mode === 'eraser' ? 'rgba(212,175,55,0.25)' : '';
 }
 
 function clearDrawing() {
   saveDrawState(); // クリア前に保存（undo可能にする）
-  var dc = document.getElementById('drawingCanvas');
+  const dc = document.getElementById('drawingCanvas');
   if (dc && _drawCtx) _drawCtx.clearRect(0, 0, dc.width, dc.height);
 }
 
 // ─── スタイル付きトースト通知 ───
 function showToast(msg, type) {
-  var existing = document.getElementById('simToast');
+  const existing = document.getElementById('simToast');
   if (existing) existing.remove();
-  var toast = document.createElement('div');
+  const toast = document.createElement('div');
   toast.id = 'simToast';
-  var color = type === 'error' ? '#ff6b6b' : '#d4af37';
+  const color = type === 'error' ? '#ff6b6b' : '#d4af37';
   toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);' +
     'background:rgba(10,10,10,0.96);border:1px solid ' + color + ';color:' + color + ';' +
     'padding:12px 24px;font-size:.78rem;letter-spacing:.08em;z-index:9999;' +
@@ -1750,19 +1750,19 @@ function showToast(msg, type) {
 }
 
 // ─── 密度スライダー: キャッシュ + ハンドラ（debounce付き） ───
-var _smpCache = null;
-var _baseDotsCache = 129600; // デフォルト
-var _sliderTimer = null;
+let _smpCache = null;
+let _baseDotsCache = 129600; // デフォルト
+let _sliderTimer = null;
 function onDensitySlider(val) {
-  var offset = parseInt(val, 10);
-  var totalDots = Math.max(10000, _baseDotsCache + offset);
-  var el = document.getElementById('densitySliderVal');
+  const offset = parseInt(val, 10);
+  const totalDots = Math.max(10000, _baseDotsCache + offset);
+  const el = document.getElementById('densitySliderVal');
   if (el) el.textContent = Math.round(totalDots / 10000) + '万';
   // 150ms debounce: 連続スライド中は描画をスキップしパフォーマンス向上
   clearTimeout(_sliderTimer);
   _sliderTimer = setTimeout(function() {
     if (_smpCache) {
-      var fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured));
+      const fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured));
       if (!fakeStructured.treatment_plan) fakeStructured.treatment_plan = {};
       fakeStructured.treatment_plan.total_dots = totalDots;
       drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, fakeStructured, 1.0);
@@ -1807,21 +1807,21 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
   conditionType = conditionType || 'thinning';
   structured = structured || {};
   densityMultiplier = densityMultiplier || 1.0;
-  var cv = document.getElementById('smpSimCanvas');
+  const cv = document.getElementById('smpSimCanvas');
   if (!cv) return;
-  var img = new Image();
+  const img = new Image();
   img.onload = function() {
-    var w = img.width, h = img.height;
+    const w = img.width, h = img.height;
     cv.width = w; cv.height = h;
-    var ctx = cv.getContext('2d');
+    const ctx = cv.getContext('2d');
     ctx.drawImage(img, 0, 0, w, h);
-    var orig = new Uint8ClampedArray(ctx.getImageData(0, 0, w, h).data);
+    const orig = new Uint8ClampedArray(ctx.getImageData(0, 0, w, h).data);
 
     // ─── ユーティリティ ───
     function pointInPoly(ppx, ppy, poly) {
-      var inside = false;
-      for (var ii = 0, jj = poly.length - 1; ii < poly.length; jj = ii++) {
-        var xi = poly[ii][0], yi = poly[ii][1], xj = poly[jj][0], yj = poly[jj][1];
+      let inside = false;
+      for (let ii = 0, jj = poly.length - 1; ii < poly.length; jj = ii++) {
+        const xi = poly[ii][0], yi = poly[ii][1], xj = poly[jj][0], yj = poly[jj][1];
         if ((yi > ppy) !== (yj > ppy) && ppx < (xj - xi) * (ppy - yi) / (yj - yi) + xi) inside = !inside;
       }
       return inside;
@@ -1844,28 +1844,28 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // セルドットアルファ: セル内に1つのドットを配置し、(x,y)がドット内か判定
     // localDensity: セルにドットが存在する確率（0=なし, 1=必ず存在）
     function cellDotAlpha(x, y, cellSz, dotR, localDensity, seed) {
-      var cx = Math.floor(x / cellSz) | 0;
-      var cy = Math.floor(y / cellSz) | 0;
+      const cx = Math.floor(x / cellSz) | 0;
+      const cy = Math.floor(y / cellSz) | 0;
       // 密度閾値判定: 適応的ディザリング（密度0.5付近で最大ばらつき、端で収束）
-      var ditherAmt = 0.22 * (1.0 - Math.abs(localDensity - 0.5) * 1.2);
-      var dither = (rand01(cx, cy, seed + 7) - 0.5) * ditherAmt;
+      const ditherAmt = 0.22 * (1.0 - Math.abs(localDensity - 0.5) * 1.2);
+      const dither = (rand01(cx, cy, seed + 7) - 0.5) * ditherAmt;
       if (rand01(cx, cy, seed) > Math.max(0, Math.min(1, localDensity + dither))) return 0.0;
       // セル内ドット中心: 密度適応ジッター（高密度=密集、低密度=分散）
-      var jitterFactor = 0.40 + localDensity * 0.35; // 0.40〜0.75
-      var ox = (rand01(cx, cy, seed + 1) - 0.5) * cellSz * jitterFactor;
-      var oy = (rand01(cx, cy, seed + 2) - 0.5) * cellSz * jitterFactor;
+      const jitterFactor = 0.40 + localDensity * 0.35; // 0.40〜0.75
+      let ox = (rand01(cx, cy, seed + 1) - 0.5) * cellSz * jitterFactor;
+      let oy = (rand01(cx, cy, seed + 2) - 0.5) * cellSz * jitterFactor;
       // 隣接セル参照による微小シフト（グリッド感を破壊）
       ox += (rand01(cx+1, cy, seed + 4) - 0.5) * cellSz * 0.08;
       oy += (rand01(cx, cy+1, seed + 5) - 0.5) * cellSz * 0.08;
-      var mx = (cx + 0.5) * cellSz + ox;
-      var my = (cy + 0.5) * cellSz + oy;
-      var dx = x - mx, dy = y - my;
-      var d2 = dx * dx + dy * dy;
-      var r2 = dotR * dotR;
+      const mx = (cx + 0.5) * cellSz + ox;
+      const my = (cy + 0.5) * cellSz + oy;
+      const dx = x - mx, dy = y - my;
+      const d2 = dx * dx + dy * dy;
+      const r2 = dotR * dotR;
       if (d2 <= r2) return 1.0;
       // ソフトエッジ（ドット輪郭の自然なフェード、DPI適応）
-      var softZone = 0.25 + 0.10 * (dotR / 4.0); // 大ドット=より広いフェード
-      var t = (d2 - r2) / (softZone * r2);
+      const softZone = 0.25 + 0.10 * (dotR / 4.0); // 大ドット=より広いフェード
+      const t = (d2 - r2) / (softZone * r2);
       return Math.max(0.0, 1.0 - Math.min(1.0, t));
     }
 
@@ -1874,10 +1874,10 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // 検出条件: R>150, G>140, B<110, R-B>80, G-B>60
     function detectYellowRegion() {
       // Step1: 黄色ピクセルバイナリマスク
-      var yMask = new Uint8Array(w * h);
-      var yCount = 0;
-      for (var i = 0; i < w * h; i++) {
-        var r = orig[i*4], g = orig[i*4+1], b = orig[i*4+2];
+      const yMask = new Uint8Array(w * h);
+      let yCount = 0;
+      for (let i = 0; i < w * h; i++) {
+        const r = orig[i*4], g = orig[i*4+1], b = orig[i*4+2];
         if (r > 150 && g > 140 && b < 110 && r - b > 80 && g - b > 60 && r + g > b * 3 + 100) {
           yMask[i] = 1; yCount++;
         }
@@ -1886,26 +1886,26 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       if (yCount < w * h * 0.0004) return null;
 
       // Step2: 黄色マスクを4px膨張（ラインの隙間を埋めて閉ループ化）
-      var dilR = 4;
-      var wall = new Uint8Array(w * h);
+      const dilR = 4;
+      const wall = new Uint8Array(w * h);
       // 水平パス
-      var tmp = new Uint8Array(w * h);
-      for (var y = 0; y < h; y++) {
-        for (var x = 0; x < w; x++) {
-          var found = 0;
-          for (var d = -dilR; d <= dilR && !found; d++) {
-            var nx2 = x + d;
+      const tmp = new Uint8Array(w * h);
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          let found = 0;
+          for (let d = -dilR; d <= dilR && !found; d++) {
+            const nx2 = x + d;
             if (nx2 >= 0 && nx2 < w && yMask[y*w+nx2]) found = 1;
           }
           tmp[y*w+x] = found;
         }
       }
       // 垂直パス
-      for (var y = 0; y < h; y++) {
-        for (var x = 0; x < w; x++) {
-          var found = 0;
-          for (var d = -dilR; d <= dilR && !found; d++) {
-            var ny2 = y + d;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          let found = 0;
+          for (let d = -dilR; d <= dilR && !found; d++) {
+            const ny2 = y + d;
             if (ny2 >= 0 && ny2 < h && tmp[ny2*w+x]) found = 1;
           }
           wall[y*w+x] = found;
@@ -1913,18 +1913,18 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       }
 
       // Step3: 4辺から BFS flood fill（壁=wall）→ 外側ピクセルを検出
-      var outside = new Uint8Array(w * h);
-      var queue = new Int32Array(w * h);
-      var qHead = 0, qTail = 0;
+      const outside = new Uint8Array(w * h);
+      const queue = new Int32Array(w * h);
+      let qHead = 0, qTail = 0;
       function enqueue(idx) {
         if (idx < 0 || idx >= w*h || outside[idx] || wall[idx]) return;
         outside[idx] = 1; queue[qTail++] = idx;
       }
-      for (var x = 0; x < w; x++) { enqueue(x); enqueue((h-1)*w+x); }
-      for (var y = 1; y < h-1; y++) { enqueue(y*w); enqueue(y*w+w-1); }
+      for (let x = 0; x < w; x++) { enqueue(x); enqueue((h-1)*w+x); }
+      for (let y = 1; y < h-1; y++) { enqueue(y*w); enqueue(y*w+w-1); }
       while (qHead < qTail) {
-        var idx = queue[qHead++];
-        var qx = idx % w, qy = (idx / w) | 0;
+        const idx = queue[qHead++];
+        const qx = idx % w, qy = (idx / w) | 0;
         if (qy > 0)   enqueue(idx - w);
         if (qy < h-1) enqueue(idx + w);
         if (qx > 0)   enqueue(idx - 1);
@@ -1932,9 +1932,9 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       }
 
       // Step4: 内側 = !outside && !yMask → 施術領域
-      var mask = new Float32Array(w * h);
-      var regionPx = 0;
-      for (var i = 0; i < w * h; i++) {
+      const mask = new Float32Array(w * h);
+      let regionPx = 0;
+      for (let i = 0; i < w * h; i++) {
         if (!outside[i] && !yMask[i]) { mask[i] = 1.0; regionPx++; }
       }
       if (regionPx < 200) return null; // 内側が小さすぎる
@@ -1946,35 +1946,36 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // ─── STEP A: 3層マスク生成 ───
     // regionMask: バイナリ領域（Geminiポリゴン内=1, 外=0）
     // densityMap: 施術強度（density_hint ベース、後で輝度補正）
-    var regionMask = new Float32Array(w * h);
-    var densityMap  = new Float32Array(w * h);
+    let regionMask = new Float32Array(w * h);
+    const densityMap  = new Float32Array(w * h);
 
     // 黄色アウトライン優先チェック
-    var yellowDetected = detectYellowRegion();
-    var hasGeminiRegions = !!(structured.treatment_regions && structured.treatment_regions.length > 0);
-    var hasExclusions    = !!(structured.exclusion_zones   && structured.exclusion_zones.length   > 0);
-    var hb = structured.head_bounds || null;
+    const yellowDetected = detectYellowRegion();
+    let hasGeminiRegions = !!(structured.treatment_regions && structured.treatment_regions.length > 0);
+    const hasExclusions    = !!(structured.exclusion_zones   && structured.exclusion_zones.length   > 0);
+    const hb = structured.head_bounds || null;
 
     if (yellowDetected) {
       // 黄色アウトライン検出: Flood fillで得た内側領域をそのまま使用
       regionMask = yellowDetected.mask;
       // densityMapは輝度ベースで初期化（後のSTEP Bで再補正される）
-      for (var i = 0; i < w * h; i++) {
+      for (let i = 0; i < w * h; i++) {
         if (regionMask[i] > 0.5) {
-          var lum0 = getLum(i * 4);
+          const lum0 = getLum(i * 4);
           densityMap[i] = 0.75 + lum0 * 0.20; // 黄色検出時は高め密度ベース
         }
       }
       hasGeminiRegions = true; // マスク有効扱いでフォールバック楕円をスキップ
       // SIMラベルに検出バッジを追加
-      var simLbl = document.querySelector('.smp-sim-label');
+      const simLbl = document.querySelector('.smp-sim-label');
       if (simLbl) simLbl.innerHTML = 'SMP シミュレーション <span style="font-size:.7em;background:#d4af37;color:#0a0a0a;padding:1px 5px;border-radius:3px;margin-left:4px;">手書きマスク検出</span>';
     } else if (hasGeminiRegions) {
-      var regions = structured.treatment_regions;
-      for (var y = 0; y < h; y++) {
-        for (var x = 0; x < w; x++) {
-          var nx = x / w, ny = y / h, maxDHint = 0, inReg = false;
-          for (var ri = 0; ri < regions.length; ri++) {
+      const regions = structured.treatment_regions;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const nx = x / w, ny = y / h;
+          let maxDHint = 0, inReg = false;
+          for (let ri = 0; ri < regions.length; ri++) {
             if (pointInPoly(nx, ny, regions[ri].polygon)) {
               inReg = true;
               maxDHint = Math.max(maxDHint, regions[ri].density_hint || 0.7);
@@ -1985,35 +1986,35 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       }
     } else {
       // フォールバック楕円（Geminiデータなし時）
-      var ecx = hb ? (hb.x + hb.w / 2) * w : w / 2;
-      var ecy = hb ? (hb.y + hb.h * 0.38) * h : h * 0.33;
-      var erx = hb ? (hb.w / 2) * w : w * 0.38;
-      var ery = hb ? (hb.h * 0.50) * h : h * 0.36;
-      for (var y = 0; y < h; y++) {
-        for (var x = 0; x < w; x++) {
-          var ed = ((x-ecx)/erx)*((x-ecx)/erx) + ((y-ecy)/ery)*((y-ecy)/ery);
+      const ecx = hb ? (hb.x + hb.w / 2) * w : w / 2;
+      const ecy = hb ? (hb.y + hb.h * 0.38) * h : h * 0.33;
+      const erx = hb ? (hb.w / 2) * w : w * 0.38;
+      const ery = hb ? (hb.h * 0.50) * h : h * 0.36;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const ed = ((x-ecx)/erx)*((x-ecx)/erx) + ((y-ecy)/ery)*((y-ecy)/ery);
           if (ed <= 1) { regionMask[y*w+x] = 1.0; densityMap[y*w+x] = 0.7; }
         }
       }
-      var cy2 = Math.round(h * 0.70);
-      for (var y = cy2; y < h; y++) {
-        var fo = Math.max(0, 1 - (y-cy2)/(h-cy2)); fo *= fo;
-        for (var x = 0; x < w; x++) { regionMask[y*w+x] *= fo; densityMap[y*w+x] *= fo; }
+      const cy2 = Math.round(h * 0.70);
+      for (let y = cy2; y < h; y++) {
+        let fo = Math.max(0, 1 - (y-cy2)/(h-cy2)); fo *= fo;
+        for (let x = 0; x < w; x++) { regionMask[y*w+x] *= fo; densityMap[y*w+x] *= fo; }
       }
-      var em2 = Math.round(w * 0.10);
-      for (var y = 0; y < h; y++) {
-        for (var x = 0; x < em2; x++) { var ef = x/em2; regionMask[y*w+x]*=ef; densityMap[y*w+x]*=ef; }
-        for (var x = w-em2; x < w; x++) { var ef=(w-1-x)/em2; regionMask[y*w+x]*=ef; densityMap[y*w+x]*=ef; }
+      const em2 = Math.round(w * 0.10);
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < em2; x++) { const ef = x/em2; regionMask[y*w+x]*=ef; densityMap[y*w+x]*=ef; }
+        for (let x = w-em2; x < w; x++) { const ef=(w-1-x)/em2; regionMask[y*w+x]*=ef; densityMap[y*w+x]*=ef; }
       }
     }
 
     // exclusion_zones（顔・耳・首）を両マスクから除外
     if (hasExclusions) {
-      var zones = structured.exclusion_zones;
-      for (var y = 0; y < h; y++) {
-        for (var x = 0; x < w; x++) {
-          var nx = x/w, ny = y/h;
-          for (var zi = 0; zi < zones.length; zi++) {
+      const zones = structured.exclusion_zones;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const nx = x/w, ny = y/h;
+          for (let zi = 0; zi < zones.length; zi++) {
             if (pointInPoly(nx, ny, zones[zi].polygon)) { regionMask[y*w+x]=0; densityMap[y*w+x]=0; break; }
           }
         }
@@ -2025,31 +2026,31 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     //       ボックスブラーで edgeMask≈0 になり finalAlpha≈0 → 完全不可視
     // 解決: 傷跡領域を ±dilR px 膨張させてから edgeMask を計算する
     if (conditionType === 'scar') {
-      var dilR = Math.max(10, Math.round(Math.min(w, h) * 0.018)); // 約18px膨張
-      var dilH = new Float32Array(w * h); // 水平パス
-      for (var dy2 = 0; dy2 < h; dy2++) {
-        for (var dx2 = 0; dx2 < w; dx2++) {
-          var mv = 0;
-          for (var dd = -dilR; dd <= dilR; dd++) {
-            var nx3 = dx2 + dd;
+      const dilR = Math.max(10, Math.round(Math.min(w, h) * 0.018)); // 約18px膨張
+      let dilH = new Float32Array(w * h); // 水平パス
+      for (let dy2 = 0; dy2 < h; dy2++) {
+        for (let dx2 = 0; dx2 < w; dx2++) {
+          let mv = 0;
+          for (let dd = -dilR; dd <= dilR; dd++) {
+            const nx3 = dx2 + dd;
             if (nx3 >= 0 && nx3 < w) mv = Math.max(mv, regionMask[dy2*w+nx3]);
           }
           dilH[dy2*w+dx2] = mv;
         }
       }
-      for (var dy2 = 0; dy2 < h; dy2++) {
-        for (var dx2 = 0; dx2 < w; dx2++) {
-          var mv = 0;
-          for (var dd = -dilR; dd <= dilR; dd++) {
-            var ny4 = dy2 + dd;
+      for (let dy2 = 0; dy2 < h; dy2++) {
+        for (let dx2 = 0; dx2 < w; dx2++) {
+          let mv = 0;
+          for (let dd = -dilR; dd <= dilR; dd++) {
+            const ny4 = dy2 + dd;
             if (ny4 >= 0 && ny4 < h) mv = Math.max(mv, dilH[ny4*w+dx2]);
           }
           // 膨張ピクセル: 一律0.85ではなく実際のRGB輝度からexposeFactor計算で光輪を防止
           if (regionMask[dy2*w+dx2] < 0.5 && mv > 0.5) {
             regionMask[dy2*w+dx2] = mv;
-            var dilLum = getLum((dy2*w+dx2) * 4);
-            var dilExp = Math.pow(Math.max(0, Math.min(1, (dilLum - 0.05) / 0.45)), 0.55);
-            var dilDens = mv * 0.88 * (0.42 + dilExp * 0.58);
+            const dilLum = getLum((dy2*w+dx2) * 4);
+            const dilExp = Math.pow(Math.max(0, Math.min(1, (dilLum - 0.05) / 0.45)), 0.55);
+            const dilDens = mv * 0.88 * (0.42 + dilExp * 0.58);
             densityMap[dy2*w+dx2] = Math.max(densityMap[dy2*w+dx2], dilDens);
           }
         }
@@ -2060,65 +2061,65 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // edgeMask: テントフィルタ（2パスボックスブラー = ガウス近似, σ≈featherR/1.22）
     // 1パスボックス → 硬い階段遷移。2パスで自然なベル型フェードを実現。
     // 傷跡: 細い領域が消えないよう featherR を小さく設定
-    var featherR = conditionType === 'scar'
+    const featherR = conditionType === 'scar'
       ? Math.max(5, Math.min(16, Math.round(Math.min(w, h) * 0.012)))
       : conditionType === 'hairline'
       ? Math.max(3, Math.min(14, Math.round(Math.min(w, h) * 0.013)))
       : Math.max(4, Math.min(20, Math.round(Math.min(w, h) * 0.018)));
-    var edgeMask = new Float32Array(w * h);
-    var tempBuf  = new Float32Array(w * h);
-    var tempBuf2 = new Float32Array(w * h);
+    const edgeMask = new Float32Array(w * h);
+    let tempBuf  = new Float32Array(w * h);
+    let tempBuf2 = new Float32Array(w * h);
     // ── 1パス目: 水平ボックスブラー（regionMask → tempBuf） ──
-    for (var y = 0; y < h; y++) {
-      var sum = 0, cnt = 0;
+    for (let y = 0; y < h; y++) {
+      let sum = 0, cnt = 0;
       // スライディングウィンドウで O(w) に高速化
-      for (var dx2 = -featherR; dx2 <= featherR; dx2++) {
+      for (let dx2 = -featherR; dx2 <= featherR; dx2++) {
         if (dx2 >= 0 && dx2 < w) { sum += regionMask[y*w+dx2]; cnt++; }
       }
       tempBuf[y*w+0] = cnt > 0 ? sum / cnt : 0;
-      for (var x = 1; x < w; x++) {
-        var add = x + featherR, rem = x - featherR - 1;
+      for (let x = 1; x < w; x++) {
+        const add = x + featherR, rem = x - featherR - 1;
         if (add < w) { sum += regionMask[y*w+add]; cnt++; }
         if (rem >= 0) { sum -= regionMask[y*w+rem]; cnt--; }
         tempBuf[y*w+x] = cnt > 0 ? sum / cnt : 0;
       }
     }
     // ── 1パス目: 垂直ボックスブラー（tempBuf → edgeMask） ──
-    for (var x = 0; x < w; x++) {
-      var sum = 0, cnt = 0;
-      for (var dy2 = -featherR; dy2 <= featherR; dy2++) {
+    for (let x = 0; x < w; x++) {
+      let sum = 0, cnt = 0;
+      for (let dy2 = -featherR; dy2 <= featherR; dy2++) {
         if (dy2 >= 0 && dy2 < h) { sum += tempBuf[dy2*w+x]; cnt++; }
       }
       edgeMask[0*w+x] = cnt > 0 ? sum / cnt : 0;
-      for (var y = 1; y < h; y++) {
-        var add = y + featherR, rem = y - featherR - 1;
+      for (let y = 1; y < h; y++) {
+        const add = y + featherR, rem = y - featherR - 1;
         if (add < h) { sum += tempBuf[add*w+x]; cnt++; }
         if (rem >= 0) { sum -= tempBuf[rem*w+x]; cnt--; }
         edgeMask[y*w+x] = cnt > 0 ? sum / cnt : 0;
       }
     }
     // ── 2パス目: edgeMask → tempBuf2（水平）→ edgeMask（垂直）でテント化 ──
-    for (var y = 0; y < h; y++) {
-      var sum = 0, cnt = 0;
-      for (var dx2 = -featherR; dx2 <= featherR; dx2++) {
+    for (let y = 0; y < h; y++) {
+      let sum = 0, cnt = 0;
+      for (let dx2 = -featherR; dx2 <= featherR; dx2++) {
         if (dx2 >= 0 && dx2 < w) { sum += edgeMask[y*w+dx2]; cnt++; }
       }
       tempBuf2[y*w+0] = cnt > 0 ? sum / cnt : 0;
-      for (var x = 1; x < w; x++) {
-        var add = x + featherR, rem = x - featherR - 1;
+      for (let x = 1; x < w; x++) {
+        const add = x + featherR, rem = x - featherR - 1;
         if (add < w) { sum += edgeMask[y*w+add]; cnt++; }
         if (rem >= 0) { sum -= edgeMask[y*w+rem]; cnt--; }
         tempBuf2[y*w+x] = cnt > 0 ? sum / cnt : 0;
       }
     }
-    for (var x = 0; x < w; x++) {
-      var sum = 0, cnt = 0;
-      for (var dy2 = -featherR; dy2 <= featherR; dy2++) {
+    for (let x = 0; x < w; x++) {
+      let sum = 0, cnt = 0;
+      for (let dy2 = -featherR; dy2 <= featherR; dy2++) {
         if (dy2 >= 0 && dy2 < h) { sum += tempBuf2[dy2*w+x]; cnt++; }
       }
       edgeMask[0*w+x] = cnt > 0 ? sum / cnt : 0;
-      for (var y = 1; y < h; y++) {
-        var add = y + featherR, rem = y - featherR - 1;
+      for (let y = 1; y < h; y++) {
+        const add = y + featherR, rem = y - featherR - 1;
         if (add < h) { sum += tempBuf2[add*w+x]; cnt++; }
         if (rem >= 0) { sum -= tempBuf2[rem*w+x]; cnt--; }
         edgeMask[y*w+x] = cnt > 0 ? sum / cnt : 0;
@@ -2129,15 +2130,15 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // ─── STEP B: densityMap を輝度露出係数で補正 ───
     // SMP施術 = 毛穴間の明るい頭皮（exposed scalp）を暗くする
     // 暗いピクセル（既存毛包）→ 少ない処理、明るい（頭皮肌）→ フル処理
-    for (var y = 0; y < h; y++) {
-      for (var x = 0; x < w; x++) {
-        var idx = y*w+x;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const idx = y*w+x;
         if (regionMask[idx] < 0.5) continue;
-        var lum = getLum(idx * 4);
+        const lum = getLum(idx * 4);
         // ガンマ補正: rawExp を 0.55乗で知覚的に線形化（高輝度側の飽和を防ぐ）
         // レンジ拡大: [0.05, 0.50] → 暗めの頭皮（濃い毛髪）にも適切に反応
-        var rawExp = Math.max(0, Math.min(1, (lum - 0.05) / 0.45));
-        var exposeFactor = Math.pow(rawExp, 0.55);
+        const rawExp = Math.max(0, Math.min(1, (lum - 0.05) / 0.45));
+        const exposeFactor = Math.pow(rawExp, 0.55);
         densityMap[idx] *= (0.42 + exposeFactor * 0.58);
       }
     }
@@ -2147,138 +2148,138 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
 
     // ─── STEP C: 2クラスターK-meansによる髪色・頭皮色抽出 ───
     // 施術領域内ピクセルをサンプリングし、暗クラスタ(髪)と明クラスタ(頭皮)に分離
-    var kStep = Math.max(1, Math.round(Math.sqrt(w * h) / 180));
-    var kSamples = [];
-    for (var ky = 0; ky < h; ky += kStep) {
-      for (var kx = 0; kx < w; kx += kStep) {
-        var kidx = ky * w + kx;
+    const kStep = Math.max(1, Math.round(Math.sqrt(w * h) / 180));
+    let kSamples = [];
+    for (let ky = 0; ky < h; ky += kStep) {
+      for (let kx = 0; kx < w; kx += kStep) {
+        const kidx = ky * w + kx;
         if (regionMask[kidx] < 0.5) continue;
-        var ki4 = kidx * 4;
+        const ki4 = kidx * 4;
         kSamples.push([orig[ki4], orig[ki4+1], orig[ki4+2]]);
       }
     }
     // 2クラスターK-meansイテレーション（暗クラスタ=kc0/髪, 明クラスタ=kc1/頭皮）
     // 画像適応初期値: サンプル平均の±40%オフセット（金髪・白髪・黒髪すべてに対応）
-    var kmInitR = 128, kmInitG = 110, kmInitB = 100;
+    let kmInitR = 128, kmInitG = 110, kmInitB = 100;
     if (kSamples.length > 0) {
-      var kmSR = 0, kmSG = 0, kmSB = 0;
-      for (var ksi0 = 0; ksi0 < kSamples.length; ksi0++) { kmSR += kSamples[ksi0][0]; kmSG += kSamples[ksi0][1]; kmSB += kSamples[ksi0][2]; }
+      let kmSR = 0, kmSG = 0, kmSB = 0;
+      for (let ksi0 = 0; ksi0 < kSamples.length; ksi0++) { kmSR += kSamples[ksi0][0]; kmSG += kSamples[ksi0][1]; kmSB += kSamples[ksi0][2]; }
       kmInitR = kmSR / kSamples.length; kmInitG = kmSG / kSamples.length; kmInitB = kmSB / kSamples.length;
     }
-    var kc0 = [kmInitR * 0.55, kmInitG * 0.55, kmInitB * 0.55]; // 暗クラスタ初期値
-    var kc1 = [Math.min(255, kmInitR * 1.45), Math.min(255, kmInitG * 1.45), Math.min(255, kmInitB * 1.45)]; // 明クラスタ初期値
-    for (var kiter = 0; kiter < 10; kiter++) {
-      var ks0=[0,0,0], kn0=0, ks1=[0,0,0], kn1=0;
-      for (var ksi = 0; ksi < kSamples.length; ksi++) {
-        var kp = kSamples[ksi];
-        var kd0 = (kp[0]-kc0[0])*(kp[0]-kc0[0])+(kp[1]-kc0[1])*(kp[1]-kc0[1])+(kp[2]-kc0[2])*(kp[2]-kc0[2]);
-        var kd1 = (kp[0]-kc1[0])*(kp[0]-kc1[0])+(kp[1]-kc1[1])*(kp[1]-kc1[1])+(kp[2]-kc1[2])*(kp[2]-kc1[2]);
+    let kc0 = [kmInitR * 0.55, kmInitG * 0.55, kmInitB * 0.55]; // 暗クラスタ初期値
+    let kc1 = [Math.min(255, kmInitR * 1.45), Math.min(255, kmInitG * 1.45), Math.min(255, kmInitB * 1.45)]; // 明クラスタ初期値
+    for (let kiter = 0; kiter < 10; kiter++) {
+      const ks0=[0,0,0]; let kn0=0; const ks1=[0,0,0]; let kn1=0;
+      for (let ksi = 0; ksi < kSamples.length; ksi++) {
+        const kp = kSamples[ksi];
+        const kd0 = (kp[0]-kc0[0])*(kp[0]-kc0[0])+(kp[1]-kc0[1])*(kp[1]-kc0[1])+(kp[2]-kc0[2])*(kp[2]-kc0[2]);
+        const kd1 = (kp[0]-kc1[0])*(kp[0]-kc1[0])+(kp[1]-kc1[1])*(kp[1]-kc1[1])+(kp[2]-kc1[2])*(kp[2]-kc1[2]);
         if (kd0 <= kd1) { ks0[0]+=kp[0]; ks0[1]+=kp[1]; ks0[2]+=kp[2]; kn0++; }
         else            { ks1[0]+=kp[0]; ks1[1]+=kp[1]; ks1[2]+=kp[2]; kn1++; }
       }
       if (kn0 > 0) kc0 = [ks0[0]/kn0, ks0[1]/kn0, ks0[2]/kn0];
       if (kn1 > 0) kc1 = [ks1[0]/kn1, ks1[1]/kn1, ks1[2]/kn1];
       // 常に暗い方をkc0（髪色）に固定
-      if ((kc0[0]+kc0[1]+kc0[2]) > (kc1[0]+kc1[1]+kc1[2])) { var ktmp=kc0; kc0=kc1; kc1=ktmp; }
+      if ((kc0[0]+kc0[1]+kc0[2]) > (kc1[0]+kc1[1]+kc1[2])) { const ktmp=kc0; kc0=kc1; kc1=ktmp; }
     }
-    var hairR = kSamples.length>0 ? Math.round(kc0[0]) : 38;
-    var hairG = kSamples.length>0 ? Math.round(kc0[1]) : 33;
-    var hairB = kSamples.length>0 ? Math.round(kc0[2]) : 30;
-    var skinR = kSamples.length>0 ? Math.round(kc1[0]) : 180;
-    var skinG = kSamples.length>0 ? Math.round(kc1[1]) : 155;
-    var skinB = kSamples.length>0 ? Math.round(kc1[2]) : 140;
+    const hairR = kSamples.length>0 ? Math.round(kc0[0]) : 38;
+    const hairG = kSamples.length>0 ? Math.round(kc0[1]) : 33;
+    const hairB = kSamples.length>0 ? Math.round(kc0[2]) : 30;
+    const skinR = kSamples.length>0 ? Math.round(kc1[0]) : 180;
+    const skinG = kSamples.length>0 ? Math.round(kc1[1]) : 155;
+    const skinB = kSamples.length>0 ? Math.round(kc1[2]) : 140;
     kSamples = null; // GC
     // SMP色 = 髪色ベース + 肌色適応補正（Fitzpatrickスケール近似）
     // 明るい肌(skinLum高)=クール系(青寄り)、暗い肌=ウォーム系(茶寄り)
-    var skinLum = (skinR * 0.299 + skinG * 0.587 + skinB * 0.114) / 255;
-    var warmShift = Math.max(0, 0.5 - skinLum) * 20; // 暗い肌→ウォーム補正
-    var coolShift = Math.max(0, skinLum - 0.5) * 16;  // 明るい肌→クール補正
-    var pigR = Math.max(15, Math.min(110, hairR + 8 + Math.round(warmShift)));
-    var pigG = Math.max(12, Math.min(105, hairG + 6 + Math.round(warmShift * 0.6)));
-    var pigB = Math.max(18, Math.min(115, hairB + 10 + Math.round(coolShift)));
+    const skinLum = (skinR * 0.299 + skinG * 0.587 + skinB * 0.114) / 255;
+    const warmShift = Math.max(0, 0.5 - skinLum) * 20; // 暗い肌→ウォーム補正
+    const coolShift = Math.max(0, skinLum - 0.5) * 16;  // 明るい肌→クール補正
+    const pigR = Math.max(15, Math.min(110, hairR + 8 + Math.round(warmShift)));
+    const pigG = Math.max(12, Math.min(105, hairG + 6 + Math.round(warmShift * 0.6)));
+    const pigB = Math.max(18, Math.min(115, hairB + 10 + Math.round(coolShift)));
     // 傷跡用インク色 = 髪色ベース（周囲の短髪シャドウと同じ濃さに合わせる）
     // 傷は「明るく見える部分」→ 周囲の毛髪と同じ暗さのドットで埋める
-    var scarPigR = Math.max(12, Math.min(90, hairR + 5 + Math.round(warmShift * 0.7)));
-    var scarPigG = Math.max(10, Math.min(82, hairG + 4 + Math.round(warmShift * 0.4)));
-    var scarPigB = Math.max(15, Math.min(95, hairB + 8 + Math.round(coolShift * 0.7)));
+    const scarPigR = Math.max(12, Math.min(90, hairR + 5 + Math.round(warmShift * 0.7)));
+    const scarPigG = Math.max(10, Math.min(82, hairG + 4 + Math.round(warmShift * 0.4)));
+    const scarPigB = Math.max(15, Math.min(95, hairB + 8 + Math.round(coolShift * 0.7)));
 
     // ─── STEP D: ドットパラメータ（仕様書: dot_size_rel × head_width_px） ───
-    var headW_px = hb ? hb.w * w : w * 0.75;
+    const headW_px = hb ? hb.w * w : w * 0.75;
     // 施術種別で dot_size_rel 調整（実際のSMPドット視認性に合わせて拡大）
-    var dot_size_rel = conditionType === 'hairline' ? 0.0055
-                     : conditionType === 'scar'     ? 0.0072
-                     : conditionType === 'patch'    ? 0.0063
-                     : 0.0065; // thinning / default
-    var dotRadius_px = (dot_size_rel * headW_px) / 2;
+    const dot_size_rel = conditionType === 'hairline' ? 0.0055
+                       : conditionType === 'scar'     ? 0.0072
+                       : conditionType === 'patch'    ? 0.0063
+                       : 0.0065; // thinning / default
+    let dotRadius_px = (dot_size_rel * headW_px) / 2;
     dotRadius_px = Math.max(1.5, Math.min(9.0, dotRadius_px)); // 最小1.5px（視認性確保）
     // セルサイズ = 直径 × 2.0（より密なblue-noise 間隔）
-    var cellSize = dotRadius_px * 2.0 * 2.0;
-    var dotArea_px = Math.PI * dotRadius_px * dotRadius_px;
-    var SEED = 0x4d534d50; // 'MSMP' 固定シード → 再現性確保
+    const cellSize = dotRadius_px * 2.0 * 2.0;
+    const dotArea_px = Math.PI * dotRadius_px * dotRadius_px;
+    const SEED = 0x4d534d50; // 'MSMP' 固定シード → 再現性確保
 
     // ─── STEP E: Poisson飽和カバレッジ率（Layer1用） ───
-    var totalDots = Math.round(((structured.treatment_plan && structured.treatment_plan.total_dots) || 129600) * densityMultiplier);
-    var treatArea = 0;
-    for (var ii = 0; ii < regionMask.length; ii++) {
+    const totalDots = Math.round(((structured.treatment_plan && structured.treatment_plan.total_dots) || 129600) * densityMultiplier);
+    let treatArea = 0;
+    for (let ii = 0; ii < regionMask.length; ii++) {
       if (regionMask[ii] > 0.5) treatArea++;
     }
     treatArea = Math.max(1, treatArea);
     // λ = 平均重なり回数（仕様書準拠ポアソン飽和）
-    var lam = totalDots * dotArea_px / treatArea;
+    const lam = totalDots * dotArea_px / treatArea;
     // Poisson飽和補正 v9.4: C = 1-(1+kλ)·exp(-λ)
     // k=0.25（低λ時の過大評価抑制を緩和し、中λ域の立ち上がりを改善）
     // 上限0.92: 実際のSMP施術では完全均一化はあり得ない（自然な地肌感を残す）
-    var baseCoverage = Math.min(0.92, 1.0 - (1.0 + 0.25 * lam) * Math.exp(-lam));
+    const baseCoverage = Math.min(0.92, 1.0 - (1.0 + 0.25 * lam) * Math.exp(-lam));
     console.log('[SMP v9.4] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px cell=' + cellSize.toFixed(1) + 'px treatPx=' + treatArea + ' λ=' + lam.toFixed(2) + ' cov=' + (baseCoverage*100).toFixed(1) + '% hair=[' + hairR+','+hairG+','+hairB+'] skin=['+skinR+','+skinG+','+skinB+']');
 
     // ─── STEP F: 2層合成（Layer1 Poisson均一化 + Layer2 セルドット点描） ───
-    var outData = ctx.getImageData(0, 0, w, h);
-    var out = outData.data;
+    const outData = ctx.getImageData(0, 0, w, h);
+    const out = outData.data;
 
-    for (var y = 0; y < h; y++) {
-      for (var x = 0; x < w; x++) {
-        var idx = y*w+x;
-        var rMask = regionMask[idx];
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const idx = y*w+x;
+        const rMask = regionMask[idx];
         if (rMask < 0.005) continue;  // 領域外は完全スキップ
 
-        var i4 = idx*4;
-        var r = orig[i4], g = orig[i4+1], b = orig[i4+2];
-        var dMap = densityMap[idx];
-        var eMask = edgeMask[idx];
+        const i4 = idx*4;
+        const r = orig[i4], g = orig[i4+1], b = orig[i4+2];
+        const dMap = densityMap[idx];
+        const eMask = edgeMask[idx];
 
         // Layer 1: Poisson飽和による均一暗化ベース（肌色を消す）
         // 条件別ベースウェイト: scar=強め、hairline=控えめ、thinning=標準
-        var l1Weight = conditionType === 'scar' ? 0.96
-                     : conditionType === 'hairline' ? 0.88
-                     : 0.93;
-        var layer1 = baseCoverage * dMap * l1Weight;
+        const l1Weight = conditionType === 'scar' ? 0.96
+                       : conditionType === 'hairline' ? 0.88
+                       : 0.93;
+        const layer1 = baseCoverage * dMap * l1Weight;
 
         // Layer 2: 決定論的セルドット（点描テクスチャ）
-        var dotA = cellDotAlpha(x, y, cellSize, dotRadius_px, dMap, SEED);
-        var l2Weight = conditionType === 'scar' ? 0.82
-                     : conditionType === 'hairline' ? 0.68
-                     : 0.75;
-        var layer2 = dotA * l2Weight;
+        const dotA = cellDotAlpha(x, y, cellSize, dotRadius_px, dMap, SEED);
+        const l2Weight = conditionType === 'scar' ? 0.82
+                       : conditionType === 'hairline' ? 0.68
+                       : 0.75;
+        const layer2 = dotA * l2Weight;
 
         // 2層を合算してedgeMaskでフェザリング
         // 条件別上限: hairline=自然に、scar=しっかり
-        var alphaCap = conditionType === 'scar' ? 0.96
-                     : conditionType === 'hairline' ? 0.92
-                     : 0.95;
-        var finalAlpha = Math.min(alphaCap, layer1 + layer2) * eMask;
+        const alphaCap = conditionType === 'scar' ? 0.96
+                       : conditionType === 'hairline' ? 0.92
+                       : 0.95;
+        const finalAlpha = Math.min(alphaCap, layer1 + layer2) * eMask;
 
         if (finalAlpha < (conditionType === 'scar' ? 0.004 : 0.002)) continue;
 
         // ドット色 + 適応的グレイン（高密度=均一、低密度=ばらつき大）
         // 傷跡エリアは scarPigColor（頭皮色ベース）を使用 → 自然な仕上がり
-        var usePigR = conditionType === 'scar' ? scarPigR : pigR;
-        var usePigG = conditionType === 'scar' ? scarPigG : pigG;
-        var usePigB = conditionType === 'scar' ? scarPigB : pigB;
-        var grainAmt = Math.round(8 + (1.0 - dMap) * 10); // 密度低→±13、高→±8
-        var gr = Math.round((rand01(x, y, SEED+3) - 0.5) * grainAmt);
-        var tR = Math.max(5, Math.min(245, usePigR + gr));
-        var tG = Math.max(5, Math.min(240, usePigG + gr));
-        var tB = Math.max(5, Math.min(245, usePigB + gr));
+        const usePigR = conditionType === 'scar' ? scarPigR : pigR;
+        const usePigG = conditionType === 'scar' ? scarPigG : pigG;
+        const usePigB = conditionType === 'scar' ? scarPigB : pigB;
+        const grainAmt = Math.round(8 + (1.0 - dMap) * 10); // 密度低→±13、高→±8
+        const gr = Math.round((rand01(x, y, SEED+3) - 0.5) * grainAmt);
+        const tR = Math.max(5, Math.min(245, usePigR + gr));
+        const tG = Math.max(5, Math.min(240, usePigG + gr));
+        const tB = Math.max(5, Math.min(245, usePigB + gr));
 
         out[i4]   = Math.round(r * (1 - finalAlpha) + tR * finalAlpha);
         out[i4+1] = Math.round(g * (1 - finalAlpha) + tG * finalAlpha);
@@ -2288,18 +2289,18 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
 
     // ─── STEP G: 非マスクエリア完全復元（顔・背景・exclusionを保護） ───
     ctx.putImageData(outData, 0, 0);
-    var finalData = ctx.getImageData(0, 0, w, h);
-    var fd = finalData.data;
-    for (var y = 0; y < h; y++) {
-      for (var x = 0; x < w; x++) {
-        var fi = (y*w+x) * 4;
-        var sm = regionMask[y*w+x] || 0;
+    const finalData = ctx.getImageData(0, 0, w, h);
+    const fd = finalData.data;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const fi = (y*w+x) * 4;
+        const sm = regionMask[y*w+x] || 0;
         if (sm < 0.01) {
           // 完全復元
           fd[fi]=orig[fi]; fd[fi+1]=orig[fi+1]; fd[fi+2]=orig[fi+2];
         } else if (sm < 0.20) {
           // トランジションゾーン: edgeMask値でブレンド
-          var blend = sm / 0.20;
+          const blend = sm / 0.20;
           fd[fi]  = Math.round(fd[fi]  *blend + orig[fi]  *(1-blend));
           fd[fi+1]= Math.round(fd[fi+1]*blend + orig[fi+1]*(1-blend));
           fd[fi+2]= Math.round(fd[fi+2]*blend + orig[fi+2]*(1-blend));
@@ -2310,19 +2311,19 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
 
     // ─── ⑤ 黄色線削除: 元写真ピクセルで黄色アノテーションを上書き ───
     if (yellowDetected && yellowDetected.yellowMask && window._cleanPhotoPixels) {
-      var yFinalData = ctx.getImageData(0, 0, w, h);
-      var cleanPx = window._cleanPhotoPixels.data;
-      var cleanW = window._cleanPhotoPixels.width;
-      var cleanH = window._cleanPhotoPixels.height;
-      var yMaskFinal = yellowDetected.yellowMask;
-      for (var yfi = 0; yfi < w * h; yfi++) {
+      const yFinalData = ctx.getImageData(0, 0, w, h);
+      const cleanPx = window._cleanPhotoPixels.data;
+      const cleanW = window._cleanPhotoPixels.width;
+      const cleanH = window._cleanPhotoPixels.height;
+      const yMaskFinal = yellowDetected.yellowMask;
+      for (let yfi = 0; yfi < w * h; yfi++) {
         if (yMaskFinal[yfi]) {
           // この位置に対応するクリーン写真ピクセルを取得（スケール考慮）
-          var yfiX = yfi % w, yfiY = (yfi / w) | 0;
-          var cX = Math.min(cleanW - 1, Math.round(yfiX * cleanW / w));
-          var cY = Math.min(cleanH - 1, Math.round(yfiY * cleanH / h));
-          var cIdx = (cY * cleanW + cX) * 4;
-          var si = yfi * 4;
+          const yfiX = yfi % w, yfiY = (yfi / w) | 0;
+          const cX = Math.min(cleanW - 1, Math.round(yfiX * cleanW / w));
+          const cY = Math.min(cleanH - 1, Math.round(yfiY * cleanH / h));
+          const cIdx = (cY * cleanW + cX) * 4;
+          const si = yfi * 4;
           yFinalData.data[si]     = cleanPx[cIdx];
           yFinalData.data[si + 1] = cleanPx[cIdx + 1];
           yFinalData.data[si + 2] = cleanPx[cIdx + 2];
@@ -2339,14 +2340,14 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
 
 // ===== 構造化データ抽出（Gemini JSON出力） =====
 function extractStructuredData(responseText) {
-  var jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
-  var data = null;
+  const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+  let data = null;
   if (jsonMatch) {
     try { data = JSON.parse(jsonMatch[1]); } catch(e) { /* フォールバック */ }
   }
   if (!data) {
     // ```なしのJSONブロックも試行
-    var rawMatch = responseText.match(/\{[\s\S]*"condition_type"[\s\S]*"scores"[\s\S]*\}/);
+    const rawMatch = responseText.match(/\{[\s\S]*"condition_type"[\s\S]*"scores"[\s\S]*\}/);
     if (rawMatch) {
       try { data = JSON.parse(rawMatch[0]); } catch(e) { /* フォールバック */ }
     }
@@ -2358,13 +2359,13 @@ function extractStructuredData(responseText) {
     data.treatment_regions = data.treatment_regions.filter(function(r) {
       if (!r || !Array.isArray(r.polygon) || r.polygon.length < 3) return false;
       // 全座標が0-1範囲内かチェック
-      var valid = r.polygon.every(function(p) {
+      const valid = r.polygon.every(function(p) {
         return Array.isArray(p) && p.length >= 2 &&
           p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1;
       });
       if (!valid) { console.warn('[SMP Sim] Invalid polygon filtered:', r.label); return false; }
       // 面積チェック（極端に小さいor大きいポリゴンを除外）
-      var area = _polyArea(r.polygon);
+      const area = _polyArea(r.polygon);
       if (area < 0.001 || area > 0.95) { console.warn('[SMP Sim] Polygon area out of range:', r.label, area); return false; }
       r.density_hint = Math.max(0, Math.min(1, r.density_hint || 0.5));
       return true;
@@ -2388,7 +2389,7 @@ function extractStructuredData(responseText) {
   }
 
   if (data.head_bounds) {
-    var hb = data.head_bounds;
+    const hb = data.head_bounds;
     if (typeof hb.x !== 'number' || typeof hb.y !== 'number' ||
         typeof hb.w !== 'number' || typeof hb.h !== 'number' ||
         hb.w <= 0 || hb.h <= 0) {
@@ -2401,8 +2402,9 @@ function extractStructuredData(responseText) {
 
 // ポリゴン面積計算（Shoelace formula、正規化座標）
 function _polyArea(pts) {
-  var n = pts.length, a = 0;
-  for (var i = 0, j = n - 1; i < n; j = i++) {
+  const n = pts.length;
+  let a = 0;
+  for (let i = 0, j = n - 1; i < n; j = i++) {
     a += pts[j][0] * pts[i][1] - pts[i][0] * pts[j][1];
   }
   return Math.abs(a) / 2;
@@ -2410,40 +2412,40 @@ function _polyArea(pts) {
 
 function showBAResult(beforeDataURL, claudeText) {
   // 構造化データの抽出を試行
-  var structured = extractStructuredData(claudeText);
+  const structured = extractStructuredData(claudeText);
 
   // Markdown表示用にJSONブロックを除去
-  var displayText = claudeText.replace(/```json[\s\S]*?```/g, '').trim();
+  const displayText = claudeText.replace(/```json[\s\S]*?```/g, '').trim();
 
-  var dotCount = extractDotCount(claudeText);
-  var condType = structured ? structured.condition_type : detectConditionType(claudeText);
-  var frame = document.getElementById('baResultFrame');
-  var beforeImg = document.getElementById('baBeforeImg');
-  var dotCountEl = document.getElementById('baDotCount');
-  var claudeTextEl = document.getElementById('claudeAdvice');
-  var adviceBox = document.getElementById('adviceBox');
-  var scoreRow = document.getElementById('simScoreRow');
+  let dotCount = extractDotCount(claudeText);
+  const condType = structured ? structured.condition_type : detectConditionType(claudeText);
+  const frame = document.getElementById('baResultFrame');
+  const beforeImg = document.getElementById('baBeforeImg');
+  const dotCountEl = document.getElementById('baDotCount');
+  const claudeTextEl = document.getElementById('claudeAdvice');
+  const adviceBox = document.getElementById('adviceBox');
+  const scoreRow = document.getElementById('simScoreRow');
 
   // 構造化データからドット数を取得（利用可能な場合）
   if (structured && structured.treatment_plan) {
-    var tp = structured.treatment_plan;
-    var totalDots = tp.total_dots || ((tp.total_dots_per_session || 0) * (tp.sessions || 1));
+    const tp = structured.treatment_plan;
+    const totalDots = tp.total_dots || ((tp.total_dots_per_session || 0) * (tp.sessions || 1));
     if (totalDots >= 10000) dotCount = '約' + Math.round(totalDots / 10000) + '万ドット（推定）';
     else if (totalDots > 0) dotCount = '約' + totalDots.toLocaleString() + 'ドット（推定）';
   }
 
   if (beforeImg) beforeImg.src = beforeDataURL;
   // ①　cm²面積計算（頭部幅19cm基準）
-  var areaInfo = '';
+  let areaInfo = '';
   if (structured && structured.head_bounds && structured.treatment_plan) {
-    var hbW = structured.head_bounds.w;
+    const hbW = structured.head_bounds.w;
     // capCv幅からpixels_per_cm推定（頭部幅=19cm平均）
-    var capCvEl = document.getElementById('capCv');
+    const capCvEl = document.getElementById('capCv');
     if (capCvEl && capCvEl.width && hbW > 0) {
-      var headPxW = hbW * capCvEl.width;
-      var pxPerCm = headPxW / 19;
-      var tDots = (structured.treatment_plan.total_dots || 0);
-      var estimatedCm2 = tDots > 0 ? Math.round(tDots / 3 / 500) : 0;
+      const headPxW = hbW * capCvEl.width;
+      const pxPerCm = headPxW / 19;
+      const tDots = (structured.treatment_plan.total_dots || 0);
+      const estimatedCm2 = tDots > 0 ? Math.round(tDots / 3 / 500) : 0;
       if (estimatedCm2 > 0) areaInfo = '推定面積 約' + estimatedCm2 + 'cm² / 500ドット×3回';
     }
   }
@@ -2454,12 +2456,12 @@ function showBAResult(beforeDataURL, claudeText) {
 
   // SMP canvas シミュレーション描画（condition-aware + region-aware）
   _smpCache = { beforeDataURL: beforeDataURL, condType: condType, structured: structured };
-  var sliderRow = document.getElementById('densitySliderRow');
-  var sliderEl  = document.getElementById('densitySlider');
-  var sliderVal = document.getElementById('densitySliderVal');
+  const sliderRow = document.getElementById('densitySliderRow');
+  const sliderEl  = document.getElementById('densitySlider');
+  const sliderVal = document.getElementById('densitySliderVal');
   if (sliderRow) sliderRow.style.display = 'block';
   if (sliderEl)  { sliderEl.value = '0'; }
-  var baseDots = (structured && structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
+  const baseDots = (structured && structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
   _baseDotsCache = baseDots;
   if (sliderVal) sliderVal.textContent = Math.round(baseDots / 10000) + '万';
   drawSMPSimulation(beforeDataURL, condType, structured, 1.0);
@@ -2467,9 +2469,9 @@ function showBAResult(beforeDataURL, claudeText) {
   // スコアバー表示（構造化データ優先、フォールバックは推定値）
   if (scoreRow) {
     scoreRow.style.display = 'flex';
-    var scoreData;
+    let scoreData;
     if (structured && structured.scores) {
-      var s = structured.scores;
+      const s = structured.scores;
       scoreData = {
         labels: ['密度改善効果', '自然な仕上がり', '若返り指数'],
         values: [
@@ -2486,10 +2488,10 @@ function showBAResult(beforeDataURL, claudeText) {
       scoreData = estimateScores(claudeText, condType);
     }
     ['1','2','3'].forEach(function(n, i) {
-      var fill = document.getElementById('sFill'+n);
-      var val  = document.getElementById('sVal'+n);
-      var lbl  = document.getElementById('sLbl'+n);
-      var pct  = scoreData.values[i];
+      const fill = document.getElementById('sFill'+n);
+      const val  = document.getElementById('sVal'+n);
+      const lbl  = document.getElementById('sLbl'+n);
+      const pct  = scoreData.values[i];
       if (fill) setTimeout(function(f,p){f.style.width=p+'%';}, 200, fill, pct);
       if (val)  val.textContent = pct + '%';
       if (lbl)  lbl.textContent = scoreData.labels[i];
@@ -2498,9 +2500,9 @@ function showBAResult(beforeDataURL, claudeText) {
 
   // 料金見積もりセクション（構造化データにpricingがある場合）
   if (structured && structured.pricing && structured.pricing.total_price > 0) {
-    var pr = structured.pricing;
-    var tp2 = structured.treatment_plan || {};
-    var pricingHtml = '<div style="margin-top:18px;padding:16px 18px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;border:1px solid rgba(212,175,55,0.3);">';
+    const pr = structured.pricing;
+    const tp2 = structured.treatment_plan || {};
+    let pricingHtml = '<div style="margin-top:18px;padding:16px 18px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;border:1px solid rgba(212,175,55,0.3);">';
     pricingHtml += '<h4 style="color:#d4af37;margin:0 0 12px 0;font-size:1.05em;">料金見積もり（1ドット＝1円）</h4>';
     pricingHtml += '<table style="width:100%;border-collapse:collapse;color:#e0e0e0;font-size:0.95em;">';
     pricingHtml += '<tr><td style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);">1セッションあたり</td><td style="text-align:right;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-weight:bold;color:#d4af37;">¥' + (pr.per_session_price || 0).toLocaleString() + '</td></tr>';
@@ -2522,24 +2524,24 @@ function showBAResult(beforeDataURL, claudeText) {
 
 function estimateScores(text, condType) {
   condType = condType || detectConditionType(text);
-  var labels, s1, s2, s3;
+  let labels, s1, s2, s3;
 
   function randRange(min, max) {
     return min + Math.floor(Math.random() * (max - min + 1));
   }
 
   // Detect Norwood/Ludwig scale from text for severity-adjusted scoring
-  var scaleMatch = text.match(/(?:Norwood|Hamilton|ノーウッド|ハミルトン)[^IV0-9]*([IV]+[〜~\-]*[IV]*|[0-9]+)/i);
-  var ludwigMatch = text.match(/(?:Ludwig|ルードウィグ|ルートヴィヒ)[^IV0-9]*([IV]+|[0-9]+)/i);
-  var severity = 'moderate'; // default
+  const scaleMatch = text.match(/(?:Norwood|Hamilton|ノーウッド|ハミルトン)[^IV0-9]*([IV]+[〜~\-]*[IV]*|[0-9]+)/i);
+  const ludwigMatch = text.match(/(?:Ludwig|ルードウィグ|ルートヴィヒ)[^IV0-9]*([IV]+|[0-9]+)/i);
+  let severity = 'moderate'; // default
   if (scaleMatch) {
-    var nw = scaleMatch[1].replace(/[IV]/gi, function(c) { return {I:'1',V:'5',i:'1',v:'5'}[c]||c; });
-    var nwNum = parseInt(nw) || 4;
+    const nw = scaleMatch[1].replace(/[IV]/gi, function(c) { return {I:'1',V:'5',i:'1',v:'5'}[c]||c; });
+    const nwNum = parseInt(nw) || 4;
     if (nwNum <= 2) severity = 'mild';
     else if (nwNum <= 4) severity = 'moderate';
     else severity = 'severe';
   } else if (ludwigMatch) {
-    var lw = ludwigMatch[1];
+    const lw = ludwigMatch[1];
     if (/I[^IV]|1/.test(lw)) severity = 'mild';
     else if (/II|2/.test(lw)) severity = 'moderate';
     else severity = 'severe';
@@ -2596,14 +2598,14 @@ function estimateScores(text, condType) {
 }
 
 // ===== SIMULATOR =====
-var simStream = null;
-var _isMobile = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
+let simStream = null;
+const _isMobile = /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
 
 /* --- Camera routing --- */
 function openCamera() {
   if (_isMobile) {
     // iOS / Android: trigger native camera via capture input
-    var cap = document.getElementById('camCapture');
+    const cap = document.getElementById('camCapture');
     if (cap) cap.click();
   } else {
     startDesktopCamera();
@@ -2614,15 +2616,15 @@ function startDesktopCamera() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     document.getElementById('imgUp').click(); return;
   }
-  var constraints = { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 960 } } };
+  const constraints = { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 960 } } };
   navigator.mediaDevices.getUserMedia(constraints)
   .then(function(stream) {
     simStream = stream;
-    var vid    = document.getElementById('vidEl');
-    var zone   = document.getElementById('camArea');
-    var camBtn = document.getElementById('camBtn');
-    var snap   = document.getElementById('capSnap');
-    var stop   = document.getElementById('stopCam');
+    const vid    = document.getElementById('vidEl');
+    const zone   = document.getElementById('camArea');
+    const camBtn = document.getElementById('camBtn');
+    const snap   = document.getElementById('capSnap');
+    const stop   = document.getElementById('stopCam');
     if (vid)   { vid.srcObject = stream; vid.play(); }
     if (zone)  zone.classList.add('camera-active');
     if (camBtn) camBtn.style.display = 'none';
@@ -2636,28 +2638,28 @@ function startDesktopCamera() {
 }
 
 function captureDesktopPhoto() {
-  var vid = document.getElementById('vidEl');
-  var cv  = document.getElementById('capCv');
+  const vid = document.getElementById('vidEl');
+  const cv  = document.getElementById('capCv');
   if (!vid || !cv) return;
   cv.width  = vid.videoWidth  || 640;
   cv.height = vid.videoHeight || 480;
   cv.getContext('2d').drawImage(vid, 0, 0);
   stopDesktopCamera(true);
-  var resized = resizeForAPI(cv, 1280);
-  var dataURL = resized.toDataURL('image/jpeg', 0.88);
-  var prev = document.getElementById('previewImg');
+  const resized = resizeForAPI(cv, 1280);
+  const dataURL = resized.toDataURL('image/jpeg', 0.88);
+  const prev = document.getElementById('previewImg');
   if (prev) { prev.src = dataURL; prev.style.display = 'block'; }
-  var zone = document.getElementById('camArea');
+  const zone = document.getElementById('camArea');
   if (zone) { zone.classList.remove('camera-active'); zone.classList.add('has-image'); }
-  var snap = document.getElementById('capSnap'), stop = document.getElementById('stopCam');
-  var camBtn = document.getElementById('camBtn'), capBtn = document.getElementById('capBtn');
-  var rstBtn = document.getElementById('rstBtn');
+  const snap = document.getElementById('capSnap'), stop = document.getElementById('stopCam');
+  const camBtn = document.getElementById('camBtn'), capBtn = document.getElementById('capBtn');
+  const rstBtn = document.getElementById('rstBtn');
   if (snap)  snap.style.display  = 'none';
   if (stop)  stop.style.display  = 'none';
   if (camBtn) camBtn.style.display = 'none';
   if (capBtn) capBtn.style.display = 'inline-block';
   if (rstBtn) rstBtn.style.display = 'inline-block';
-  var pg = document.getElementById('photoGuide');
+  const pg = document.getElementById('photoGuide');
   if (pg) pg.style.display = 'none';
   initDrawingCanvas();
   setStep(1);
@@ -2665,14 +2667,14 @@ function captureDesktopPhoto() {
 
 function stopDesktopCamera(keepPreview) {
   if (simStream) { simStream.getTracks().forEach(function(t){ t.stop(); }); simStream = null; }
-  var vid  = document.getElementById('vidEl');
-  var zone = document.getElementById('camArea');
+  const vid  = document.getElementById('vidEl');
+  const zone = document.getElementById('camArea');
   if (vid)  vid.style.display = 'none';
   if (zone) zone.classList.remove('camera-active');
   if (!keepPreview) {
-    var camBtn = document.getElementById('camBtn');
-    var snap   = document.getElementById('capSnap');
-    var stop   = document.getElementById('stopCam');
+    const camBtn = document.getElementById('camBtn');
+    const snap   = document.getElementById('capSnap');
+    const stop   = document.getElementById('stopCam');
     if (camBtn) camBtn.style.display = 'inline-block';
     if (snap)  snap.style.display  = 'none';
     if (stop)  stop.style.display  = 'none';
@@ -2682,11 +2684,11 @@ function stopDesktopCamera(keepPreview) {
 /* --- Image resize: iOS photos can be 12MP+, keep under 1280px for API --- */
 function resizeForAPI(canvas, maxPx) {
   maxPx = maxPx || 1280;
-  var w = canvas.width, h = canvas.height;
+  const w = canvas.width, h = canvas.height;
   if (!w || !h || (w <= maxPx && h <= maxPx)) return canvas;
-  var scale = Math.min(maxPx / w, maxPx / h);
-  var nw = Math.round(w * scale), nh = Math.round(h * scale);
-  var tmp = document.createElement('canvas');
+  const scale = Math.min(maxPx / w, maxPx / h);
+  const nw = Math.round(w * scale), nh = Math.round(h * scale);
+  const tmp = document.createElement('canvas');
   tmp.width = nw; tmp.height = nh;
   tmp.getContext('2d').drawImage(canvas, 0, 0, nw, nh);
   return tmp;
@@ -2697,25 +2699,25 @@ function loadImageFile(file) {
   if (!file) return;
   // Accept all image types (including HEIC on iOS Safari)
   if (file.type && !file.type.startsWith('image/') && file.type !== '') return;
-  var reader = new FileReader();
+  const reader = new FileReader();
   reader.onload = function(ev) {
-    var img = new Image();
+    const img = new Image();
     img.onerror = function() { showToast('画像の読み込みに失敗しました。JPG・PNG・WebP形式をお試しください。', 'error'); };
     img.onload = function() {
-      var cv = document.getElementById('capCv');
+      const cv = document.getElementById('capCv');
       if (!cv) return;
       cv.width  = img.naturalWidth  || img.width  || 640;
       cv.height = img.naturalHeight || img.height || 480;
       cv.getContext('2d').drawImage(img, 0, 0);
       // Show preview
-      var prev = document.getElementById('previewImg');
+      const prev = document.getElementById('previewImg');
       if (prev) { prev.src = ev.target.result; prev.style.display = 'block'; }
       // Update UI state
-      var zone   = document.getElementById('camArea');
-      var camBtn = document.getElementById('camBtn');
-      var capBtn = document.getElementById('capBtn');
-      var rstBtn = document.getElementById('rstBtn');
-      var pg     = document.getElementById('photoGuide');
+      const zone   = document.getElementById('camArea');
+      const camBtn = document.getElementById('camBtn');
+      const capBtn = document.getElementById('capBtn');
+      const rstBtn = document.getElementById('rstBtn');
+      const pg     = document.getElementById('photoGuide');
       if (zone)  zone.classList.add('has-image');
       if (camBtn) camBtn.style.display = 'none';
       if (capBtn) capBtn.style.display = 'inline-block';
@@ -2730,17 +2732,17 @@ function loadImageFile(file) {
 }
 
 function handleUp(e) {
-  var file = e.target.files[0];
+  const file = e.target.files[0];
   if (file) loadImageFile(file);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  var zone = document.getElementById('camArea');
+  const zone = document.getElementById('camArea');
   if (!zone) return;
   // Click anywhere on zone → open file picker (except buttons/labels)
   zone.addEventListener('click', function(e) {
     if (e.target.closest('label,button,input')) return;
-    var inp = document.getElementById('imgUp');
+    const inp = document.getElementById('imgUp');
     if (inp) inp.click();
   });
   // Drag over
@@ -2759,14 +2761,14 @@ document.addEventListener('DOMContentLoaded', function() {
   zone.addEventListener('drop', function(e) {
     e.preventDefault(); e.stopPropagation();
     zone.classList.remove('drag-over');
-    var files = e.dataTransfer.files;
+    const files = e.dataTransfer.files;
     if (files && files[0]) loadImageFile(files[0]);
   });
 });
 
 function setStep(n) {
-  for (var i=1;i<=3;i++) {
-    var el=document.getElementById('st'+i);
+  for (let i=1;i<=3;i++) {
+    const el=document.getElementById('st'+i);
     if (el) { if(i<=n) el.classList.add('act'); else el.classList.remove('act'); }
   }
 }
@@ -2774,48 +2776,48 @@ function setStep(n) {
 // ===== Gemini API プロキシ経由呼び出し =====
 // APIキーはCloudflare Worker (gemini-proxy) に安全に保管
 // フロントエンドにはAPIキーを一切持たない
-var _GEMINI_PROXY_URL = 'https://gemini-proxy.navigator-187.workers.dev';
-var _GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.5-pro'];
+const _GEMINI_PROXY_URL = 'https://gemini-proxy.navigator-187.workers.dev';
+const _GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.5-pro'];
 
 function analyze() {
-  var capCv = document.getElementById('capCv');
+  const capCv = document.getElementById('capCv');
   if (!capCv || !capCv.width) { showToast('先に写真をアップロードしてください', 'error'); return; }
 
-  var capBtn=document.getElementById('capBtn'),rstBtn=document.getElementById('rstBtn');
-  var ldDots=document.getElementById('ldDots');
+  const capBtn=document.getElementById('capBtn'),rstBtn=document.getElementById('rstBtn');
+  const ldDots=document.getElementById('ldDots');
   if (capBtn) capBtn.style.display='none';
   if (rstBtn) rstBtn.style.display='inline-block';
   if (ldDots) ldDots.classList.add('on');
   setStep(2);
 
   // 旧結果を即座にクリア（新解析開始時に前回画像が残らないようにする）
-  var oldFrame = document.getElementById('baResultFrame');
+  const oldFrame = document.getElementById('baResultFrame');
   if (oldFrame) oldFrame.style.display = 'none';
-  var oldCanvas = document.getElementById('smpSimCanvas');
-  if (oldCanvas) { var oc = oldCanvas.getContext('2d'); oc.clearRect(0,0,oldCanvas.width,oldCanvas.height); oldCanvas.width=0; }
-  var adviceBox = document.getElementById('adviceBox');
+  const oldCanvas = document.getElementById('smpSimCanvas');
+  if (oldCanvas) { const oc = oldCanvas.getContext('2d'); oc.clearRect(0,0,oldCanvas.width,oldCanvas.height); oldCanvas.width=0; }
+  const adviceBox = document.getElementById('adviceBox');
   if (adviceBox) adviceBox.style.display = 'none';
-  var scoreRow = document.getElementById('simScoreRow');
+  const scoreRow = document.getElementById('simScoreRow');
   if (scoreRow) scoreRow.style.display = 'none';
-  var densityRow = document.getElementById('densitySliderRow');
+  const densityRow = document.getElementById('densitySliderRow');
   if (densityRow) densityRow.style.display = 'none';
   _smpCache = null;
 
   // 描画キャンバスをマージ（黄色ペン描画があれば合成）
-  var dc = document.getElementById('drawingCanvas');
-  var mergedCv = document.createElement('canvas');
+  const dc = document.getElementById('drawingCanvas');
+  const mergedCv = document.createElement('canvas');
   mergedCv.width = capCv.width; mergedCv.height = capCv.height;
-  var mCtx = mergedCv.getContext('2d');
+  const mCtx = mergedCv.getContext('2d');
   mCtx.drawImage(capCv, 0, 0);
   if (dc && dc.width === capCv.width && dc.style.display !== 'none') {
     mCtx.drawImage(dc, 0, 0);
   }
   // クリーン写真データを保存（黄色線削除⑤で使用）
   window._cleanPhotoPixels = capCv.getContext('2d').getImageData(0, 0, capCv.width, capCv.height);
-  var srcCanvas = resizeForAPI(mergedCv, 1280);
-  var beforeDataURL = srcCanvas.toDataURL('image/jpeg', 0.88);
-  var b64 = beforeDataURL.split(',')[1];
-  var prompt = 'あなたはTHE SCALP INK by CIMAの上級SMPスペシャリストです。\n' +
+  const srcCanvas = resizeForAPI(mergedCv, 1280);
+  const beforeDataURL = srcCanvas.toDataURL('image/jpeg', 0.88);
+  const b64 = beforeDataURL.split(',')[1];
+  const prompt = 'あなたはTHE SCALP INK by CIMAの上級SMPスペシャリストです。\n' +
 'この頭部・頭皮の画像を精密に観察し、以下の5ステップで日本語の詳細診断レポートを作成してください。\n\n' +
 
 '【SMP施術の基礎データ（計算の根拠として使用）】\n' +
@@ -2929,7 +2931,7 @@ function analyze() {
 '```';
 
   // Gemini API - フォールバックチェーン対応
-  var requestBody = JSON.stringify({
+  const requestBody = JSON.stringify({
     system_instruction: {
       parts: [{
         text: 'あなたはSMP（スカルプマイクロピグメンテーション）の専門家です。頭皮画像を解析し、正確な施術プランを提案します。' +
@@ -2949,18 +2951,18 @@ function analyze() {
 
   function tryGeminiModel(modelIndex) {
     if (modelIndex >= _GEMINI_MODELS.length) {
-      var advBox = document.getElementById('adviceBox');
-      var claudeEl = document.getElementById('claudeAdvice');
+      const advBox = document.getElementById('adviceBox');
+      const claudeEl = document.getElementById('claudeAdvice');
       if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">⚠ すべてのAIモデルが利用上限に達しています。<br>時間をおいて再度お試しください（通常1分程度で回復します）。</span>';
       if (advBox) advBox.style.display='block';
-      var frame = document.getElementById('baResultFrame');
+      const frame = document.getElementById('baResultFrame');
       if (frame) frame.style.display='block';
       setStep(3);
       if (capBtn) capBtn.style.display='inline-block';
       if (ldDots) ldDots.classList.remove('on');
       return;
     }
-    var model = _GEMINI_MODELS[modelIndex];
+    const model = _GEMINI_MODELS[modelIndex];
     // Cloudflare Worker プロキシ経由でGemini APIを呼び出す
     fetch(_GEMINI_PROXY_URL, {
       method: 'POST',
@@ -2969,13 +2971,13 @@ function analyze() {
     })
     .then(function(res){
       if (!res.ok) return res.json().then(function(e){
-        var errMsg = (e.error && e.error.message) || 'API error ' + res.status;
+        const errMsg = (e.error && e.error.message) || 'API error ' + res.status;
         throw new Error(errMsg);
       });
       return res.json();
     })
     .then(function(data){
-      var txt = '';
+      let txt = '';
       try {
         txt = data.candidates[0].content.parts[0].text;
       } catch(ex) {
@@ -2986,22 +2988,22 @@ function analyze() {
       if (ldDots) ldDots.classList.remove('on');
     })
     .catch(function(err){
-      var msg = err && err.message ? err.message : '';
-      var isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
-      var isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
+      const msg = err && err.message ? err.message : '';
+      const isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
+      const isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
       if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
         console.log('[AI Sim] ' + model + ' quota exceeded, trying ' + _GEMINI_MODELS[modelIndex + 1]);
         tryGeminiModel(modelIndex + 1);
         return;
       }
-      var displayMsg = isAuthErr
+      const displayMsg = isAuthErr
         ? '⚠ APIキーが無効です。管理者にお問い合わせください。'
         : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>ネットワーク接続をご確認ください。';
-      var advBox = document.getElementById('adviceBox');
-      var claudeEl = document.getElementById('claudeAdvice');
+      const advBox = document.getElementById('adviceBox');
+      const claudeEl = document.getElementById('claudeAdvice');
       if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
       if (advBox) advBox.style.display='block';
-      var frame = document.getElementById('baResultFrame');
+      const frame = document.getElementById('baResultFrame');
       if (frame) frame.style.display='block';
       setStep(3);
       if (capBtn) capBtn.style.display='inline-block';
@@ -3015,18 +3017,18 @@ function analyze() {
 function resetSim() {
   // Stop any camera stream
   stopDesktopCamera(false);
-  var capCv    = document.getElementById('capCv');
-  var prev     = document.getElementById('previewImg');
-  var zone     = document.getElementById('camArea');
-  var capBtn   = document.getElementById('capBtn');
-  var rstBtn   = document.getElementById('rstBtn');
-  var baFrame  = document.getElementById('baResultFrame');
-  var imgUp    = document.getElementById('imgUp');
-  var camCap   = document.getElementById('camCapture');
+  const capCv    = document.getElementById('capCv');
+  const prev     = document.getElementById('previewImg');
+  const zone     = document.getElementById('camArea');
+  const capBtn   = document.getElementById('capBtn');
+  const rstBtn   = document.getElementById('rstBtn');
+  const baFrame  = document.getElementById('baResultFrame');
+  const imgUp    = document.getElementById('imgUp');
+  const camCap   = document.getElementById('camCapture');
   if (capCv)   { capCv.width=0; capCv.height=0; }
-  var dc = document.getElementById('drawingCanvas');
+  const dc = document.getElementById('drawingCanvas');
   if (dc) { dc.style.display = 'none'; if (_drawCtx) _drawCtx.clearRect(0,0,dc.width,dc.height); }
-  var drawControls = document.getElementById('drawingControls');
+  const drawControls = document.getElementById('drawingControls');
   if (drawControls) drawControls.style.display = 'none';
   window._cleanPhotoPixels = null;
   if (prev)    { prev.src=''; prev.style.display='none'; }
@@ -3036,21 +3038,21 @@ function resetSim() {
   if (baFrame) baFrame.style.display='none';
   if (imgUp)   imgUp.value='';
   if (camCap)  camCap.value='';
-  var advBox   = document.getElementById('adviceBox');
-  var scoreRow = document.getElementById('simScoreRow');
+  const advBox   = document.getElementById('adviceBox');
+  const scoreRow = document.getElementById('simScoreRow');
   if (advBox)   advBox.style.display='none';
   if (scoreRow) scoreRow.style.display='none';
-  var pg = document.getElementById('photoGuide');
+  const pg = document.getElementById('photoGuide');
   if (pg) pg.style.display='block';
   setStep(1);
 }
 
 // Hero動画: マルチOS対応フェードイン (iOS Safari / Android Chrome / Win / macOS)
 (function() {
-  var vid = document.getElementById('heroVid');
-  var bgImg = document.querySelector('.hero-bg-img');
+  const vid = document.getElementById('heroVid');
+  const bgImg = document.querySelector('.hero-bg-img');
   if (!vid) return;
-  var shown = false;
+  let shown = false;
   function showVideo() {
     if (shown) return;
     shown = true;
@@ -3068,7 +3070,7 @@ function resetSim() {
   // 即座に再生可能なら表示（ブラウザキャッシュ対応）
   if (vid.readyState >= 2) showVideo();
   // 自動再生トリガー（全OS共通）
-  var playPromise = vid.play();
+  const playPromise = vid.play();
   if (playPromise !== undefined) {
     playPromise.catch(function() {
       // autoplayブロック時: muted確認後リトライ
