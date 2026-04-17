@@ -1592,7 +1592,8 @@ function extractDotCount(text) {
   while ((match = areaPattern.exec(text)) !== null) {
     let val;
     if (match[2]) {
-      val = parseInt(match[2].replace(/,/g, ''));
+      // Range notation (e.g. "10,000 to 15,000 dots") — use midpoint
+      val = Math.round((parseInt(match[1].replace(/,/g, '')) + parseInt(match[2].replace(/,/g, ''))) / 2);
     } else if (match[3]) {
       val = parseInt(match[3].replace(/,/g, ''));
     } else {
@@ -1921,6 +1922,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       if (regionPx < 200) return null;
 
       console.log('[SMP] Yellow outline detected: ' + yCount + ' yellow px, region ' + regionPx + 'px');
+      showToast('✏️ Hand-drawn outline detected', 'info');
       return { mask: mask, regionPx: regionPx, yellowMask: yMask };
     }
 
@@ -2962,6 +2964,7 @@ function resetSim() {
   if (capCv)   { capCv.width=0; capCv.height=0; }
   const dc = document.getElementById('drawingCanvas');
   if (dc) { dc.style.display = 'none'; if (_drawCtx) _drawCtx.clearRect(0,0,dc.width,dc.height); }
+  _drawHistory = []; // Clear undo history
   const drawControls = document.getElementById('drawingControls');
   if (drawControls) drawControls.style.display = 'none';
   window._cleanPhotoPixels = null;

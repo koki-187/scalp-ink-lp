@@ -1596,7 +1596,8 @@ function extractDotCount(text) {
   while ((match = areaPattern.exec(text)) !== null) {
     const n1 = match[1].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/,/g, '');
     const n2 = match[2] ? match[2].replace(/[０-９]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); }).replace(/,/g, '') : '';
-    const val = n2 ? parseInt(n2) : parseInt(n1);
+    // 範囲表記（例: 10,000～15,000ドット）の場合は中央値を使用
+    const val = n2 ? Math.round((parseInt(n1) + parseInt(n2)) / 2) : parseInt(n1);
     if (!isNaN(val) && val > 100) dotNums.push(val);
   }
   if (dotNums.length > 0) {
@@ -1940,6 +1941,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       if (regionPx < 200) return null; // 内側が小さすぎる
 
       console.log('[SMP] 黄色アウトライン検出: ' + yCount + '黄色px, 施術領域' + regionPx + 'px');
+      showToast('✏️ 手描きアウトラインを検出しました', 'info');
       return { mask: mask, regionPx: regionPx, yellowMask: yMask };
     }
 
@@ -3028,6 +3030,7 @@ function resetSim() {
   if (capCv)   { capCv.width=0; capCv.height=0; }
   const dc = document.getElementById('drawingCanvas');
   if (dc) { dc.style.display = 'none'; if (_drawCtx) _drawCtx.clearRect(0,0,dc.width,dc.height); }
+  _drawHistory = []; // Undo履歴もクリア
   const drawControls = document.getElementById('drawingControls');
   if (drawControls) drawControls.style.display = 'none';
   window._cleanPhotoPixels = null;
