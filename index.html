@@ -1091,7 +1091,6 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         </div>
       </div>
     </div>
-    <input type="hidden" id="apiKey">
   </div>
 </section>
 
@@ -1619,6 +1618,7 @@ let _lastDrawX = 0, _lastDrawY = 0;
 let _drawCtx = null;
 let _drawHistory = [];   // Undo履歴（ImageData配列）
 const _HISTORY_MAX = 20;   // 最大undo段数
+let _keydownListenerActive = false; // リスナー二重登録防止フラグ
 
 function initDrawingCanvas() {
   const photo = document.getElementById('capCv');
@@ -1639,8 +1639,11 @@ function initDrawingCanvas() {
   dc.ontouchend   = onDrawEnd;
   const drawControls = document.getElementById('drawingControls');
   if (drawControls) drawControls.style.display = 'block';
-  // Ctrl+Z / Cmd+Z でundo
-  document.addEventListener('keydown', onDrawKeydown);
+  // Ctrl+Z / Cmd+Z でundo（二重登録防止）
+  if (!_keydownListenerActive) {
+    document.addEventListener('keydown', onDrawKeydown);
+    _keydownListenerActive = true;
+  }
 }
 
 function onDrawKeydown(e) {
@@ -1811,6 +1814,10 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
   const cv = document.getElementById('smpSimCanvas');
   if (!cv) return;
   const img = new Image();
+  img.onerror = function() {
+    console.error('[SMP] シミュレーション画像の読み込みに失敗しました');
+    showToast('シミュレーション画像の表示に失敗しました。やり直してください。', 'error');
+  };
   img.onload = function() {
     const w = img.width, h = img.height;
     cv.width = w; cv.height = h;
@@ -2356,6 +2363,18 @@ function extractStructuredData(responseText) {
   }
   if (!data) return null;
 
+  // condition_type バリデーション（許可リスト外は自動マッピング）
+  const validCondTypes = ['thinning', 'hairline', 'scar', 'patch', 'combined'];
+  if (data.condition_type && !validCondTypes.includes(data.condition_type)) {
+    const ct = String(data.condition_type).toLowerCase();
+    if (/scar|wound|burn|keloid|transplant|fue|fut/.test(ct)) data.condition_type = 'scar';
+    else if (/hairline|recession|mchar|widow/.test(ct)) data.condition_type = 'hairline';
+    else if (/patch|areata|alopecia|circle/.test(ct)) data.condition_type = 'patch';
+    else if (/combined|mixed|multiple/.test(ct)) data.condition_type = 'combined';
+    else data.condition_type = 'thinning'; // デフォルト
+    console.warn('[SMP] condition_type を自動マッピング:', data.condition_type);
+  }
+
   // ポリゴン座標のバリデーション＆サニタイズ
   if (data.treatment_regions && Array.isArray(data.treatment_regions)) {
     data.treatment_regions = data.treatment_regions.filter(function(r) {
@@ -2528,8 +2547,14 @@ function estimateScores(text, condType) {
   condType = condType || detectConditionType(text);
   let labels, s1, s2, s3;
 
+  // 決定論的疑似乱数（同一テキスト→同一スコア, Math.randomを排除）
+  let _seed = 0;
+  for (let i = 0; i < Math.min(text.length, 200); i++) _seed = (_seed * 31 + text.charCodeAt(i)) >>> 0;
   function randRange(min, max) {
-    return min + Math.floor(Math.random() * (max - min + 1));
+    _seed = (_seed ^ (_seed >>> 16)) >>> 0;
+    _seed = Math.imul(_seed, 0x7feb352d) >>> 0;
+    _seed = (_seed ^ (_seed >>> 15)) >>> 0;
+    return min + (_seed % (max - min + 1));
   }
 
   // Detect Norwood/Ludwig scale from text for severity-adjusted scoring
@@ -2932,8 +2957,8 @@ function analyze() {
 '}\n' +
 '```';
 
-  // Gemini API - フォールバックチェーン対応
-  const requestBody = JSON.stringify({
+  // Gemini API - フォールバックチェーン対応（requestBodyをObjectで保持し二重変換を排除）
+  const requestBodyObj = {
     system_instruction: {
       parts: [{
         text: 'あなたはSMP（スカルプマイクロピグメンテーション）の専門家です。頭皮画像を解析し、正確な施術プランを提案します。' +
@@ -2948,8 +2973,29 @@ function analyze() {
         { text: prompt }
       ]
     }],
-    generationConfig: { maxOutputTokens: 4096, temperature: 0.3, topP: 0.85, topK: 40 }
-  });
+    generationConfig: { maxOutputTokens: 6144, temperature: 0.2, topP: 0.85, topK: 40 }
+  };
+
+  // AI処理中の経過タイマー
+  let _ldSeconds = 0;
+  const _ldTimerEl = document.querySelector('#ldDots .ld-msg');
+  const _ldTimerInterval = setInterval(function() {
+    _ldSeconds++;
+    if (_ldTimerEl) {
+      if (_ldSeconds < 30) {
+        _ldTimerEl.textContent = '施術シミュレーション中... ' + _ldSeconds + '秒経過';
+      } else if (_ldSeconds < 60) {
+        _ldTimerEl.textContent = 'AIが詳細解析中... ' + _ldSeconds + '秒（もう少しお待ちください）';
+      } else {
+        _ldTimerEl.textContent = '解析に時間がかかっています... ' + _ldSeconds + '秒（通常60秒以内に完了します）';
+      }
+    }
+  }, 1000);
+
+  function stopLdTimer() {
+    clearInterval(_ldTimerInterval);
+    if (_ldTimerEl) _ldTimerEl.textContent = '施術シミュレーション中... 約30〜60秒お待ちください';
+  }
 
   function tryGeminiModel(modelIndex) {
     if (modelIndex >= _GEMINI_MODELS.length) {
@@ -2965,20 +3011,29 @@ function analyze() {
       return;
     }
     const model = _GEMINI_MODELS[modelIndex];
-    // Cloudflare Worker プロキシ経由でGemini APIを呼び出す
+    // AbortController で90秒タイムアウト（無限待機防止）
+    const abortCtrl = new AbortController();
+    const abortTimer = setTimeout(function() { abortCtrl.abort(); }, 90000);
+    // Cloudflare Worker プロキシ経由でGemini APIを呼び出す（requestBodyObj直接参照で二重変換排除）
     fetch(_GEMINI_PROXY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: model, body: JSON.parse(requestBody) })
+      body: JSON.stringify({ model: model, body: requestBodyObj }),
+      signal: abortCtrl.signal
     })
     .then(function(res){
-      if (!res.ok) return res.json().then(function(e){
-        const errMsg = (e.error && e.error.message) || 'API error ' + res.status;
-        throw new Error(errMsg);
-      });
+      clearTimeout(abortTimer);
+      if (!res.ok) {
+        return res.text().then(function(body) {
+          let errMsg = 'API error ' + res.status;
+          try { const ej = JSON.parse(body); errMsg = (ej.error && ej.error.message) || errMsg; } catch(ex) {}
+          throw new Error(errMsg);
+        });
+      }
       return res.json();
     })
     .then(function(data){
+      stopLdTimer();
       let txt = '';
       try {
         txt = data.candidates[0].content.parts[0].text;
@@ -2990,7 +3045,10 @@ function analyze() {
       if (ldDots) ldDots.classList.remove('on');
     })
     .catch(function(err){
+      clearTimeout(abortTimer);
+      stopLdTimer();
       const msg = err && err.message ? err.message : '';
+      const isAborted = err && err.name === 'AbortError';
       const isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
       const isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
       if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
@@ -2998,9 +3056,11 @@ function analyze() {
         tryGeminiModel(modelIndex + 1);
         return;
       }
-      const displayMsg = isAuthErr
+      const displayMsg = isAborted
+        ? '⚠ AI解析がタイムアウトしました（90秒超過）。<br>接続状況を確認して、もう一度お試しください。'
+        : isAuthErr
         ? '⚠ APIキーが無効です。管理者にお問い合わせください。'
-        : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>ネットワーク接続をご確認ください。';
+        : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>時間をおいて再度お試しください。';
       const advBox = document.getElementById('adviceBox');
       const claudeEl = document.getElementById('claudeAdvice');
       if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
@@ -3031,6 +3091,8 @@ function resetSim() {
   const dc = document.getElementById('drawingCanvas');
   if (dc) { dc.style.display = 'none'; if (_drawCtx) _drawCtx.clearRect(0,0,dc.width,dc.height); }
   _drawHistory = []; // Undo履歴もクリア
+  document.removeEventListener('keydown', onDrawKeydown);
+  _keydownListenerActive = false;
   const drawControls = document.getElementById('drawingControls');
   if (drawControls) drawControls.style.display = 'none';
   window._cleanPhotoPixels = null;

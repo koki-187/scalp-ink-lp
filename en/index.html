@@ -1086,7 +1086,6 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         </div>
       </div>
     </div>
-    <input type="hidden" id="apiKey">
   </div>
 </section>
 
@@ -1619,6 +1618,7 @@ let _lastDrawX = 0, _lastDrawY = 0;
 let _drawCtx = null;
 let _drawHistory = [];   // Undo history (ImageData array)
 const _HISTORY_MAX = 20;   // Max undo steps
+let _keydownListenerActive = false; // Prevent duplicate listener registration
 
 function initDrawingCanvas() {
   const photo = document.getElementById('capCv');
@@ -1637,7 +1637,10 @@ function initDrawingCanvas() {
   dc.ontouchstart = function(e) { e.preventDefault(); onDrawStart(e); };
   dc.ontouchmove  = function(e) { e.preventDefault(); onDrawMove(e); };
   dc.ontouchend   = onDrawEnd;
-  document.addEventListener('keydown', onDrawKeydown);
+  if (!_keydownListenerActive) {
+    document.addEventListener('keydown', onDrawKeydown);
+    _keydownListenerActive = true;
+  }
   const drawControls = document.getElementById('drawingControls');
   if (drawControls) drawControls.style.display = 'block';
 }
@@ -1803,6 +1806,10 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
   const cv = document.getElementById('smpSimCanvas');
   if (!cv) return;
   const img = new Image();
+  img.onerror = function() {
+    console.error('[SMP] Simulation image failed to load');
+    showToast('Simulation image failed to display. Please try again.', 'error');
+  };
   img.onload = function() {
     const w = img.width, h = img.height;
     cv.width = w; cv.height = h;
@@ -2306,6 +2313,18 @@ function extractStructuredData(responseText) {
   }
   if (!data) return null;
 
+  // condition_type validation (allowlist + auto-mapping)
+  const validCondTypes = ['thinning', 'hairline', 'scar', 'patch', 'combined'];
+  if (data.condition_type && !validCondTypes.includes(data.condition_type)) {
+    const ct = String(data.condition_type).toLowerCase();
+    if (/scar|wound|burn|keloid|transplant|fue|fut/.test(ct)) data.condition_type = 'scar';
+    else if (/hairline|recession|mchar|widow/.test(ct)) data.condition_type = 'hairline';
+    else if (/patch|areata|alopecia|circle/.test(ct)) data.condition_type = 'patch';
+    else if (/combined|mixed|multiple/.test(ct)) data.condition_type = 'combined';
+    else data.condition_type = 'thinning';
+    console.warn('[SMP] condition_type auto-mapped to:', data.condition_type);
+  }
+
   // Polygon coordinate validation & sanitization
   if (data.treatment_regions && Array.isArray(data.treatment_regions)) {
     data.treatment_regions = data.treatment_regions.filter(function(r) {
@@ -2453,8 +2472,14 @@ function estimateScores(text, condType) {
   condType = condType || detectConditionType(text);
   let labels, s1, s2, s3;
 
+  // Deterministic pseudo-random (same text → same score, no Math.random)
+  let _seed = 0;
+  for (let i = 0; i < Math.min(text.length, 200); i++) _seed = (_seed * 31 + text.charCodeAt(i)) >>> 0;
   function randRange(min, max) {
-    return min + Math.floor(Math.random() * (max - min + 1));
+    _seed = (_seed ^ (_seed >>> 16)) >>> 0;
+    _seed = Math.imul(_seed, 0x7feb352d) >>> 0;
+    _seed = (_seed ^ (_seed >>> 15)) >>> 0;
+    return min + (_seed % (max - min + 1));
   }
 
   // Detect Norwood/Ludwig scale from text for severity-adjusted scoring
@@ -2869,8 +2894,8 @@ function analyze() {
 '}\n' +
 '```';
 
-  // Gemini API - fallback chain
-  const requestBody = JSON.stringify({
+  // Gemini API - fallback chain (keep as object, no double JSON conversion)
+  const requestBodyObj = {
     system_instruction: {
       parts: [{
         text: 'You are an SMP (Scalp Micropigmentation) specialist. Analyze scalp images and propose accurate treatment plans. ' +
@@ -2885,11 +2910,33 @@ function analyze() {
         { text: prompt }
       ]
     }],
-    generationConfig: { maxOutputTokens: 3072, temperature: 0.4, topP: 0.85, topK: 40 }
-  });
+    generationConfig: { maxOutputTokens: 6144, temperature: 0.2, topP: 0.85, topK: 40 }
+  }; // end requestBodyObj
+
+  // Loading timer (elapsed seconds counter)
+  let _ldSeconds = 0;
+  const _ldTimerEl = document.querySelector('#ldDots .ld-msg');
+  const _ldTimerInterval = setInterval(function() {
+    _ldSeconds++;
+    if (_ldTimerEl) {
+      if (_ldSeconds < 30) {
+        _ldTimerEl.textContent = 'Simulation in progress... ' + _ldSeconds + 's elapsed';
+      } else if (_ldSeconds < 60) {
+        _ldTimerEl.textContent = 'AI analyzing in detail... ' + _ldSeconds + 's (almost there)';
+      } else {
+        _ldTimerEl.textContent = 'Taking longer than usual... ' + _ldSeconds + 's (usually under 60s)';
+      }
+    }
+  }, 1000);
+
+  function stopLdTimer() {
+    clearInterval(_ldTimerInterval);
+    if (_ldTimerEl) _ldTimerEl.textContent = 'Simulation in progress... approx. 30-60 seconds';
+  }
 
   function tryGeminiModel(modelIndex) {
     if (modelIndex >= _GEMINI_MODELS.length) {
+      stopLdTimer();
       const advBox = document.getElementById('adviceBox');
       const claudeEl = document.getElementById('claudeAdvice');
       if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">⚠ All AI models have reached their usage limits.<br>Please try again shortly (usually recovers within 1 minute).</span>';
@@ -2902,20 +2949,29 @@ function analyze() {
       return;
     }
     const model = _GEMINI_MODELS[modelIndex];
-    // Call Cloudflare Worker proxy — API key never touches the browser
+    // AbortController: 90-second timeout to prevent infinite wait
+    const abortCtrl = new AbortController();
+    const abortTimer = setTimeout(function() { abortCtrl.abort(); }, 90000);
+    // Call Cloudflare Worker proxy — requestBodyObj directly (no double JSON conversion)
     fetch(_GEMINI_PROXY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: model, body: JSON.parse(requestBody) })
+      body: JSON.stringify({ model: model, body: requestBodyObj }),
+      signal: abortCtrl.signal
     })
     .then(function(res){
-      if (!res.ok) return res.json().then(function(e){
-        const errMsg = (e.error && e.error.message) || 'API error ' + res.status;
-        throw new Error(errMsg);
-      });
+      clearTimeout(abortTimer);
+      if (!res.ok) {
+        return res.text().then(function(body) {
+          let errMsg = 'API error ' + res.status;
+          try { const ej = JSON.parse(body); errMsg = (ej.error && ej.error.message) || errMsg; } catch(ex) {}
+          throw new Error(errMsg);
+        });
+      }
       return res.json();
     })
     .then(function(data){
+      stopLdTimer();
       let txt = '';
       try { txt = data.candidates[0].content.parts[0].text; }
       catch(ex) { txt = 'Could not retrieve AI response. Please try again.'; }
@@ -2924,7 +2980,10 @@ function analyze() {
       if (ldDots) ldDots.classList.remove('on');
     })
     .catch(function(err){
+      clearTimeout(abortTimer);
+      stopLdTimer();
       const msg = err && err.message ? err.message : '';
+      const isAborted = err && err.name === 'AbortError';
       const isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
       const isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
       if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
@@ -2932,9 +2991,11 @@ function analyze() {
         tryGeminiModel(modelIndex + 1);
         return;
       }
-      const displayMsg = isAuthErr
+      const displayMsg = isAborted
+        ? '⚠ AI analysis timed out (90 seconds). Please check your connection and try again.'
+        : isAuthErr
         ? '⚠ Invalid API key. Please contact the administrator.'
-        : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>Please check your network connection.';
+        : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>Please try again after a moment.';
       const advBox = document.getElementById('adviceBox');
       const claudeEl = document.getElementById('claudeAdvice');
       if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
@@ -2965,6 +3026,8 @@ function resetSim() {
   const dc = document.getElementById('drawingCanvas');
   if (dc) { dc.style.display = 'none'; if (_drawCtx) _drawCtx.clearRect(0,0,dc.width,dc.height); }
   _drawHistory = []; // Clear undo history
+  document.removeEventListener('keydown', onDrawKeydown);
+  _keydownListenerActive = false;
   const drawControls = document.getElementById('drawingControls');
   if (drawControls) drawControls.style.display = 'none';
   window._cleanPhotoPixels = null;
