@@ -367,6 +367,10 @@ section{position:relative;z-index:1;}
 .rpt-ul{margin:6px 0;padding-left:16px;list-style:none;}
 .rpt-ul li{position:relative;padding-left:12px;margin-bottom:4px;font-size:.78rem;color:rgba(245,245,240,.68);line-height:1.7;}
 .rpt-ul li::before{content:'';position:absolute;left:0;top:.6em;width:4px;height:4px;border-radius:50%;background:var(--gd);}
+.rpt-ol{margin:6px 0;padding-left:20px;list-style:decimal;}
+.rpt-ol li{margin-bottom:5px;font-size:.78rem;color:rgba(245,245,240,.68);line-height:1.7;}
+.rpt-ol li::marker{color:var(--gd);font-family:"Bebas Neue",sans-serif;font-size:.85rem;}
+.rpt-h4{font-size:.75rem;color:rgba(245,245,240,.8);letter-spacing:.04em;font-weight:600;margin:10px 0 4px;padding-left:8px;border-left:2px solid rgba(201,168,76,.4);}
 .rpt-code{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.1);padding:10px 14px;margin:8px 0;font-size:.74rem;line-height:1.6;color:rgba(245,245,240,.72);}
 .ld-msg{width:100%;text-align:center;font-size:.68rem;color:rgba(201,168,76,.5);letter-spacing:.12em;margin-top:8px;}
 
@@ -1094,7 +1098,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
             <a href="#booking" class="btn-p" style="font-size:.8rem;padding:12px 24px;">&#128197; このイメージで予約する</a>
             <a href="https://line.me/R/ti/p/@045ovoxr" target="_blank" rel="noopener" class="btn-o" style="font-size:.8rem;padding:12px 20px;border-color:rgba(0,195,0,0.5);color:#00c300;">&#128172; LINEで無料相談</a>
           </div>
-          <button id="downloadSimBtn" onclick="downloadSimResult()" style="display:none;background:none;border:1px solid rgba(245,245,240,0.2);color:rgba(245,245,240,.45);font-size:.7rem;padding:8px 16px;cursor:pointer;border-radius:4px;letter-spacing:.06em;">&#128190; シミュレーション画像を保存</button>
+          <button id="downloadSimBtn" onclick="downloadSimResult()" style="display:none;background:none;border:1px solid rgba(245,245,240,0.3);color:rgba(245,245,240,.72);font-size:.7rem;padding:8px 16px;cursor:pointer;border-radius:4px;letter-spacing:.06em;transition:all .25s;" onmouseover="this.style.borderColor='rgba(201,168,76,.6)';this.style.color='#d4af37';" onmouseout="this.style.borderColor='rgba(245,245,240,0.3)';this.style.color='rgba(245,245,240,.72)';">&#128190; シミュレーション画像を保存</button>
         </div>
       </div>
     </div>
@@ -1474,6 +1478,7 @@ function renderMarkdown(text) {
   const out = [];
   let inTable = false;
   let inList = false;
+  let inOList = false; // 番号付きリスト（ol）の開始済みフラグ
   let headerRowDone = false;
 
   for (let i = 0; i < lines.length; i++) {
@@ -1517,20 +1522,40 @@ function renderMarkdown(text) {
       continue;
     }
 
-    // Headings
+    // Headings （#### → ### → ## の順に判定、長いものから先に）
+    if (/^#### (.+)$/.test(trimmed)) {
+      if (inList)  { out.push('</ul>');  inList  = false; }
+      if (inOList) { out.push('</ol>'); inOList = false; }
+      out.push('<p class="rpt-h4">' + trimmed.replace(/^#### /,'') + '</p>');
+      continue;
+    }
     if (/^### (.+)$/.test(trimmed)) {
-      if (inList) { out.push('</ul>'); inList = false; }
+      if (inList)  { out.push('</ul>');  inList  = false; }
+      if (inOList) { out.push('</ol>'); inOList = false; }
       out.push('<h4 class="rpt-h3">' + trimmed.replace(/^### /,'') + '</h4>');
       continue;
     }
     if (/^## (.+)$/.test(trimmed)) {
-      if (inList) { out.push('</ul>'); inList = false; }
+      if (inList)  { out.push('</ul>');  inList  = false; }
+      if (inOList) { out.push('</ol>'); inOList = false; }
       out.push('<h3 class="rpt-h2">' + trimmed.replace(/^## /,'') + '</h3>');
       continue;
     }
 
-    // List items (- item or * item)
+    // Numbered list items (1. item) — <ol> 生成
+    if (/^\d+\.\s+(.+)$/.test(trimmed)) {
+      if (inList)  { out.push('</ul>');  inList  = false; }
+      if (!inOList) { out.push('<ol class="rpt-ol">'); inOList = true; }
+      out.push('<li>' + trimmed.replace(/^\d+\.\s+/,'') + '</li>');
+      continue;
+    } else if (inOList && trimmed === '') {
+      out.push('</ol>');
+      inOList = false;
+    }
+
+    // Bullet list items (- item or * item)
     if (/^[-*]\s+(.+)$/.test(trimmed)) {
+      if (inOList) { out.push('</ol>'); inOList = false; }
       if (!inList) {
         out.push('<ul class="rpt-ul">');
         inList = true;
@@ -1544,17 +1569,19 @@ function renderMarkdown(text) {
 
     // Empty lines
     if (trimmed === '') {
-      if (!inList) out.push('<br>');
+      if (!inList && !inOList) out.push('<br>');
       continue;
     }
 
-    // Normal text
-    if (inList) { out.push('</ul>'); inList = false; }
+    // Normal text — 開いているリストを閉じる
+    if (inList)  { out.push('</ul>');  inList  = false; }
+    if (inOList) { out.push('</ol>'); inOList = false; }
     out.push(ln + '<br>');
   }
 
   if (inTable) out.push('</table>');
-  if (inList) out.push('</ul>');
+  if (inList)  out.push('</ul>');
+  if (inOList) out.push('</ol>');
 
   let result = out.join('\n');
 
@@ -1766,6 +1793,7 @@ let _baseDotsCache = 129600; // デフォルト
 let _sliderTimer = null;
 let _currentAbortCtrl = null;   // 実行中APIリクエストのAbortController（resetSimで中断可能）
 let _ldTimerIntervalRef = null; // ローディングタイマーID（resetSimからクリア可能）
+let _userAborted = false;       // ユーザー操作によるリセット中フラグ（catch競合防止）
 function onDensitySlider(val) {
   const offset = parseInt(val, 10);
   const totalDots = Math.max(10000, _baseDotsCache + offset);
@@ -2910,6 +2938,7 @@ function analyze() {
     showToast('インターネット接続を確認してください。オフラインではシミュレーションできません。', 'error');
     return;
   }
+  _userAborted = false; // 新しい解析開始時にリセット
 
   const capBtn=document.getElementById('capBtn'),rstBtn=document.getElementById('rstBtn');
   const ldDots=document.getElementById('ldDots');
@@ -3101,6 +3130,8 @@ function analyze() {
 
   function tryGeminiModel(modelIndex) {
     if (modelIndex >= _GEMINI_MODELS.length) {
+      stopLdTimer(); // タイマーリーク防止
+      if (_userAborted) { _userAborted = false; return; } // リセット済みなら何もしない
       const advBox = document.getElementById('adviceBox');
       const claudeEl = document.getElementById('claudeAdvice');
       if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">⚠ すべてのAIモデルが利用上限に達しています。<br>時間をおいて再度お試しください（通常1分程度で回復します）。</span>';
@@ -3150,12 +3181,15 @@ function analyze() {
     .catch(function(err){
       clearTimeout(abortTimer);
       stopLdTimer();
+      // ユーザーが「やり直す」を押してリセットした場合 → UI上書きを防止して静かに終了
+      if (_userAborted) { _userAborted = false; return; }
       const msg = err && err.message ? err.message : '';
       const isAborted = err && err.name === 'AbortError';
       const isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
       const isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
       if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
         console.log('[AI Sim] ' + model + ' quota exceeded, trying ' + _GEMINI_MODELS[modelIndex + 1]);
+        showToast('接続が混雑しています。別のAIモデルで再試行中...', 'info');
         tryGeminiModel(modelIndex + 1);
         return;
       }
@@ -3194,6 +3228,8 @@ function downloadSimResult() {
 }
 
 function resetSim() {
+  // ユーザー操作によるリセット — catch ハンドラがUI上書きしないようフラグを先に立てる
+  _userAborted = true;
   // 実行中のAPIリクエストを中断（中断しないと古い結果が後から表示されてしまう）
   if (_currentAbortCtrl) { _currentAbortCtrl.abort(); _currentAbortCtrl = null; }
   // ローディングタイマーを停止
