@@ -1086,8 +1086,15 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           <div id="claudeAdvice" style="font-size:.82rem;color:rgba(245,245,240,.72);line-height:1.92;"></div>
         </div>
 
-        <div style="text-align:center;margin-top:18px;">
-          <a href="#booking" class="btn-p">このイメージで予約する</a>
+        <!-- シミュレーション結果 CTA -->
+        <div style="margin-top:24px;padding:20px;background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.04));border:1px solid rgba(201,168,76,0.3);border-radius:12px;text-align:center;">
+          <div style="font-size:.8rem;color:rgba(245,245,240,.55);letter-spacing:.1em;margin-bottom:4px;">次のステップ</div>
+          <div style="font-size:1rem;color:#d4af37;font-weight:500;margin-bottom:14px;letter-spacing:.05em;">このシミュレーション結果をもとに<br>無料カウンセリングを受けてみませんか？</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">
+            <a href="#booking" class="btn-p" style="font-size:.8rem;padding:12px 24px;">&#128197; このイメージで予約する</a>
+            <a href="https://line.me/R/ti/p/@045ovoxr" target="_blank" rel="noopener" class="btn-o" style="font-size:.8rem;padding:12px 20px;border-color:rgba(0,195,0,0.5);color:#00c300;">&#128172; LINEで無料相談</a>
+          </div>
+          <button id="downloadSimBtn" onclick="downloadSimResult()" style="display:none;background:none;border:1px solid rgba(245,245,240,0.2);color:rgba(245,245,240,.45);font-size:.7rem;padding:8px 16px;cursor:pointer;border-radius:4px;letter-spacing:.06em;">&#128190; シミュレーション画像を保存</button>
         </div>
       </div>
     </div>
@@ -1757,6 +1764,8 @@ function showToast(msg, type) {
 let _smpCache = null;
 let _baseDotsCache = 129600; // デフォルト
 let _sliderTimer = null;
+let _currentAbortCtrl = null;   // 実行中APIリクエストのAbortController（resetSimで中断可能）
+let _ldTimerIntervalRef = null; // ローディングタイマーID（resetSimからクリア可能）
 function onDensitySlider(val) {
   const offset = parseInt(val, 10);
   const totalDots = Math.max(10000, _baseDotsCache + offset);
@@ -1774,7 +1783,7 @@ function onDensitySlider(val) {
   }, 150);
 }
 
-function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMultiplier) {
+function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMultiplier, onComplete) {
   /*
    * SMP（スカルプマイクロピグメンテーション）シミュレーション v9
    * ══════════════════════════════════════════════════════════════════
@@ -2343,6 +2352,8 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     }
 
     img.onload = null; img.src = '';
+    // onComplete コールバック（スクロール等のUI後処理）
+    if (typeof onComplete === 'function') onComplete();
   };
   img.src = beforeDataURL;
 }
@@ -2485,7 +2496,16 @@ function showBAResult(beforeDataURL, claudeText) {
   const baseDots = (structured && structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
   _baseDotsCache = baseDots;
   if (sliderVal) sliderVal.textContent = Math.round(baseDots / 10000) + '万';
-  drawSMPSimulation(beforeDataURL, condType, structured, 1.0);
+  // canvas描画完了後にスクロール＋ダウンロードボタン表示
+  drawSMPSimulation(beforeDataURL, condType, structured, 1.0, function() {
+    // ダウンロードボタンを表示（canvas描画完了後）
+    const dlBtn = document.getElementById('downloadSimBtn');
+    if (dlBtn) dlBtn.style.display = 'inline-block';
+    if (frame) {
+      // モバイルでは結果先頭にスムーズスクロール（block:'start'で視認性確保）
+      frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
 
   // スコアバー表示（構造化データ優先、フォールバックは推定値）
   if (scoreRow) {
@@ -2539,8 +2559,6 @@ function showBAResult(beforeDataURL, claudeText) {
     if (claudeTextEl) claudeTextEl.innerHTML += pricingHtml;
   }
 
-  // スクロール
-  if (frame) frame.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
 function estimateScores(text, condType) {
@@ -2721,41 +2739,119 @@ function resizeForAPI(canvas, maxPx) {
   return tmp;
 }
 
+/* --- EXIF orientation helpers (iOS写真の向き自動補正) --- */
+function readEXIFOrientation(file, callback) {
+  // JPEGのみEXIFを読む（PNG/WebPは常に向き=1）
+  if (!file.type || !file.type.includes('jpeg') && !file.type.includes('jpg') && !file.name || !/\.(jpe?g|heic|heif)$/i.test(file.name)) {
+    callback(1); return;
+  }
+  const rdr = new FileReader();
+  rdr.onload = function(e) {
+    let orientation = 1;
+    try {
+      const view = new DataView(e.target.result);
+      if (view.getUint16(0, false) === 0xFFD8) {
+        let off = 2;
+        while (off < view.byteLength) {
+          const marker = view.getUint16(off, false);
+          off += 2;
+          if (marker === 0xFFE1) {
+            if (off + 6 <= view.byteLength && view.getUint32(off + 2, false) === 0x45786966) {
+              const little = view.getUint16(off + 8, false) === 0x4949;
+              const ifdStart = off + 10;
+              if (view.getUint32(ifdStart, little) === 0x002A) {
+                const ifd = ifdStart + view.getUint32(ifdStart + 4, little);
+                const entries = view.getUint16(ifd, little);
+                for (let i = 0; i < entries; i++) {
+                  if (view.getUint16(ifd + 2 + i * 12, little) === 0x0112) {
+                    orientation = view.getUint16(ifd + 2 + i * 12 + 8, little);
+                    break;
+                  }
+                }
+              }
+            }
+            break;
+          } else if ((marker & 0xFF00) !== 0xFF00) break;
+          else off += view.getUint16(off, false);
+        }
+      }
+    } catch(ex) { /* EXIF parse error → default orientation 1 */ }
+    callback(orientation);
+  };
+  rdr.onerror = function() { callback(1); };
+  rdr.readAsArrayBuffer(file.slice(0, 131072)); // 先頭128KBでEXIF取得
+}
+
+function applyEXIFOrientation(img, orientation, canvas) {
+  const ctx = canvas.getContext('2d');
+  const w = img.naturalWidth || img.width || 640;
+  const h = img.naturalHeight || img.height || 480;
+  // 向き5〜8: 90°/270°回転 → 縦横サイズを入れ替える
+  if (orientation >= 5) { canvas.width = h; canvas.height = w; }
+  else                  { canvas.width = w; canvas.height = h; }
+  ctx.save();
+  switch (orientation) {
+    case 2: ctx.transform(-1, 0, 0,  1,  w, 0); break;
+    case 3: ctx.transform(-1, 0, 0, -1,  w, h); break;
+    case 4: ctx.transform( 1, 0, 0, -1,  0, h); break;
+    case 5: ctx.transform( 0, 1, 1,  0,  0, 0); break;
+    case 6: ctx.transform( 0, 1,-1,  0,  h, 0); break;
+    case 7: ctx.transform( 0,-1,-1,  0,  h, w); break;
+    case 8: ctx.transform( 0,-1, 1,  0,  0, w); break;
+    default: break; // orientation 1: そのまま
+  }
+  ctx.drawImage(img, 0, 0);
+  ctx.restore();
+}
+
 /* --- File / drop image loader --- */
 function loadImageFile(file) {
   if (!file) return;
   // Accept all image types (including HEIC on iOS Safari)
   if (file.type && !file.type.startsWith('image/') && file.type !== '') return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    const img = new Image();
-    img.onerror = function() { showToast('画像の読み込みに失敗しました。JPG・PNG・WebP形式をお試しください。', 'error'); };
-    img.onload = function() {
-      const cv = document.getElementById('capCv');
-      if (!cv) return;
-      cv.width  = img.naturalWidth  || img.width  || 640;
-      cv.height = img.naturalHeight || img.height || 480;
-      cv.getContext('2d').drawImage(img, 0, 0);
-      // Show preview
-      const prev = document.getElementById('previewImg');
-      if (prev) { prev.src = ev.target.result; prev.style.display = 'block'; }
-      // Update UI state
-      const zone   = document.getElementById('camArea');
-      const camBtn = document.getElementById('camBtn');
-      const capBtn = document.getElementById('capBtn');
-      const rstBtn = document.getElementById('rstBtn');
-      const pg     = document.getElementById('photoGuide');
-      if (zone)  zone.classList.add('has-image');
-      if (camBtn) camBtn.style.display = 'none';
-      if (capBtn) capBtn.style.display = 'inline-block';
-      if (rstBtn) rstBtn.style.display = 'inline-block';
-      if (pg)    pg.style.display = 'none';
-      initDrawingCanvas();
-      setStep(1);
+  // ファイルサイズ上限チェック（20MB）
+  if (file.size > 20 * 1024 * 1024) {
+    showToast('ファイルサイズが大きすぎます（上限20MB）。圧縮してからお試しください。', 'error');
+    return;
+  }
+  readEXIFOrientation(file, function(orientation) {
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const img = new Image();
+      img.onerror = function() { showToast('画像の読み込みに失敗しました。JPG・PNG・WebP形式をお試しください。', 'error'); };
+      img.onload = function() {
+        // 最小解像度チェック（小さすぎる画像はAI解析に不向き）
+        const natW = img.naturalWidth || img.width || 0;
+        const natH = img.naturalHeight || img.height || 0;
+        if (natW < 100 || natH < 100) {
+          showToast('画像が小さすぎます。より鮮明な頭部写真をご使用ください（推奨: 640px以上）。', 'error');
+          return;
+        }
+        const cv = document.getElementById('capCv');
+        if (!cv) return;
+        // EXIF向き補正を適用してcanvasに描画
+        applyEXIFOrientation(img, orientation, cv);
+        // プレビュー: 補正済みcanvasから生成（常に正しい向きで表示）
+        const prev = document.getElementById('previewImg');
+        if (prev) { prev.src = cv.toDataURL('image/jpeg', 0.88); prev.style.display = 'block'; }
+        // Update UI state
+        const zone   = document.getElementById('camArea');
+        const camBtn = document.getElementById('camBtn');
+        const capBtn = document.getElementById('capBtn');
+        const rstBtn = document.getElementById('rstBtn');
+        const pg     = document.getElementById('photoGuide');
+        if (zone)  zone.classList.add('has-image');
+        if (camBtn) camBtn.style.display = 'none';
+        if (capBtn) capBtn.style.display = 'inline-block';
+        if (rstBtn) rstBtn.style.display = 'inline-block';
+        if (pg)    pg.style.display = 'none';
+        initDrawingCanvas();
+        setStep(1);
+      };
+      img.src = ev.target.result;
     };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
+  });
 }
 
 function handleUp(e) {
@@ -2809,6 +2905,11 @@ const _GEMINI_MODELS = ['gemini-2.5-flash-lite', 'gemini-2.5-flash', 'gemini-2.5
 function analyze() {
   const capCv = document.getElementById('capCv');
   if (!capCv || !capCv.width) { showToast('先に写真をアップロードしてください', 'error'); return; }
+  // ネットワーク接続チェック
+  if (!navigator.onLine) {
+    showToast('インターネット接続を確認してください。オフラインではシミュレーションできません。', 'error');
+    return;
+  }
 
   const capBtn=document.getElementById('capBtn'),rstBtn=document.getElementById('rstBtn');
   const ldDots=document.getElementById('ldDots');
@@ -2976,10 +3077,10 @@ function analyze() {
     generationConfig: { maxOutputTokens: 6144, temperature: 0.2, topP: 0.85, topK: 40 }
   };
 
-  // AI処理中の経過タイマー
+  // AI処理中の経過タイマー（モジュールスコープ ref で resetSim からも停止可能）
   let _ldSeconds = 0;
   const _ldTimerEl = document.querySelector('#ldDots .ld-msg');
-  const _ldTimerInterval = setInterval(function() {
+  _ldTimerIntervalRef = setInterval(function() {
     _ldSeconds++;
     if (_ldTimerEl) {
       if (_ldSeconds < 30) {
@@ -2993,7 +3094,8 @@ function analyze() {
   }, 1000);
 
   function stopLdTimer() {
-    clearInterval(_ldTimerInterval);
+    clearInterval(_ldTimerIntervalRef);
+    _ldTimerIntervalRef = null;
     if (_ldTimerEl) _ldTimerEl.textContent = '施術シミュレーション中... 約30〜60秒お待ちください';
   }
 
@@ -3011,8 +3113,9 @@ function analyze() {
       return;
     }
     const model = _GEMINI_MODELS[modelIndex];
-    // AbortController で90秒タイムアウト（無限待機防止）
+    // AbortController で90秒タイムアウト（無限待機防止・resetSimからも中断可能）
     const abortCtrl = new AbortController();
+    _currentAbortCtrl = abortCtrl; // モジュールスコープに保存
     const abortTimer = setTimeout(function() { abortCtrl.abort(); }, 90000);
     // Cloudflare Worker プロキシ経由でGemini APIを呼び出す（requestBodyObj直接参照で二重変換排除）
     fetch(_GEMINI_PROXY_URL, {
@@ -3076,7 +3179,25 @@ function analyze() {
   tryGeminiModel(0);
 }
 
+function downloadSimResult() {
+  const canvas = document.getElementById('smpSimCanvas');
+  if (!canvas || !canvas.width) { showToast('シミュレーション結果がありません', 'error'); return; }
+  try {
+    const link = document.createElement('a');
+    link.download = 'scalp-ink-simulation.jpg';
+    link.href = canvas.toDataURL('image/jpeg', 0.92);
+    link.click();
+    showToast('✅ シミュレーション画像を保存しました', 'info');
+  } catch(ex) {
+    showToast('画像の保存に失敗しました。スクリーンショットをご利用ください。', 'error');
+  }
+}
+
 function resetSim() {
+  // 実行中のAPIリクエストを中断（中断しないと古い結果が後から表示されてしまう）
+  if (_currentAbortCtrl) { _currentAbortCtrl.abort(); _currentAbortCtrl = null; }
+  // ローディングタイマーを停止
+  if (_ldTimerIntervalRef) { clearInterval(_ldTimerIntervalRef); _ldTimerIntervalRef = null; }
   // Stop any camera stream
   stopDesktopCamera(false);
   const capCv    = document.getElementById('capCv');
@@ -3103,10 +3224,16 @@ function resetSim() {
   if (baFrame) baFrame.style.display='none';
   if (imgUp)   imgUp.value='';
   if (camCap)  camCap.value='';
-  const advBox   = document.getElementById('adviceBox');
-  const scoreRow = document.getElementById('simScoreRow');
+  const ldDots    = document.getElementById('ldDots');
+  const advBox    = document.getElementById('adviceBox');
+  const scoreRow  = document.getElementById('simScoreRow');
+  const densRow   = document.getElementById('densitySliderRow');
+  const dlBtn     = document.getElementById('downloadSimBtn');
+  if (ldDots)   ldDots.classList.remove('on');
   if (advBox)   advBox.style.display='none';
   if (scoreRow) scoreRow.style.display='none';
+  if (densRow)  densRow.style.display='none';
+  if (dlBtn)    dlBtn.style.display='none';
   const pg = document.getElementById('photoGuide');
   if (pg) pg.style.display='block';
   setStep(1);
