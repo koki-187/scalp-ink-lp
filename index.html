@@ -212,7 +212,7 @@ section{position:relative;z-index:1;}
   letter-spacing:.18em;color:var(--wh);}
 .ba-imgs{display:grid;grid-template-columns:1fr 1fr;gap:0;}
 .ba-side{position:relative;overflow:hidden;aspect-ratio:1/1;background:#0a0a0a;}
-.ba-side img.ba-img{width:100%;height:100%;object-fit:cover;display:block;}
+.ba-side img.ba-img{width:100%;height:100%;object-fit:contain;display:block;}
 .ba-sep{position:absolute;top:0;bottom:0;left:50%;width:2px;
   background:var(--gd);z-index:5;transform:translateX(-50%);}
 .ba-footer{background:#000;padding:12px 20px;
@@ -291,7 +291,7 @@ section{position:relative;z-index:1;}
 .sim-score{flex:1;min-width:120px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.14);
   padding:11px 14px;}
 .sim-score-lbl{font-size:.56rem;letter-spacing:.14em;color:rgba(201,168,76,.6);margin-bottom:6px;}
-.sim-score-bar{height:3px;background:rgba(255,255,255,.07);margin-bottom:4px;overflow:hidden;}
+.sim-score-bar{height:5px;background:rgba(255,255,255,.07);margin-bottom:4px;overflow:hidden;border-radius:3px;}
 .sim-score-fill{height:100%;background:var(--gd);width:0;transition:width 1.2s ease;}
 .sim-score-val{font-family:"Bebas Neue",sans-serif;font-size:1.1rem;color:var(--gd);}
 .sim-hd .g-line{margin:16px auto;}
@@ -310,7 +310,7 @@ section{position:relative;z-index:1;}
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;
   border:1px solid rgba(201,168,76,.1);}
 .cam-area canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
-#previewImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+#previewImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;image-orientation:from-image;}
 .drop-zone-inner{display:flex;flex-direction:column;align-items:center;gap:13px;z-index:2;pointer-events:auto;}
 .drop-ic{font-size:3rem;opacity:.12;transition:opacity .3s;line-height:1;}
 .drop-ttl{font-size:.8rem;letter-spacing:.18em;color:rgba(255,255,255,.32);text-align:center;}
@@ -2857,11 +2857,11 @@ function loadImageFile(file) {
         }
         const cv = document.getElementById('capCv');
         if (!cv) return;
-        // EXIF向き補正を適用してcanvasに描画
+        // EXIF向き補正を適用してcanvasに描画（API送信用）
         applyEXIFOrientation(img, orientation, cv);
-        // プレビュー: 補正済みcanvasから生成（常に正しい向きで表示）
+        // プレビュー: ブラウザネイティブ表示（メインスレッドをブロックしない）
         const prev = document.getElementById('previewImg');
-        if (prev) { prev.src = cv.toDataURL('image/jpeg', 0.88); prev.style.display = 'block'; }
+        if (prev) { prev.src = ev.target.result; prev.style.display = 'block'; }
         // Update UI state
         const zone   = document.getElementById('camArea');
         const camBtn = document.getElementById('camBtn');
@@ -2939,6 +2939,7 @@ function analyze() {
     return;
   }
   _userAborted = false; // 新しい解析開始時にリセット
+  if (navigator.vibrate) navigator.vibrate(10); // 触覚フィードバック（モバイル）
 
   const capBtn=document.getElementById('capBtn'),rstBtn=document.getElementById('rstBtn');
   const ldDots=document.getElementById('ldDots');
@@ -3134,7 +3135,7 @@ function analyze() {
       if (_userAborted) { _userAborted = false; return; } // リセット済みなら何もしない
       const advBox = document.getElementById('adviceBox');
       const claudeEl = document.getElementById('claudeAdvice');
-      if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">⚠ すべてのAIモデルが利用上限に達しています。<br>時間をおいて再度お試しください（通常1分程度で回復します）。</span>';
+      if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">⚠ すべてのAIモデルが利用上限に達しています。<br>1〜2分後に「施術シミュレーション開始」ボタンを押して再試行してください。</span>';
       if (advBox) advBox.style.display='block';
       const frame = document.getElementById('baResultFrame');
       if (frame) frame.style.display='block';
@@ -3194,10 +3195,10 @@ function analyze() {
         return;
       }
       const displayMsg = isAborted
-        ? '⚠ AI解析がタイムアウトしました（90秒超過）。<br>接続状況を確認して、もう一度お試しください。'
+        ? '⚠ AI解析がタイムアウトしました（90秒超過）。<br>接続状況を確認後、「施術シミュレーション開始」ボタンで再試行してください。'
         : isAuthErr
         ? '⚠ APIキーが無効です。管理者にお問い合わせください。'
-        : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>時間をおいて再度お試しください。';
+        : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>「施術シミュレーション開始」ボタンで再試行してください。';
       const advBox = document.getElementById('adviceBox');
       const claudeEl = document.getElementById('claudeAdvice');
       if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
