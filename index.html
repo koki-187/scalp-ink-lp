@@ -2018,11 +2018,11 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         }
       }
     } else {
-      // フォールバック楕円（Geminiデータなし時）
+      // フォールバック楕円（Geminiデータなし時）- 控えめなサイズで過大化防止
       const ecx = hb ? (hb.x + hb.w / 2) * w : w / 2;
-      const ecy = hb ? (hb.y + hb.h * 0.38) * h : h * 0.33;
-      const erx = hb ? (hb.w / 2) * w : w * 0.38;
-      const ery = hb ? (hb.h * 0.50) * h : h * 0.36;
+      const ecy = hb ? (hb.y + hb.h * 0.38) * h : h * 0.40;
+      const erx = hb ? (hb.w * 0.38) * w : w * 0.28;
+      const ery = hb ? (hb.h * 0.40) * h : h * 0.28;
       for (let y = 0; y < h; y++) {
         for (let x = 0; x < w; x++) {
           const ed = ((x-ecx)/erx)*((x-ecx)/erx) + ((y-ecy)/ery)*((y-ecy)/ery);
@@ -2258,7 +2258,15 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     const pxPerCm = Math.max(1, headW_px / 19);
     const treatCm2 = treatArea / (pxPerCm * pxPerCm);
     // 仕様: 500 ドット/cm² × 3 セッション = 1500 ドット/cm²
-    const autoBaseDots = Math.max(3000, Math.round(treatCm2 * 1500));
+    const autoBaseRaw = Math.max(3000, Math.round(treatCm2 * 1500));
+    // 施術タイプ別リアリティキャップ（実際のSMP施術のドット数レンジ）
+    // 近接写真や曖昧なAI出力時の非現実的値を防ぐ
+    const maxDotsByCond = conditionType === 'scar'     ? 30000
+                        : conditionType === 'hairline' ? 55000
+                        : conditionType === 'patch'    ? 40000
+                        : conditionType === 'thinning' ? 95000
+                        : 130000;  // combined/fullhead/default
+    const autoBaseDots = Math.min(maxDotsByCond, autoBaseRaw);
     // グローバルに公開（スライダーが基準値として参照）
     window._lastAutoBaseDots = autoBaseDots;
 
