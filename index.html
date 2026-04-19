@@ -2270,11 +2270,23 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // グローバルに公開（スライダーが基準値として参照）
     window._lastAutoBaseDots = autoBaseDots;
 
-    // ユーザーがスライダー操作済みの場合のみ明示値を使用、それ以外は面積ベース自動計算
+    // ドット数決定の優先順位:
+    //  1. ユーザーがスライダーで明示指定 → その値を使用
+    //  2. AIが具体値を返した場合（JSON or テキスト抽出合成）→ その値（キャップ適用）
+    //  3. 上記なし → 面積ベース自動計算（キャップ適用済み）
     const tp = structured.treatment_plan || {};
-    const totalDots = (tp._userAdjusted && tp.total_dots)
-      ? Math.round(tp.total_dots * densityMultiplier)
-      : Math.round(autoBaseDots * densityMultiplier);
+    let baseDots;
+    if (tp._userAdjusted && tp.total_dots) {
+      baseDots = tp.total_dots;
+    } else if (tp.total_dots && tp.total_dots > 0) {
+      // AI推奨値をベースにしつつ、リアリティキャップの範囲内に収める
+      baseDots = Math.min(maxDotsByCond, Math.max(3000, tp.total_dots));
+    } else {
+      baseDots = autoBaseDots;
+    }
+    const totalDots = Math.round(baseDots * densityMultiplier);
+    // 面積ベース再計算値もAI値と揃える（スライダー基準）
+    window._lastAutoBaseDots = baseDots;
     // 構造化データの total_dots を上書き（結果表示の整合性確保）
     if (structured.treatment_plan) structured.treatment_plan.total_dots = totalDots;
 
@@ -2484,13 +2496,35 @@ function _polyArea(pts) {
 
 function showBAResult(beforeDataURL, claudeText) {
   // 構造化データの抽出を試行
-  const structured = extractStructuredData(claudeText);
+  let structured = extractStructuredData(claudeText);
 
   // Markdown表示用にJSONブロックを除去
   const displayText = claudeText.replace(/```json[\s\S]*?```/g, '').trim();
 
   let dotCount = extractDotCount(claudeText);
   const condType = structured ? structured.condition_type : detectConditionType(claudeText);
+
+  // ★ JSON未返却時: テキストから合成した最小限の構造化データを構築
+  // これにより drawSMPSimulation が condition_type と total_dots を適切に受け取れる
+  if (!structured) {
+    // 本文から具体的なドット数を抽出（detectConditionType は 'scar' 等の文字列を返す）
+    const numMatches = [];
+    const pattern = /約?([0-9０-９,]+)[,\s]*(?:ドット|dots)/g;
+    let m;
+    while ((m = pattern.exec(claudeText)) !== null) {
+      const raw = m[1].replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/,/g, '');
+      const v = parseInt(raw, 10);
+      if (!isNaN(v) && v >= 1000 && v <= 300000) numMatches.push(v);
+    }
+    // 最大値を採用（累計/総計/合計の数値であることが多い）
+    const textDots = numMatches.length ? Math.max.apply(null, numMatches) : 0;
+    structured = {
+      condition_type: condType,
+      treatment_plan: textDots > 0 ? { total_dots: textDots } : {},
+      _syntheticFromText: true
+    };
+    console.log('[SMP] JSON未返却 → テキスト抽出で合成:', { condType, textDots });
+  }
   const frame = document.getElementById('baResultFrame');
   const beforeImg = document.getElementById('baBeforeImg');
   const dotCountEl = document.getElementById('baDotCount');

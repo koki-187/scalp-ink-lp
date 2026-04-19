@@ -2231,11 +2231,18 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     const autoBaseDots = Math.min(maxDotsByCond, autoBaseRaw);
     window._lastAutoBaseDots = autoBaseDots;
 
-    // If slider was user-adjusted, use the provided total_dots; otherwise area-based auto
+    // Dot count priority: 1) slider override, 2) AI explicit value (capped), 3) area-based auto (capped)
     const tp = structured.treatment_plan || {};
-    const totalDots = (tp._userAdjusted && tp.total_dots)
-      ? Math.round(tp.total_dots * densityMultiplier)
-      : Math.round(autoBaseDots * densityMultiplier);
+    let baseDots;
+    if (tp._userAdjusted && tp.total_dots) {
+      baseDots = tp.total_dots;
+    } else if (tp.total_dots && tp.total_dots > 0) {
+      baseDots = Math.min(maxDotsByCond, Math.max(3000, tp.total_dots));
+    } else {
+      baseDots = autoBaseDots;
+    }
+    const totalDots = Math.round(baseDots * densityMultiplier);
+    window._lastAutoBaseDots = baseDots;
     if (structured.treatment_plan) structured.treatment_plan.total_dots = totalDots;
 
     // Dynamic cellSize: visible grain matches totalDots/treatArea
@@ -2408,13 +2415,32 @@ function extractStructuredData(responseText) {
 
 function showBAResult(beforeDataURL, claudeText) {
   // Extract structured data
-  const structured = extractStructuredData(claudeText);
+  let structured = extractStructuredData(claudeText);
 
   // Remove JSON block from Markdown display
   const displayText = claudeText.replace(/```json[\s\S]*?```/g, '').trim();
 
   let dotCount = extractDotCount(claudeText);
   const condType = structured ? structured.condition_type : detectConditionType(claudeText);
+
+  // If JSON missing, synthesize a minimal structured object from narrative text
+  if (!structured) {
+    const numMatches = [];
+    const pattern = /([0-9０-９,]+)[,\s]*(?:ドット|dots)/gi;
+    let m;
+    while ((m = pattern.exec(claudeText)) !== null) {
+      const raw = m[1].replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/,/g, '');
+      const v = parseInt(raw, 10);
+      if (!isNaN(v) && v >= 1000 && v <= 300000) numMatches.push(v);
+    }
+    const textDots = numMatches.length ? Math.max.apply(null, numMatches) : 0;
+    structured = {
+      condition_type: condType,
+      treatment_plan: textDots > 0 ? { total_dots: textDots } : {},
+      _syntheticFromText: true
+    };
+    console.log('[SMP] JSON missing, synthesized:', { condType, textDots });
+  }
   const frame = document.getElementById('baResultFrame');
   const beforeImg = document.getElementById('baBeforeImg');
   const dotCountEl = document.getElementById('baDotCount');
