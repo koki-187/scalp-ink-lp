@@ -1759,18 +1759,39 @@ let _ldTimerIntervalRef = null; // Loading timer ID (clearable from resetSim)
 let _userAborted = false;       // User-initiated reset flag (prevents catch handler from re-showing UI)
 function onDensitySlider(val) {
   const offset = parseInt(val, 10);
-  const totalDots = Math.max(10000, _baseDotsCache + offset);
+  // Base value = area-based auto calculation (window._lastAutoBaseDots)
+  const base = window._lastAutoBaseDots || _baseDotsCache;
+  const totalDots = Math.max(3000, base + offset);
   const el = document.getElementById('densitySliderVal');
-  if (el) el.textContent = (totalDots >= 10000 ? Math.round(totalDots/1000) + 'k' : totalDots);
+  if (el) el.textContent = totalDots >= 1000 ? Math.round(totalDots/1000) + 'k' : totalDots;
+  const dotCountEl = document.getElementById('baDotCount');
+  if (dotCountEl) {
+    const label = totalDots >= 1000 ? ('~' + Math.round(totalDots/1000) + 'k dots (est.)') : ('~' + totalDots + ' dots (est.)');
+    dotCountEl.textContent = label;
+  }
   clearTimeout(_sliderTimer);
   _sliderTimer = setTimeout(function() {
   if (_smpCache) {
     const fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured));
     if (!fakeStructured.treatment_plan) fakeStructured.treatment_plan = {};
     fakeStructured.treatment_plan.total_dots = totalDots;
+    fakeStructured.treatment_plan._userAdjusted = true;
     drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, fakeStructured, 1.0);
   }
   }, 150);
+}
+
+function _syncSliderToAutoBase() {
+  const base = window._lastAutoBaseDots;
+  if (!base) return;
+  _baseDotsCache = base;
+  const sliderVal = document.getElementById('densitySliderVal');
+  if (sliderVal) sliderVal.textContent = base >= 1000 ? Math.round(base/1000) + 'k' : base;
+  const dotCountEl = document.getElementById('baDotCount');
+  if (dotCountEl) {
+    const label = base >= 1000 ? ('~' + Math.round(base/1000) + 'k dots (est.)') : ('~' + base + ' dots (est.)');
+    dotCountEl.textContent = label;
+  }
 }
 
 function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMultiplier, onComplete) {
@@ -2180,23 +2201,39 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
 
     // ─── STEP D: Dot parameters (spec: dot_size_rel × head_width_px) ───
     const headW_px = hb ? hb.w * w : w * 0.75;
-    const dot_size_rel = conditionType === 'hairline' ? 0.0055
-                     : conditionType === 'scar'     ? 0.0072
-                     : conditionType === 'patch'    ? 0.0063
-                     : 0.0065; // thinning / default
+    // Smaller, finer dots for realistic SMP grain
+    const dot_size_rel = conditionType === 'hairline' ? 0.0042
+                     : conditionType === 'scar'     ? 0.0048
+                     : conditionType === 'patch'    ? 0.0045
+                     : 0.0046; // thinning / default
     let dotRadius_px = (dot_size_rel * headW_px) / 2;
-    dotRadius_px = Math.max(1.5, Math.min(9.0, dotRadius_px)); // min 1.5px for visibility
-    const cellSize   = dotRadius_px * 2.0 * 2.0; // denser blue-noise spacing
+    dotRadius_px = Math.max(1.1, Math.min(5.5, dotRadius_px));
     const dotArea_px = Math.PI * dotRadius_px * dotRadius_px;
     const SEED = 0x4d534d50; // 'MSMP' fixed seed → reproducible results
 
-    // ─── STEP E: Poisson saturation coverage rate (for Layer 1) ───
-    const totalDots = Math.round(((structured.treatment_plan && structured.treatment_plan.total_dots) || 129600) * densityMultiplier);
+    // ─── STEP E: Treated area → area-based auto dot count ───
     let treatArea = 0;
     for (let ii = 0; ii < regionMask.length; ii++) {
       if (regionMask[ii] > 0.5) treatArea++;
     }
     treatArea = Math.max(1, treatArea);
+    // Convert pixels → cm² (19cm head width reference)
+    const pxPerCm = Math.max(1, headW_px / 19);
+    const treatCm2 = treatArea / (pxPerCm * pxPerCm);
+    // Spec: 500 dots/cm² × 3 sessions = 1500 dots/cm²
+    const autoBaseDots = Math.max(3000, Math.round(treatCm2 * 1500));
+    window._lastAutoBaseDots = autoBaseDots;
+
+    // If slider was user-adjusted, use the provided total_dots; otherwise area-based auto
+    const tp = structured.treatment_plan || {};
+    const totalDots = (tp._userAdjusted && tp.total_dots)
+      ? Math.round(tp.total_dots * densityMultiplier)
+      : Math.round(autoBaseDots * densityMultiplier);
+    if (structured.treatment_plan) structured.treatment_plan.total_dots = totalDots;
+
+    // Dynamic cellSize: visible grain matches totalDots/treatArea
+    const targetCellSize = Math.sqrt(treatArea / Math.max(1, totalDots));
+    const cellSize = Math.max(dotRadius_px * 2.3, Math.min(dotRadius_px * 5.0, targetCellSize));
     const lam = totalDots * dotArea_px / treatArea;
     // Spec: saturation correction C = 1-(1+0.3λ)·exp(-λ) (neg-binomial: suppresses overestimation at low λ)
     const baseCoverage = Math.min(0.94, 1.0 - (1.0 + 0.3 * lam) * Math.exp(-lam));
@@ -2411,11 +2448,10 @@ function showBAResult(beforeDataURL, claudeText) {
   const sliderVal = document.getElementById('densitySliderVal');
   if (sliderRow) sliderRow.style.display = 'block';
   if (sliderEl)  { sliderEl.value = '0'; }
-  const baseDots = (structured && structured.treatment_plan && structured.treatment_plan.total_dots) || 129600;
-  _baseDotsCache = baseDots;
-  if (sliderVal) sliderVal.textContent = Math.round(baseDots/1000) + 'k';
-  // Scroll after canvas rendering completes + show download button
+  if (sliderVal) sliderVal.textContent = 'calculating…';
+  // Scroll after canvas rendering completes + show download button + sync slider to auto-base
   drawSMPSimulation(beforeDataURL, condType, structured, 1.0, function() {
+    _syncSliderToAutoBase();
     const dlBtn = document.getElementById('downloadSimBtn');
     if (dlBtn) dlBtn.style.display = 'inline-block';
     if (frame) frame.scrollIntoView({ behavior: 'smooth', block: 'start' });
