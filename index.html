@@ -2505,25 +2505,25 @@ function showBAResult(beforeDataURL, claudeText) {
   const condType = structured ? structured.condition_type : detectConditionType(claudeText);
 
   // ★ JSON未返却時: テキストから合成した最小限の構造化データを構築
-  // これにより drawSMPSimulation が condition_type と total_dots を適切に受け取れる
+  // これにより drawSMPSimulation が condition_type を適切に受け取れる
+  // total_dots はテキスト抽出より「面積×1500」の自動計算を優先（より信頼できるため）
   if (!structured) {
-    // 本文から具体的なドット数を抽出（detectConditionType は 'scar' 等の文字列を返す）
-    const numMatches = [];
-    const pattern = /約?([0-9０-９,]+)[,\s]*(?:ドット|dots)/g;
-    let m;
-    while ((m = pattern.exec(claudeText)) !== null) {
-      const raw = m[1].replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/,/g, '');
+    // 合計/総計/計 近傍の数値のみを採用（単回あたりを拾わないための安全策）
+    let textDots = 0;
+    const totalCtx = /(?:合計|総計|総?ドット数|total[\s_-]*dots?)[^0-9０-９]{0,20}([0-9０-９,]+)/i;
+    const mt = claudeText.match(totalCtx);
+    if (mt) {
+      const raw = mt[1].replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/,/g, '');
       const v = parseInt(raw, 10);
-      if (!isNaN(v) && v >= 1000 && v <= 300000) numMatches.push(v);
+      if (!isNaN(v) && v >= 5000 && v <= 300000) textDots = v;
     }
-    // 最大値を採用（累計/総計/合計の数値であることが多い）
-    const textDots = numMatches.length ? Math.max.apply(null, numMatches) : 0;
     structured = {
       condition_type: condType,
+      // textDots が取れなければ空オブジェクト → drawSMPSimulation が autoBaseDots（面積×1500）を採用
       treatment_plan: textDots > 0 ? { total_dots: textDots } : {},
       _syntheticFromText: true
     };
-    console.log('[SMP] JSON未返却 → テキスト抽出で合成:', { condType, textDots });
+    console.log('[SMP] JSON未返却 → 合成:', { condType, textDots, usingAutoBase: textDots === 0 });
   }
   const frame = document.getElementById('baResultFrame');
   const beforeImg = document.getElementById('baBeforeImg');

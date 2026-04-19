@@ -2423,23 +2423,23 @@ function showBAResult(beforeDataURL, claudeText) {
   let dotCount = extractDotCount(claudeText);
   const condType = structured ? structured.condition_type : detectConditionType(claudeText);
 
-  // If JSON missing, synthesize a minimal structured object from narrative text
+  // If JSON missing, synthesize a minimal structured object from narrative text.
+  // Prefer area-based autoBase over text extraction (text often contains per-session values).
   if (!structured) {
-    const numMatches = [];
-    const pattern = /([0-9０-９,]+)[,\s]*(?:ドット|dots)/gi;
-    let m;
-    while ((m = pattern.exec(claudeText)) !== null) {
-      const raw = m[1].replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/,/g, '');
+    let textDots = 0;
+    const totalCtx = /(?:合計|総計|total[\s_-]*dots?|grand[\s_-]*total)[^0-9０-９]{0,20}([0-9０-９,]+)/i;
+    const mt = claudeText.match(totalCtx);
+    if (mt) {
+      const raw = mt[1].replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/,/g, '');
       const v = parseInt(raw, 10);
-      if (!isNaN(v) && v >= 1000 && v <= 300000) numMatches.push(v);
+      if (!isNaN(v) && v >= 5000 && v <= 300000) textDots = v;
     }
-    const textDots = numMatches.length ? Math.max.apply(null, numMatches) : 0;
     structured = {
       condition_type: condType,
       treatment_plan: textDots > 0 ? { total_dots: textDots } : {},
       _syntheticFromText: true
     };
-    console.log('[SMP] JSON missing, synthesized:', { condType, textDots });
+    console.log('[SMP] JSON missing, synthesized:', { condType, textDots, usingAutoBase: textDots === 0 });
   }
   const frame = document.getElementById('baResultFrame');
   const beforeImg = document.getElementById('baBeforeImg');
