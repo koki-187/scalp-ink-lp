@@ -2480,9 +2480,9 @@ function extractStructuredData(responseText) {
     if ('sessions' in tp) tp.sessions = _num(tp.sessions, 3, 1, 10);
     if ('total_dots_per_session' in tp) tp.total_dots_per_session = _num(tp.total_dots_per_session, 0, 0, 200000);
     if ('treatment_area_cm2' in tp) tp.treatment_area_cm2 = _num(tp.treatment_area_cm2, 0, 0, 2000);
-    // total_dots 欠損時は session × per_session で補完
+    // total_dots 欠損時は session × per_session で補完（補完値も上限クランプ）
     if ((!tp.total_dots || tp.total_dots === 0) && tp.total_dots_per_session && tp.sessions) {
-      tp.total_dots = tp.total_dots_per_session * tp.sessions;
+      tp.total_dots = Math.min(500000, tp.total_dots_per_session * tp.sessions);
     }
   }
   // scores クランプ

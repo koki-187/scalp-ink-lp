@@ -2420,7 +2420,7 @@ function extractStructuredData(responseText) {
     if ('total_dots_per_session' in tp) tp.total_dots_per_session = _num(tp.total_dots_per_session, 0, 0, 200000);
     if ('treatment_area_cm2' in tp) tp.treatment_area_cm2 = _num(tp.treatment_area_cm2, 0, 0, 2000);
     if ((!tp.total_dots || tp.total_dots === 0) && tp.total_dots_per_session && tp.sessions) {
-      tp.total_dots = tp.total_dots_per_session * tp.sessions;
+      tp.total_dots = Math.min(500000, tp.total_dots_per_session * tp.sessions);
     }
   }
   if (data.scores && typeof data.scores === 'object') {
