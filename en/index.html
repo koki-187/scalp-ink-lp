@@ -1055,7 +1055,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           <div style="font-size:1rem;color:#d4af37;font-weight:500;margin-bottom:14px;letter-spacing:.05em;">Ready to make this simulation a reality?<br>Book your free consultation today.</div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;">
             <a href="#booking" class="btn-p" style="font-size:.8rem;padding:12px 24px;">&#128197; Book with This Look</a>
-            <a href="https://line.me/R/ti/p/@045ovoxr" target="_blank" rel="noopener" class="btn-o" style="font-size:.8rem;padding:12px 20px;border-color:rgba(0,195,0,0.5);color:#00c300;">&#128172; Chat on LINE</a>
+            <a href="https://line.me/R/ti/p/@045ovoxr" target="_blank" rel="noopener" class="btn-o" onclick="window.open('https://line.me/R/ti/p/@045ovoxr','_blank');return false;" style="font-size:.8rem;padding:12px 20px;border-color:rgba(0,195,0,0.5);color:#00c300;-webkit-tap-highlight-color:transparent;">&#128172; Chat on LINE</a>
           </div>
           <button id="downloadSimBtn" onclick="downloadSimResult()" style="display:none;background:none;border:1px solid rgba(245,245,240,0.3);color:rgba(245,245,240,.72);font-size:.7rem;padding:8px 16px;cursor:pointer;border-radius:4px;letter-spacing:.06em;transition:all .25s;" onmouseover="this.style.borderColor='rgba(201,168,76,.6)';this.style.color='#d4af37';" onmouseout="this.style.borderColor='rgba(245,245,240,0.3)';this.style.color='rgba(245,245,240,.72)';">&#128190; Save Simulation Image</button>
         </div>
@@ -2856,8 +2856,9 @@ function analyze() {
   }
   // Save clean photo data (used for yellow line removal)
   window._cleanPhotoPixels = capCv.getContext('2d').getImageData(0, 0, capCv.width, capCv.height);
-  const srcCanvas = resizeForAPI(mergedCv, 1280);
-  const beforeDataURL = srcCanvas.toDataURL('image/jpeg', 0.88);
+  const _isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
+  const srcCanvas = resizeForAPI(mergedCv, _isMobile ? 800 : 1280);
+  const beforeDataURL = srcCanvas.toDataURL('image/jpeg', _isMobile ? 0.75 : 0.88);
   const b64 = beforeDataURL.split(',')[1];
   const prompt = 'You are a senior SMP specialist at THE SCALP INK by CIMA.\n' +
 'Please carefully examine this head/scalp image and create a detailed diagnostic report following the 5 steps below.\n\n' +
@@ -3034,7 +3035,7 @@ function analyze() {
       if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">⚠ All AI models have reached their usage limits.<br>Please press the "Start SMP Simulation" button again in 1–2 minutes to retry.</span>';
       if (advBox) advBox.style.display='block';
       const frame = document.getElementById('baResultFrame');
-      if (frame) frame.style.display='block';
+      if (frame) { frame.style.display='block'; setTimeout(function(){ frame.scrollIntoView({ behavior:'smooth', block:'start' }); }, 100); }
       setStep(3);
       if (capBtn) capBtn.style.display='inline-block';
       if (ldDots) ldDots.classList.remove('on');
@@ -3081,23 +3082,25 @@ function analyze() {
       const isAborted = err && err.name === 'AbortError';
       const isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
       const isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
+      const isNetworkErr = /Failed to fetch|NetworkError|Load failed|network/i.test(msg);
       if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
-
         showToast('Connection busy. Retrying with a different AI model...', 'info');
         tryGeminiModel(modelIndex + 1);
         return;
       }
       const displayMsg = isAborted
-        ? '⚠ AI analysis timed out (90 seconds). Please check your connection and press "Start SMP Simulation" to retry.'
+        ? '⚠ AI analysis timed out (90 seconds). Please try again on WiFi or in an area with better signal.'
         : isAuthErr
         ? '⚠ Invalid API key. Please contact the administrator.'
+        : isNetworkErr
+        ? '⚠ Network connection error. Please try again on WiFi or in an area with better signal.'
         : '⚠ ' + msg.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '<br>Press "Start SMP Simulation" to retry.';
       const advBox = document.getElementById('adviceBox');
       const claudeEl = document.getElementById('claudeAdvice');
       if (claudeEl) claudeEl.innerHTML='<span style="color:#ff6b6b;">' + displayMsg + '</span>';
       if (advBox) advBox.style.display='block';
       const frame = document.getElementById('baResultFrame');
-      if (frame) frame.style.display='block';
+      if (frame) { frame.style.display='block'; setTimeout(function(){ frame.scrollIntoView({ behavior:'smooth', block:'start' }); }, 100); }
       setStep(3);
       if (capBtn) capBtn.style.display='inline-block';
       if (ldDots) ldDots.classList.remove('on');
