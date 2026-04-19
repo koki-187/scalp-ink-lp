@@ -1770,10 +1770,12 @@ let _currentAbortCtrl = null;   // Active API request AbortController (cancellab
 let _ldTimerIntervalRef = null; // Loading timer ID (clearable from resetSim)
 let _userAborted = false;       // User-initiated reset flag (prevents catch handler from re-showing UI)
 function onDensitySlider(val) {
-  const offset = parseInt(val, 10);
-  // Base value = area-based auto calculation (window._lastAutoBaseDots)
-  const base = window._lastAutoBaseDots || _baseDotsCache;
-  const totalDots = Math.max(3000, base + offset);
+  let offset = parseInt(val, 10);
+  if (!isFinite(offset)) offset = 0;
+  offset = Math.max(-30000, Math.min(30000, offset));
+  const baseRaw = window._lastAutoBaseDots || _baseDotsCache;
+  const base = (isFinite(baseRaw) && baseRaw > 0) ? baseRaw : 30000;
+  const totalDots = Math.max(3000, Math.min(500000, base + offset));
   const el = document.getElementById('densitySliderVal');
   if (el) el.textContent = totalDots >= 1000 ? Math.round(totalDots/1000) + 'k' : totalDots;
   const dotCountEl = document.getElementById('baDotCount');
@@ -1783,13 +1785,20 @@ function onDensitySlider(val) {
   }
   clearTimeout(_sliderTimer);
   _sliderTimer = setTimeout(function() {
-  if (_smpCache) {
-    const fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured));
-    if (!fakeStructured.treatment_plan) fakeStructured.treatment_plan = {};
-    fakeStructured.treatment_plan.total_dots = totalDots;
-    fakeStructured.treatment_plan._userAdjusted = true;
-    drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, fakeStructured, 1.0);
-  }
+    if (!_smpCache || !_smpCache.beforeDataURL) {
+      console.warn('[SMP] Slider: cache missing, skipping redraw');
+      return;
+    }
+    try {
+      const fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured || {}));
+      if (!fakeStructured.treatment_plan) fakeStructured.treatment_plan = {};
+      fakeStructured.treatment_plan.total_dots = totalDots;
+      fakeStructured.treatment_plan._userAdjusted = true;
+      drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, fakeStructured, 1.0);
+    } catch (err) {
+      console.error('[SMP] Slider redraw failed:', err);
+      showToast('Density adjustment failed. Please reload the page.', 'error');
+    }
   }, 150);
 }
 
@@ -1835,11 +1844,19 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
    * Unified dot scale (per spec):
    *  dot_size_rel 0.001–0.01 × head_width_px → always proportional to head size
    */
-  conditionType = conditionType || 'thinning';
-  structured = structured || {};
-  densityMultiplier = densityMultiplier || 1.0;
+  // Input validation
+  const validCondTypes = ['thinning','hairline','scar','patch','combined','fullhead'];
+  conditionType = validCondTypes.indexOf(conditionType) >= 0 ? conditionType : 'thinning';
+  structured = (structured && typeof structured === 'object') ? structured : {};
+  densityMultiplier = (isFinite(densityMultiplier) && densityMultiplier > 0) ? densityMultiplier : 1.0;
+  densityMultiplier = Math.max(0.1, Math.min(5.0, densityMultiplier));
+  if (!beforeDataURL || typeof beforeDataURL !== 'string') {
+    console.error('[SMP] beforeDataURL missing');
+    showToast('Image data invalid. Please retake the photo.', 'error');
+    return;
+  }
   const cv = document.getElementById('smpSimCanvas');
-  if (!cv) return;
+  if (!cv) { console.error('[SMP] smpSimCanvas element not found'); return; }
   const img = new Image();
   img.onerror = function() {
     console.error('[SMP] Simulation image failed to load');
@@ -2212,28 +2229,32 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     const scarPigB = Math.max(18, Math.min(78, hairB + 9));
 
     // ─── STEP D: Dot parameters (spec: dot_size_rel × head_width_px) ───
-    const headW_px = hb ? hb.w * w : w * 0.75;
-    // Smaller, finer dots for realistic SMP grain
+    let headW_px = hb ? hb.w * w : w * 0.75;
+    if (!isFinite(headW_px) || headW_px <= 0) headW_px = w * 0.75;
+    headW_px = Math.max(50, Math.min(w, headW_px));
     const dot_size_rel = conditionType === 'hairline' ? 0.0042
                      : conditionType === 'scar'     ? 0.0048
                      : conditionType === 'patch'    ? 0.0045
-                     : 0.0046; // thinning / default
+                     : 0.0046;
     let dotRadius_px = (dot_size_rel * headW_px) / 2;
+    if (!isFinite(dotRadius_px) || dotRadius_px <= 0) dotRadius_px = 2.0;
     dotRadius_px = Math.max(1.1, Math.min(5.5, dotRadius_px));
     const dotArea_px = Math.PI * dotRadius_px * dotRadius_px;
-    const SEED = 0x4d534d50; // 'MSMP' fixed seed → reproducible results
+    const SEED = 0x4d534d50;
 
     // ─── STEP E: Treated area → area-based auto dot count ───
     let treatArea = 0;
     for (let ii = 0; ii < regionMask.length; ii++) {
       if (regionMask[ii] > 0.5) treatArea++;
     }
-    treatArea = Math.max(1, treatArea);
-    // Convert pixels → cm² (19cm head width reference)
+    if (treatArea <= 0) {
+      console.warn('[SMP] No treatment region detected. Using fallback area.');
+      treatArea = Math.max(1, Math.round(headW_px * headW_px * 0.05));
+    }
+    treatArea = Math.max(1, Math.min(w * h, treatArea));
     const pxPerCm = Math.max(1, headW_px / 19);
-    const treatCm2 = treatArea / (pxPerCm * pxPerCm);
-    // Spec: 500 dots/cm² × 3 sessions = 1500 dots/cm²
-    const autoBaseRaw = Math.max(3000, Math.round(treatCm2 * 1500));
+    const treatCm2 = Math.max(0.5, treatArea / (pxPerCm * pxPerCm));
+    const autoBaseRaw = Math.max(3000, Math.min(300000, Math.round(treatCm2 * 1500)));
     // Realistic caps per condition type (real SMP dot ranges)
     const maxDotsByCond = conditionType === 'scar'     ? 30000
                         : conditionType === 'hairline' ? 55000
@@ -2253,15 +2274,18 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     } else {
       baseDots = autoBaseDots;
     }
-    const totalDots = Math.round(baseDots * densityMultiplier);
+    let totalDots = Math.round(baseDots * densityMultiplier);
+    if (!isFinite(totalDots) || totalDots < 3000) totalDots = 3000;
+    totalDots = Math.min(500000, totalDots);
     // Preserve original slider base when user is adjusting (prevent feedback loop)
     if (!tp._userAdjusted) {
       window._lastAutoBaseDots = baseDots;
     }
     if (structured.treatment_plan) structured.treatment_plan.total_dots = totalDots;
 
-    // Dynamic cellSize: visible grain matches totalDots/treatArea
-    const targetCellSize = Math.sqrt(treatArea / Math.max(1, totalDots));
+    // Dynamic cellSize: NaN/0/Infinity guarded
+    let targetCellSize = Math.sqrt(treatArea / Math.max(1, totalDots));
+    if (!isFinite(targetCellSize) || targetCellSize <= 0) targetCellSize = dotRadius_px * 3.0;
     const cellSize = Math.max(dotRadius_px * 2.3, Math.min(dotRadius_px * 5.0, targetCellSize));
     const lam = totalDots * dotArea_px / treatArea;
     // Spec: saturation correction C = 1-(1+0.3λ)·exp(-λ) (neg-binomial: suppresses overestimation at low λ)
@@ -2370,18 +2394,40 @@ function _polyArea(pts) {
 }
 
 function extractStructuredData(responseText) {
+  if (!responseText || typeof responseText !== 'string') return null;
   const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
   let data = null;
   if (jsonMatch) {
     try { data = JSON.parse(jsonMatch[1]); } catch(e) { /* fallback */ }
   }
   if (!data) {
-    const rawMatch = responseText.match(/\{[\s\S]*"condition_type"[\s\S]*"scores"[\s\S]*\}/);
+    const rawMatch = responseText.match(/\{[\s\S]*?"condition_type"[\s\S]*?\}/);
     if (rawMatch) {
       try { data = JSON.parse(rawMatch[0]); } catch(e) { /* fallback */ }
     }
   }
-  if (!data) return null;
+  if (!data || typeof data !== 'object') return null;
+  // Numeric sanitization
+  function _num(v, def, min, max) {
+    const n = Number(v);
+    if (!isFinite(n)) return def;
+    return Math.max(min, Math.min(max, n));
+  }
+  if (data.treatment_plan && typeof data.treatment_plan === 'object') {
+    const tp = data.treatment_plan;
+    if ('total_dots' in tp) tp.total_dots = _num(tp.total_dots, 0, 0, 500000);
+    if ('sessions' in tp) tp.sessions = _num(tp.sessions, 3, 1, 10);
+    if ('total_dots_per_session' in tp) tp.total_dots_per_session = _num(tp.total_dots_per_session, 0, 0, 200000);
+    if ('treatment_area_cm2' in tp) tp.treatment_area_cm2 = _num(tp.treatment_area_cm2, 0, 0, 2000);
+    if ((!tp.total_dots || tp.total_dots === 0) && tp.total_dots_per_session && tp.sessions) {
+      tp.total_dots = tp.total_dots_per_session * tp.sessions;
+    }
+  }
+  if (data.scores && typeof data.scores === 'object') {
+    ['coverage_improvement','naturalness','confidence_boost'].forEach(function(k){
+      if (k in data.scores) data.scores[k] = _num(data.scores[k], 80, 0, 100);
+    });
+  }
 
   // condition_type validation (allowlist + auto-mapping)
   const validCondTypes = ['thinning', 'hairline', 'scar', 'patch', 'combined'];
@@ -2421,14 +2467,27 @@ function extractStructuredData(responseText) {
 
   if (data.head_bounds) {
     const hb = data.head_bounds;
-    if (typeof hb.x !== 'number' || typeof hb.y !== 'number' || typeof hb.w !== 'number' || typeof hb.h !== 'number' || hb.w <= 0 || hb.h <= 0) {
+    if (typeof hb.x !== 'number' || typeof hb.y !== 'number' || typeof hb.w !== 'number' || typeof hb.h !== 'number' ||
+        !isFinite(hb.x) || !isFinite(hb.y) || !isFinite(hb.w) || !isFinite(hb.h) ||
+        hb.w <= 0 || hb.h <= 0) {
       data.head_bounds = null;
+    } else {
+      hb.x = Math.max(0, Math.min(1, hb.x));
+      hb.y = Math.max(0, Math.min(1, hb.y));
+      hb.w = Math.max(0.05, Math.min(1 - hb.x, hb.w));
+      hb.h = Math.max(0.05, Math.min(1 - hb.y, hb.h));
     }
   }
   return data;
 }
 
 function showBAResult(beforeDataURL, claudeText) {
+  if (typeof claudeText !== 'string') claudeText = '';
+  if (!beforeDataURL || typeof beforeDataURL !== 'string') {
+    console.error('[SMP] showBAResult: beforeDataURL missing');
+    showToast('Image data invalid. Please retake the photo.', 'error');
+    return;
+  }
   // Extract structured data
   let structured = extractStructuredData(claudeText);
 
@@ -2436,7 +2495,7 @@ function showBAResult(beforeDataURL, claudeText) {
   const displayText = claudeText.replace(/```json[\s\S]*?```/g, '').trim();
 
   let dotCount = extractDotCount(claudeText);
-  const condType = structured ? structured.condition_type : detectConditionType(claudeText);
+  const condType = (structured && structured.condition_type) || detectConditionType(claudeText);
 
   // If JSON missing, synthesize a minimal structured object from narrative text.
   // Prefer area-based autoBase over text extraction (text often contains per-session values).

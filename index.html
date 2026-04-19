@@ -1774,27 +1774,37 @@ let _currentAbortCtrl = null;   // 実行中APIリクエストのAbortController
 let _ldTimerIntervalRef = null; // ローディングタイマーID（resetSimからクリア可能）
 let _userAborted = false;       // ユーザー操作によるリセット中フラグ（catch競合防止）
 function onDensitySlider(val) {
-  const offset = parseInt(val, 10);
-  // 基準値は面積ベースの自動計算値（window._lastAutoBaseDots）を優先
-  const base = window._lastAutoBaseDots || _baseDotsCache;
-  const totalDots = Math.max(3000, base + offset);
+  // NaN/非数値ガード
+  let offset = parseInt(val, 10);
+  if (!isFinite(offset)) offset = 0;
+  offset = Math.max(-30000, Math.min(30000, offset));
+  // 基準値のバリデーション（NaN/0/負数を拒否）
+  const baseRaw = window._lastAutoBaseDots || _baseDotsCache;
+  const base = (isFinite(baseRaw) && baseRaw > 0) ? baseRaw : 30000;
+  const totalDots = Math.max(3000, Math.min(500000, base + offset));
   const el = document.getElementById('densitySliderVal');
   if (el) el.textContent = totalDots >= 10000 ? Math.round(totalDots / 10000) + '万' : totalDots.toLocaleString();
-  // ドット数表示も同期更新
   const dotCountEl = document.getElementById('baDotCount');
   if (dotCountEl) {
     const label = totalDots >= 10000 ? ('約' + Math.round(totalDots / 10000) + '万ドット（推定）') : ('約' + totalDots.toLocaleString() + 'ドット（推定）');
     dotCountEl.textContent = label + ' dots';
   }
-  // 150ms debounce: 連続スライド中は描画をスキップしパフォーマンス向上
   clearTimeout(_sliderTimer);
   _sliderTimer = setTimeout(function() {
-    if (_smpCache) {
-      const fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured));
+    // _smpCache 欠損時は描画をスキップ（ラベル更新のみで中断）
+    if (!_smpCache || !_smpCache.beforeDataURL) {
+      console.warn('[SMP] スライダー操作: キャッシュ未構築のため描画スキップ');
+      return;
+    }
+    try {
+      const fakeStructured = JSON.parse(JSON.stringify(_smpCache.structured || {}));
       if (!fakeStructured.treatment_plan) fakeStructured.treatment_plan = {};
       fakeStructured.treatment_plan.total_dots = totalDots;
-      fakeStructured.treatment_plan._userAdjusted = true; // 明示値を使用するフラグ
+      fakeStructured.treatment_plan._userAdjusted = true;
       drawSMPSimulation(_smpCache.beforeDataURL, _smpCache.condType, fakeStructured, 1.0);
+    } catch (err) {
+      console.error('[SMP] スライダー再描画失敗:', err);
+      showToast('密度調整の反映に失敗しました。ページを再読み込みしてください。', 'error');
     }
   }, 150);
 }
@@ -1847,11 +1857,19 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
    * dotスケール統一（仕様書準拠）:
    *  dot_size_rel 0.001〜0.01 × head_width_px → 常に頭部比例サイズ
    */
-  conditionType = conditionType || 'thinning';
-  structured = structured || {};
-  densityMultiplier = densityMultiplier || 1.0;
+  // ─── 入力バリデーション ───
+  const validCondTypes = ['thinning','hairline','scar','patch','combined','fullhead'];
+  conditionType = validCondTypes.indexOf(conditionType) >= 0 ? conditionType : 'thinning';
+  structured = (structured && typeof structured === 'object') ? structured : {};
+  densityMultiplier = (isFinite(densityMultiplier) && densityMultiplier > 0) ? densityMultiplier : 1.0;
+  densityMultiplier = Math.max(0.1, Math.min(5.0, densityMultiplier));
+  if (!beforeDataURL || typeof beforeDataURL !== 'string') {
+    console.error('[SMP] beforeDataURL が未指定');
+    showToast('画像データが不正です。撮影からやり直してください。', 'error');
+    return;
+  }
   const cv = document.getElementById('smpSimCanvas');
-  if (!cv) return;
+  if (!cv) { console.error('[SMP] smpSimCanvas が見つかりません'); return; }
   const img = new Image();
   img.onerror = function() {
     console.error('[SMP] シミュレーション画像の読み込みに失敗しました');
@@ -2251,14 +2269,17 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     const scarPigB = Math.max(15, Math.min(95, hairB + 8 + Math.round(coolShift * 0.7)));
 
     // ─── STEP D: ドットパラメータ（仕様書: dot_size_rel × head_width_px） ───
-    const headW_px = hb ? hb.w * w : w * 0.75;
-    // 施術種別で dot_size_rel 調整（よりリアルなSMP粒度へ調整: 細かく高密度）
+    // headW_px ガード: 0/負/NaN を防ぐ（head_bounds が null/不正でも動作）
+    let headW_px = hb ? hb.w * w : w * 0.75;
+    if (!isFinite(headW_px) || headW_px <= 0) headW_px = w * 0.75;
+    headW_px = Math.max(50, Math.min(w, headW_px));
     const dot_size_rel = conditionType === 'hairline' ? 0.0042
                        : conditionType === 'scar'     ? 0.0048
                        : conditionType === 'patch'    ? 0.0045
-                       : 0.0046; // thinning / default
+                       : 0.0046;
     let dotRadius_px = (dot_size_rel * headW_px) / 2;
-    dotRadius_px = Math.max(1.1, Math.min(5.5, dotRadius_px)); // 微細ドット優先
+    if (!isFinite(dotRadius_px) || dotRadius_px <= 0) dotRadius_px = 2.0;
+    dotRadius_px = Math.max(1.1, Math.min(5.5, dotRadius_px));
     const dotArea_px = Math.PI * dotRadius_px * dotRadius_px;
     const SEED = 0x4d534d50; // 'MSMP' 固定シード → 再現性確保
 
@@ -2267,12 +2288,15 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     for (let ii = 0; ii < regionMask.length; ii++) {
       if (regionMask[ii] > 0.5) treatArea++;
     }
-    treatArea = Math.max(1, treatArea);
-    // 実際の処理面積を cm² に変換（頭部幅 19cm 基準）
+    // treatArea=0（領域検出失敗）ガード: 最低面積として headW×15% × 同等高さを仮定
+    if (treatArea <= 0) {
+      console.warn('[SMP] 施術領域が検出できません。フォールバック面積を使用します。');
+      treatArea = Math.max(1, Math.round(headW_px * headW_px * 0.05));
+    }
+    treatArea = Math.max(1, Math.min(w * h, treatArea));
     const pxPerCm = Math.max(1, headW_px / 19);
-    const treatCm2 = treatArea / (pxPerCm * pxPerCm);
-    // 仕様: 500 ドット/cm² × 3 セッション = 1500 ドット/cm²
-    const autoBaseRaw = Math.max(3000, Math.round(treatCm2 * 1500));
+    const treatCm2 = Math.max(0.5, treatArea / (pxPerCm * pxPerCm));
+    const autoBaseRaw = Math.max(3000, Math.min(300000, Math.round(treatCm2 * 1500)));
     // 施術タイプ別リアリティキャップ（実際のSMP施術のドット数レンジ）
     // 近接写真や曖昧なAI出力時の非現実的値を防ぐ
     const maxDotsByCond = conditionType === 'scar'     ? 30000
@@ -2298,7 +2322,9 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     } else {
       baseDots = autoBaseDots;
     }
-    const totalDots = Math.round(baseDots * densityMultiplier);
+    let totalDots = Math.round(baseDots * densityMultiplier);
+    if (!isFinite(totalDots) || totalDots < 3000) totalDots = 3000;
+    totalDots = Math.min(500000, totalDots);
     // スライダー基準値: ユーザー調整時は元の基準を保持（再帰更新を防止）
     if (!tp._userAdjusted) {
       window._lastAutoBaseDots = baseDots;
@@ -2306,10 +2332,9 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // 構造化データの total_dots を上書き（結果表示の整合性確保）
     if (structured.treatment_plan) structured.treatment_plan.total_dots = totalDots;
 
-    // セルサイズを動的に決定: totalDots/treatArea 比率に基づき視覚的な粒度を一致させる
-    // 1セル = 1ドット想定 → cellSize² = treatArea / totalDots
-    const targetCellSize = Math.sqrt(treatArea / Math.max(1, totalDots));
-    // クランプ: 最小 = ドット直径 × 1.15（重なり防止）、最大 = ドット直径 × 5.0（過疎防止）
+    // セルサイズ算出: NaN/0/Infinity ガード付き
+    let targetCellSize = Math.sqrt(treatArea / Math.max(1, totalDots));
+    if (!isFinite(targetCellSize) || targetCellSize <= 0) targetCellSize = dotRadius_px * 3.0;
     const cellSize = Math.max(dotRadius_px * 2.3, Math.min(dotRadius_px * 5.0, targetCellSize));
     // λ = 平均重なり回数（仕様書準拠ポアソン飽和）
     const lam = totalDots * dotArea_px / treatArea;
@@ -2428,19 +2453,44 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
 
 // ===== 構造化データ抽出（Gemini JSON出力） =====
 function extractStructuredData(responseText) {
+  if (!responseText || typeof responseText !== 'string') return null;
   const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
   let data = null;
   if (jsonMatch) {
     try { data = JSON.parse(jsonMatch[1]); } catch(e) { /* フォールバック */ }
   }
   if (!data) {
-    // ```なしのJSONブロックも試行
-    const rawMatch = responseText.match(/\{[\s\S]*"condition_type"[\s\S]*"scores"[\s\S]*\}/);
+    // ```なしのJSONブロックも試行（condition_type含む塊を探す）
+    const rawMatch = responseText.match(/\{[\s\S]*?"condition_type"[\s\S]*?\}/);
     if (rawMatch) {
       try { data = JSON.parse(rawMatch[0]); } catch(e) { /* フォールバック */ }
     }
   }
-  if (!data) return null;
+  if (!data || typeof data !== 'object') return null;
+  // ─── 数値サニタイゼーション ───
+  function _num(v, def, min, max) {
+    const n = Number(v);
+    if (!isFinite(n)) return def;
+    return Math.max(min, Math.min(max, n));
+  }
+  // treatment_plan の数値バリデーション
+  if (data.treatment_plan && typeof data.treatment_plan === 'object') {
+    const tp = data.treatment_plan;
+    if ('total_dots' in tp) tp.total_dots = _num(tp.total_dots, 0, 0, 500000);
+    if ('sessions' in tp) tp.sessions = _num(tp.sessions, 3, 1, 10);
+    if ('total_dots_per_session' in tp) tp.total_dots_per_session = _num(tp.total_dots_per_session, 0, 0, 200000);
+    if ('treatment_area_cm2' in tp) tp.treatment_area_cm2 = _num(tp.treatment_area_cm2, 0, 0, 2000);
+    // total_dots 欠損時は session × per_session で補完
+    if ((!tp.total_dots || tp.total_dots === 0) && tp.total_dots_per_session && tp.sessions) {
+      tp.total_dots = tp.total_dots_per_session * tp.sessions;
+    }
+  }
+  // scores クランプ
+  if (data.scores && typeof data.scores === 'object') {
+    ['coverage_improvement','naturalness','confidence_boost'].forEach(function(k){
+      if (k in data.scores) data.scores[k] = _num(data.scores[k], 80, 0, 100);
+    });
+  }
 
   // condition_type バリデーション（許可リスト外は自動マッピング）
   const validCondTypes = ['thinning', 'hairline', 'scar', 'patch', 'combined'];
@@ -2492,8 +2542,15 @@ function extractStructuredData(responseText) {
     const hb = data.head_bounds;
     if (typeof hb.x !== 'number' || typeof hb.y !== 'number' ||
         typeof hb.w !== 'number' || typeof hb.h !== 'number' ||
+        !isFinite(hb.x) || !isFinite(hb.y) || !isFinite(hb.w) || !isFinite(hb.h) ||
         hb.w <= 0 || hb.h <= 0) {
       data.head_bounds = null;
+    } else {
+      // [0,1]クランプ + はみ出し防止
+      hb.x = Math.max(0, Math.min(1, hb.x));
+      hb.y = Math.max(0, Math.min(1, hb.y));
+      hb.w = Math.max(0.05, Math.min(1 - hb.x, hb.w));
+      hb.h = Math.max(0.05, Math.min(1 - hb.y, hb.h));
     }
   }
 
@@ -2511,6 +2568,13 @@ function _polyArea(pts) {
 }
 
 function showBAResult(beforeDataURL, claudeText) {
+  // 入力バリデーション: claudeText が null/undefined/空でも crash しない
+  if (typeof claudeText !== 'string') claudeText = '';
+  if (!beforeDataURL || typeof beforeDataURL !== 'string') {
+    console.error('[SMP] showBAResult: beforeDataURL 未指定');
+    showToast('画像データが不正です。撮影からやり直してください。', 'error');
+    return;
+  }
   // 構造化データの抽出を試行
   let structured = extractStructuredData(claudeText);
 
@@ -2518,7 +2582,7 @@ function showBAResult(beforeDataURL, claudeText) {
   const displayText = claudeText.replace(/```json[\s\S]*?```/g, '').trim();
 
   let dotCount = extractDotCount(claudeText);
-  const condType = structured ? structured.condition_type : detectConditionType(claudeText);
+  const condType = (structured && structured.condition_type) || detectConditionType(claudeText);
 
   // ★ JSON未返却時: テキストから合成した最小限の構造化データを構築
   // これにより drawSMPSimulation が condition_type を適切に受け取れる
