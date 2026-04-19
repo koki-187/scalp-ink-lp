@@ -1323,7 +1323,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 <!-- FOOTER -->
 <footer>
   <div class="ft-logo">THE SCALP INK</div>
-  <div class="ft-copy">&copy; 2024 THE SCALP INK by CIMA. All rights reserved.</div>
+  <div class="ft-copy">&copy; 2026 THE SCALP INK by CIMA. All rights reserved.</div>
   <div class="ft-links">
     <a href="privacy-policy.html">Privacy Policy</a>
     <a href="tokushoho.html">Tokushoho Act</a>
@@ -1966,7 +1966,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       }
       if (regionPx < 200) return null;
 
-      console.log('[SMP] Yellow outline detected: ' + yCount + ' yellow px, region ' + regionPx + 'px');
+
       showToast('✏️ Hand-drawn outline detected', 'info');
       return { mask: mask, regionPx: regionPx, yellowMask: yMask };
     }
@@ -2236,7 +2236,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     const lam = totalDots * dotArea_px / treatArea;
     // Spec: saturation correction C = 1-(1+0.3λ)·exp(-λ) (neg-binomial: suppresses overestimation at low λ)
     const baseCoverage = Math.min(0.94, 1.0 - (1.0 + 0.3 * lam) * Math.exp(-lam));
-    console.log('[SMP v9] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px cell=' + cellSize.toFixed(1) + 'px treatPx=' + treatArea + ' λ=' + lam.toFixed(2) + ' cov=' + (baseCoverage*100).toFixed(1) + '% hair=[' + hairR+','+hairG+','+hairB+'] skin=['+skinR+','+skinG+','+skinB+']');
+
 
     // ─── STEP F: Two-layer synthesis (Layer1 Poisson base + Layer2 cell-dot stipple) ───
     const outData = ctx.getImageData(0, 0, w, h);
@@ -3118,7 +3118,7 @@ function analyze() {
       const isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
       const isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
       if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
-        console.log('[AI Sim] ' + model + ' quota exceeded, trying ' + _GEMINI_MODELS[modelIndex + 1]);
+
         showToast('Connection busy. Retrying with a different AI model...', 'info');
         tryGeminiModel(modelIndex + 1);
         return;

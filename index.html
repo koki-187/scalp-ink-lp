@@ -565,7 +565,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
     "closes": "20:00"
   },
   "sameAs": [
-    "https://line.me/R/ti/p/@045ovoxr"
+    "https://line.me/R/ti/p/@045ovoxr",
+    "https://www.instagram.com/cima88_inkwork"
   ]
 }
 </script>
@@ -1325,7 +1326,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 <!-- FOOTER -->
 <footer>
   <div class="ft-logo">THE SCALP INK</div>
-  <div class="ft-copy">&copy; 2024 THE SCALP INK by CIMA. All rights reserved.</div>
+  <div class="ft-copy">&copy; 2026 THE SCALP INK by CIMA. All rights reserved.</div>
   <div class="ft-links">
     <a href="privacy-policy.html">プライバシーポリシー</a>
     <a href="tokushoho.html">特定商取引法</a>
@@ -1984,8 +1985,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       }
       if (regionPx < 200) return null; // 内側が小さすぎる
 
-      console.log('[SMP] 黄色アウトライン検出: ' + yCount + '黄色px, 施術領域' + regionPx + 'px');
-      showToast('✏️ 手描きアウトラインを検出しました', 'info');
+        showToast('✏️ 手描きアウトラインを検出しました', 'info');
       return { mask: mask, regionPx: regionPx, yellowMask: yMask };
     }
 
@@ -2276,7 +2276,6 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // k=0.25（低λ時の過大評価抑制を緩和し、中λ域の立ち上がりを改善）
     // 上限0.92: 実際のSMP施術では完全均一化はあり得ない（自然な地肌感を残す）
     const baseCoverage = Math.min(0.92, 1.0 - (1.0 + 0.25 * lam) * Math.exp(-lam));
-    console.log('[SMP v9.4] dots=' + totalDots + ' dotR=' + dotRadius_px.toFixed(1) + 'px cell=' + cellSize.toFixed(1) + 'px treatPx=' + treatArea + ' λ=' + lam.toFixed(2) + ' cov=' + (baseCoverage*100).toFixed(1) + '% hair=[' + hairR+','+hairG+','+hairB+'] skin=['+skinR+','+skinG+','+skinB+']');
 
     // ─── STEP F: 2層合成（Layer1 Poisson均一化 + Layer2 セルドット点描） ───
     const outData = ctx.getImageData(0, 0, w, h);
@@ -3189,7 +3188,6 @@ function analyze() {
       const isQuotaErr = /quota|rate.limit|resource.exhausted|429|RESOURCE_EXHAUSTED/i.test(msg);
       const isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
       if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
-        console.log('[AI Sim] ' + model + ' quota exceeded, trying ' + _GEMINI_MODELS[modelIndex + 1]);
         showToast('接続が混雑しています。別のAIモデルで再試行中...', 'info');
         tryGeminiModel(modelIndex + 1);
         return;
