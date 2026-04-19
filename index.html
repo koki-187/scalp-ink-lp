@@ -2299,8 +2299,10 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       baseDots = autoBaseDots;
     }
     const totalDots = Math.round(baseDots * densityMultiplier);
-    // 面積ベース再計算値もAI値と揃える（スライダー基準）
-    window._lastAutoBaseDots = baseDots;
+    // スライダー基準値: ユーザー調整時は元の基準を保持（再帰更新を防止）
+    if (!tp._userAdjusted) {
+      window._lastAutoBaseDots = baseDots;
+    }
     // 構造化データの total_dots を上書き（結果表示の整合性確保）
     if (structured.treatment_plan) structured.treatment_plan.total_dots = totalDots;
 

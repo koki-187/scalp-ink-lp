@@ -2254,7 +2254,10 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       baseDots = autoBaseDots;
     }
     const totalDots = Math.round(baseDots * densityMultiplier);
-    window._lastAutoBaseDots = baseDots;
+    // Preserve original slider base when user is adjusting (prevent feedback loop)
+    if (!tp._userAdjusted) {
+      window._lastAutoBaseDots = baseDots;
+    }
     if (structured.treatment_plan) structured.treatment_plan.total_dots = totalDots;
 
     // Dynamic cellSize: visible grain matches totalDots/treatArea
