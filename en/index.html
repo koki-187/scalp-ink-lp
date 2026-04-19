@@ -1555,17 +1555,29 @@ function renderMarkdown(text) {
 
 // ===== CONDITION TYPE DETECTION =====
 function detectConditionType(text) {
-  const hasScar = /傷跡|瘢痕|手術跡|外傷|移植痕|scar/i.test(text);
-  const hasHairline = /ヘアライン|生え際|M字|後退|hairline/i.test(text);
-  const hasThinning = /薄毛|びまん|頭頂部|AGA|密度不足|全体型/i.test(text);
-  const hasPatch = /円形脱毛|パッチ|局所|脱毛パッチ/i.test(text);
+  // Priority 1: explicit declared type
+  const declaredType = text.match(/(?:状態タイプ|condition[_\s-]*type|タイプ|type)\s*[：:=]\s*([A-Za-z]|[^\n。,、]{1,40})/i);
+  if (declaredType) {
+    const d = declaredType[1];
+    if (/傷跡|瘢痕|scar|^C$/i.test(d)) return 'scar';
+    if (/ヘアライン|生え際|hairline|^A$/i.test(d)) return 'hairline';
+    if (/円形|パッチ|patch|局所|^D$/i.test(d)) return 'patch';
+    if (/薄毛|びまん|thinning|頭頂|^B$/i.test(d)) return 'thinning';
+  }
 
-  const count = (hasScar?1:0) + (hasHairline?1:0) + (hasThinning?1:0) + (hasPatch?1:0);
-  if (count >= 2) return 'combined';
-  if (hasScar) return 'scar';
-  if (hasHairline) return 'hairline';
-  if (hasPatch) return 'patch';
-  return 'thinning';
+  // Priority 2: keyword occurrence counts
+  const scarN  = (text.match(/傷跡|瘢痕|手術跡|外傷|移植痕|scar/gi) || []).length;
+  const hairN  = (text.match(/ヘアライン|生え際|M字|後退|hairline/gi) || []).length;
+  const thinN  = (text.match(/薄毛|びまん|頭頂部|AGA|密度不足|全体型|thinning/gi) || []).length;
+  const patchN = (text.match(/円形脱毛|パッチ|局所|脱毛パッチ|patch/gi) || []).length;
+
+  const arr = [['scar', scarN], ['hairline', hairN], ['patch', patchN], ['thinning', thinN]];
+  arr.sort((a, b) => b[1] - a[1]);
+  const [topName, topCount] = arr[0];
+  const [, secondCount] = arr[1];
+  if (topCount === 0) return 'thinning';
+  if (topCount >= secondCount * 2 || secondCount === 0) return topName;
+  return 'combined';
 }
 
 // ===== BA FRAME: dot count extraction =====
@@ -2427,12 +2439,18 @@ function showBAResult(beforeDataURL, claudeText) {
   // Prefer area-based autoBase over text extraction (text often contains per-session values).
   if (!structured) {
     let textDots = 0;
-    const totalCtx = /(?:合計|総計|total[\s_-]*dots?|grand[\s_-]*total)[^0-9０-９]{0,20}([0-9０-９,]+)/i;
-    const mt = claudeText.match(totalCtx);
-    if (mt) {
-      const raw = mt[1].replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/,/g, '');
-      const v = parseInt(raw, 10);
-      if (!isNaN(v) && v >= 5000 && v <= 300000) textDots = v;
+    const patterns = [
+      /([0-9０-９,]+)\s*[〜~～\-–]\s*([0-9０-９,]+)\s*ドット[^。\n]{0,25}?(?:合計|総計)/i,
+      /([0-9０-９,]+)\s*(?:ドット|dots)[^。\n]{0,25}?(?:合計|総計|全セッション|total|grand[\s_-]*total)/i,
+      /(?:合計|総計|total[\s_-]*dots?|grand[\s_-]*total)[^0-9０-９]{0,20}([0-9０-９,]+)/i
+    ];
+    const toNum = s => parseInt(s.replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/,/g, ''), 10);
+    for (const pat of patterns) {
+      const m = claudeText.match(pat);
+      if (m) {
+        const v = m[2] ? toNum(m[2]) : toNum(m[1]);
+        if (!isNaN(v) && v >= 3000 && v <= 300000) { textDots = v; break; }
+      }
     }
     structured = {
       condition_type: condType,
