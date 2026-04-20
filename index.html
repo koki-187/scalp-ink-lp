@@ -461,6 +461,11 @@ section{position:relative;z-index:1;}
   font-size:.75rem;color:rgba(245,245,240,.55);display:flex;align-items:center;gap:10px;}
 .award-list li::before{content:"★";color:var(--gd);font-size:.7rem;}
 .art-sns{display:flex;gap:9px;margin-top:18px;flex-wrap:wrap;}
+.jink-badge{display:inline-flex;align-items:center;gap:14px;margin:18px 0 4px;padding:12px 18px;background:linear-gradient(135deg,rgba(201,168,76,.10),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.28);border-radius:4px;}
+.jink-badge img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(201,168,76,.25));}
+.jink-text{display:flex;flex-direction:column;gap:2px;}
+.jink-label{font-size:.78rem;color:var(--gd);letter-spacing:.12em;font-weight:500;}
+.jink-sub{font-size:.62rem;color:rgba(245,245,240,.48);letter-spacing:.06em;}
 .sns-btn{padding:9px 18px;text-decoration:none;border:1px solid rgba(201,168,76,.26);
   color:var(--gd);font-size:.68rem;letter-spacing:.1em;transition:all .3s;
   display:flex;align-items:center;gap:6px;}
@@ -1218,12 +1223,22 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <div class="art-en">THE SCALP INK ARTIST</div>
         <h2 class="s-ttl">CIMA</h2>
         <div class="g-line"></div>
-        <p class="art-bio">スカルプマイクロピグメンテーション（SMP）のスペシャリスト。人体安全基準認定の液体と専用機器を用いた精密施術で多くの方の自信を取り戻してきました。韓国発の最新技術をいち早く習得し、世界的な大会においても高い技術評価を獲得。</p>
+        <p class="art-bio">髪の悩みは、鏡に映る自分への自信を少しずつ奪っていく——その苦しみに、私自身も長く向き合ってきました。だからこそ、一人ひとりの悩みの深さも、取り戻したい日常の景色も、本当の意味で理解できると思っています。</p>
+        <p class="art-bio">SMPは、頭皮に色を入れるだけの技術ではありません。その方の輪郭、毛流れ、肌色、そして「こうありたい」という願いを、1ドット1ドットに託して描き出す作業です。韓国発の最新技術をいち早く習得し、人体安全基準を満たしたインクと機器のみを使用。世界的な大会で評価を頂いた精度を、あなた一人のために注ぎ込みます。</p>
+        <p class="art-bio">鏡の前で、もう一度笑える瞬間を——。<br>その瞬間を一緒に取り戻すために、私はこの仕事を続けています。</p>
         <ul class="award-list">
           <li>世界的SMP大会 高評価受賞</li>
           <li>韓国最新SMP技術 正式認定</li>
           <li>人体安全基準認定技術者</li>
+          <li>一般社団法人 日本タトゥー衛生協会 正会員（会員番号 SI-25-000291）</li>
         </ul>
+        <div class="jink-badge" aria-label="日本タトゥー衛生協会 正会員">
+          <img src="assets/jink-logo.png" alt="J-INK 日本タトゥー衛生協会" onerror="this.style.display='none'">
+          <div class="jink-text">
+            <span class="jink-label">J-INK 正会員</span>
+            <span class="jink-sub">一般社団法人 日本タトゥー衛生協会</span>
+          </div>
+        </div>
         <div class="art-sns">
           <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="sns-btn">Instagram @cima88_inkwork</a>
           <a href="#booking" class="sns-btn">予約する</a>

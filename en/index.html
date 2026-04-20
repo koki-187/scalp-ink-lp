@@ -460,6 +460,11 @@ section{position:relative;z-index:1;}
   font-size:.75rem;color:rgba(245,245,240,.55);display:flex;align-items:center;gap:10px;}
 .award-list li::before{content:"★";color:var(--gd);font-size:.7rem;}
 .art-sns{display:flex;gap:9px;margin-top:18px;flex-wrap:wrap;}
+.jink-badge{display:inline-flex;align-items:center;gap:14px;margin:18px 0 4px;padding:12px 18px;background:linear-gradient(135deg,rgba(201,168,76,.10),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.28);border-radius:4px;}
+.jink-badge img{width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(201,168,76,.25));}
+.jink-text{display:flex;flex-direction:column;gap:2px;}
+.jink-label{font-size:.78rem;color:var(--gd);letter-spacing:.12em;font-weight:500;}
+.jink-sub{font-size:.62rem;color:rgba(245,245,240,.48);letter-spacing:.06em;}
 .sns-btn{padding:9px 18px;text-decoration:none;border:1px solid rgba(201,168,76,.26);
   color:var(--gd);font-size:.68rem;letter-spacing:.1em;transition:all .3s;
   display:flex;align-items:center;gap:6px;}
@@ -1212,12 +1217,22 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <div class="art-en">THE SCALP INK ARTIST</div>
         <h2 class="s-ttl">CIMA</h2>
         <div class="g-line"></div>
-        <p class="art-bio">SMP specialist. Using safety-certified pigments and specialized equipment, CIMA has helped countless clients reclaim their confidence through precise treatments. An early adopter of the latest Korean SMP techniques, with high technical recognition at international competitions.</p>
+        <p class="art-bio">Hair loss steals your confidence, little by little, every time you look in the mirror. I understand that pain deeply — because I've lived it myself. That's why I believe I can truly understand the depth of each person's struggle, and the everyday moments they wish to reclaim.</p>
+        <p class="art-bio">SMP is more than just adding color to the scalp. It's the art of translating each client's contours, hair flow, skin tone, and hopes into every single dot. Trained early in cutting-edge Korean techniques and using only safety-certified pigments and equipment, I bring the precision recognized at world competitions — dedicated entirely to you.</p>
+        <p class="art-bio">To bring back the moment you can smile in front of the mirror again.<br>That's why I continue this work.</p>
         <ul class="award-list">
           <li>High Commendation at World SMP Competition</li>
           <li>Official Certification in Latest Korean SMP Techniques</li>
           <li>Certified Human Safety Standards Technician</li>
+          <li>Registered Member, Japan Ink Hygiene Association (Member No. SI-25-000291)</li>
         </ul>
+        <div class="jink-badge" aria-label="Japan Ink Hygiene Association Member">
+          <img src="../assets/jink-logo.png" alt="J-INK Japan Ink Hygiene Association" onerror="this.style.display='none'">
+          <div class="jink-text">
+            <span class="jink-label">J-INK Registered Member</span>
+            <span class="jink-sub">Japan Ink Hygiene Association</span>
+          </div>
+        </div>
         <div class="art-sns">
           <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="sns-btn">Instagram @cima88_inkwork</a>
           <a href="#booking" class="sns-btn">Book Now</a>
