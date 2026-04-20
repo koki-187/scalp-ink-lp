@@ -2099,7 +2099,9 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // Scar: smaller featherR so thin regions survive the blur
     const featherR = conditionType === 'scar'
       ? Math.max(3, Math.min(8, Math.round(Math.min(w, h) * 0.006)))
-      : Math.max(4, Math.min(20, Math.round(Math.min(w, h) * 0.018)));
+      : conditionType === 'hairline'
+      ? Math.max(3, Math.min(14, Math.round(Math.min(w, h) * 0.013)))
+      : Math.max(6, Math.min(28, Math.round(Math.min(w, h) * 0.024)));
     const edgeMask = new Float32Array(w * h);
     let tempBuf  = new Float32Array(w * h);
     let tempBuf2 = new Float32Array(w * h);
@@ -2160,6 +2162,12 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       }
     }
     tempBuf = null; tempBuf2 = null;
+
+    // v9.5: smoothstep on edgeMask for a gentler falloff
+    for (let ei = 0; ei < w * h; ei++) {
+      const v = edgeMask[ei];
+      edgeMask[ei] = v * v * (3 - 2 * v);
+    }
 
     // ─── STEP B: Adjust densityMap by luminance exposure factor ───
     // SMP treatment: brighten exposed scalp (bright px) fully, spare existing follicles (dark px)
@@ -2355,23 +2363,50 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     ctx.putImageData(finalData, 0, 0);
 
     // ─── Yellow line removal: overwrite yellow annotations with original photo pixels ───
+    // v9.5: dilate yMask by 3px + loose-yellow fringe catch (for JPEG anti-alias)
     if (yellowDetected && yellowDetected.yellowMask && window._cleanPhotoPixels) {
       const yFinalData = ctx.getImageData(0, 0, w, h);
       const cleanPx = window._cleanPhotoPixels.data;
       const cleanW = window._cleanPhotoPixels.width;
       const cleanH = window._cleanPhotoPixels.height;
-      const yMaskFinal = yellowDetected.yellowMask;
+      const yMaskOrig = yellowDetected.yellowMask;
+      const yDilR = 3;
+      const yMaskDil = new Uint8Array(w * h);
+      const yTmp = new Uint8Array(w * h);
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          let found = 0;
+          for (let d = -yDilR; d <= yDilR && !found; d++) {
+            const nx2 = x + d;
+            if (nx2 >= 0 && nx2 < w && yMaskOrig[y*w+nx2]) found = 1;
+          }
+          yTmp[y*w+x] = found;
+        }
+      }
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          let found = 0;
+          for (let d = -yDilR; d <= yDilR && !found; d++) {
+            const ny2 = y + d;
+            if (ny2 >= 0 && ny2 < h && yTmp[ny2*w+x]) found = 1;
+          }
+          yMaskDil[y*w+x] = found;
+        }
+      }
+      const fd = yFinalData.data;
       for (let yfi = 0; yfi < w * h; yfi++) {
-        if (yMaskFinal[yfi]) {
+        const si = yfi * 4;
+        const fr = fd[si], fg = fd[si+1], fb = fd[si+2];
+        const isFringe = (fr > 130 && fg > 115 && fb < 140 && fr - fb > 35 && fg - fb > 20);
+        if (yMaskDil[yfi] || isFringe) {
           const yfiX = yfi % w, yfiY = (yfi / w) | 0;
           const cX = Math.min(cleanW - 1, Math.round(yfiX * cleanW / w));
           const cY = Math.min(cleanH - 1, Math.round(yfiY * cleanH / h));
           const cIdx = (cY * cleanW + cX) * 4;
-          const si = yfi * 4;
-          yFinalData.data[si]     = cleanPx[cIdx];
-          yFinalData.data[si + 1] = cleanPx[cIdx + 1];
-          yFinalData.data[si + 2] = cleanPx[cIdx + 2];
-          yFinalData.data[si + 3] = 255;
+          fd[si]     = cleanPx[cIdx];
+          fd[si + 1] = cleanPx[cIdx + 1];
+          fd[si + 2] = cleanPx[cIdx + 2];
+          fd[si + 3] = 255;
         }
       }
       ctx.putImageData(yFinalData, 0, 0);
@@ -3063,10 +3098,15 @@ function analyze() {
 '- Recommended session schedule table (7-14 day intervals)\n\n' +
 
 '[STEP 4: Post-Treatment Visual Image]\n' +
-'- Finished look with scars/patches made invisible (always include if applicable)\n' +
-'- Change in density and natural appearance (before/after comparison table)\n' +
-'- Change in first impression and perceived age\n' +
-'- Transparent billing at 1 dot = \\u00a51: estimated total dots (all sessions combined) and reference price range\n\n' +
+'\u2605 All three items below MUST be fully populated (NO empty tables):\n' +
+'(1) Density/naturalness change table with header "| Aspect | Before | After |" and ALL 5 rows below:\n' +
+'  - | Scalp visibility | (specific before state) | (improved state) |\n' +
+'  - | Hair volume impression | (before) | (after) |\n' +
+'  - | Edge sharpness | (before) | (after) |\n' +
+'  - | Naturalness (close-up) | (before) | (after) |\n' +
+'  - | Naturalness (distance) | (before) | (after) |\n' +
+'(2) At least 3 bullet points on changes in first impression and perceived age\n' +
+'(3) Transparent billing at 1 dot = \\u00a51: estimated total dots (all sessions combined) and reference price range\n\n' +
 
 '[STEP 5: CIMA 4D Technique Strengths]\n' +
 '- Coverage for scars and special areas\n' +

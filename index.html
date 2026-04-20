@@ -2130,7 +2130,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       ? Math.max(5, Math.min(16, Math.round(Math.min(w, h) * 0.012)))
       : conditionType === 'hairline'
       ? Math.max(3, Math.min(14, Math.round(Math.min(w, h) * 0.013)))
-      : Math.max(4, Math.min(20, Math.round(Math.min(w, h) * 0.018)));
+      : Math.max(6, Math.min(28, Math.round(Math.min(w, h) * 0.024)));
     const edgeMask = new Float32Array(w * h);
     let tempBuf  = new Float32Array(w * h);
     let tempBuf2 = new Float32Array(w * h);
@@ -2191,6 +2191,12 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       }
     }
     tempBuf = null; tempBuf2 = null; // GC
+
+    // v9.5: edgeMask にガンマ補正で滑らかな減衰 (0→0.5→1 の遷移を自然に)
+    for (let ei = 0; ei < w * h; ei++) {
+      const v = edgeMask[ei];
+      edgeMask[ei] = v * v * (3 - 2 * v); // smoothstep: 硬いステップを避け自然な falloff
+    }
 
     // ─── STEP B: densityMap を輝度露出係数で補正 ───
     // SMP施術 = 毛穴間の明るい頭皮（exposed scalp）を暗くする
@@ -2421,24 +2427,52 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     ctx.putImageData(finalData, 0, 0);
 
     // ─── ⑤ 黄色線削除: 元写真ピクセルで黄色アノテーションを上書き ───
+    // v9.5: yMask を3px膨張 + ゆるい黄色閾値で二重除去（JPEGフリンジ対策）
     if (yellowDetected && yellowDetected.yellowMask && window._cleanPhotoPixels) {
       const yFinalData = ctx.getImageData(0, 0, w, h);
       const cleanPx = window._cleanPhotoPixels.data;
       const cleanW = window._cleanPhotoPixels.width;
       const cleanH = window._cleanPhotoPixels.height;
-      const yMaskFinal = yellowDetected.yellowMask;
+      const yMaskOrig = yellowDetected.yellowMask;
+      // yMask を3px膨張（水平→垂直2パス）
+      const yDilR = 3;
+      const yMaskDil = new Uint8Array(w * h);
+      const yTmp = new Uint8Array(w * h);
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          let found = 0;
+          for (let d = -yDilR; d <= yDilR && !found; d++) {
+            const nx2 = x + d;
+            if (nx2 >= 0 && nx2 < w && yMaskOrig[y*w+nx2]) found = 1;
+          }
+          yTmp[y*w+x] = found;
+        }
+      }
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          let found = 0;
+          for (let d = -yDilR; d <= yDilR && !found; d++) {
+            const ny2 = y + d;
+            if (ny2 >= 0 && ny2 < h && yTmp[ny2*w+x]) found = 1;
+          }
+          yMaskDil[y*w+x] = found;
+        }
+      }
+      // 除去: 膨張マスク内 OR ゆるい黄色閾値（フリンジ）の画素を元写真で上書き
+      const fd = yFinalData.data;
       for (let yfi = 0; yfi < w * h; yfi++) {
-        if (yMaskFinal[yfi]) {
-          // この位置に対応するクリーン写真ピクセルを取得（スケール考慮）
+        const si = yfi * 4;
+        const fr = fd[si], fg = fd[si+1], fb = fd[si+2];
+        const isFringe = (fr > 130 && fg > 115 && fb < 140 && fr - fb > 35 && fg - fb > 20);
+        if (yMaskDil[yfi] || isFringe) {
           const yfiX = yfi % w, yfiY = (yfi / w) | 0;
           const cX = Math.min(cleanW - 1, Math.round(yfiX * cleanW / w));
           const cY = Math.min(cleanH - 1, Math.round(yfiY * cleanH / h));
           const cIdx = (cY * cleanW + cX) * 4;
-          const si = yfi * 4;
-          yFinalData.data[si]     = cleanPx[cIdx];
-          yFinalData.data[si + 1] = cleanPx[cIdx + 1];
-          yFinalData.data[si + 2] = cleanPx[cIdx + 2];
-          yFinalData.data[si + 3] = 255;
+          fd[si]     = cleanPx[cIdx];
+          fd[si + 1] = cleanPx[cIdx + 1];
+          fd[si + 2] = cleanPx[cIdx + 2];
+          fd[si + 3] = 255;
         }
       }
       ctx.putImageData(yFinalData, 0, 0);
@@ -3157,9 +3191,15 @@ function analyze() {
 '- 推奨セッション数と間隔（7〜14日）のテーブル\n\n' +
 
 '【STEP 4: 施術後のビジュアルイメージ】\n' +
-'- 密度感・自然さの変化テーブル\n' +
-'- 第一印象・年齢印象の変化\n' +
-'- 1ドット＝1円の透明会計：推定総ドット数（全セッション合計）と参考価格帯\n\n' +
+'★必ず以下の3つを全て具体的な内容で記載すること（空テーブル禁止）：\n' +
+'① 密度感・自然さの変化テーブル（ヘッダー「| 項目 | 施術前 | 施術後 |」の後、以下の5行を必ず全て出力）:\n' +
+'  - | 頭皮の透け感 | （具体的な施術前の状態） | （改善後の状態） |\n' +
+'  - | 毛量の印象 | （施術前） | （施術後） |\n' +
+'  - | 境界のシャープさ | （施術前） | （施術後） |\n' +
+'  - | 自然さ（近距離） | （施術前） | （施術後） |\n' +
+'  - | 自然さ（遠距離） | （施術前） | （施術後） |\n' +
+'② 第一印象・年齢印象の変化を箇条書き3項目以上で記載\n' +
+'③ 1ドット＝1円の透明会計：推定総ドット数（全セッション合計）と参考価格帯を明記\n\n' +
 
 '【STEP 5: CIMA 4Dテクニックの強み】\n' +
 '- 傷跡・特殊エリアのカバレッジ\n' +
