@@ -12,6 +12,7 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#080808">
 <meta name="format-detection" content="telephone=no">
@@ -1876,7 +1877,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
   img.onload = function() {
     const w = img.width, h = img.height;
     cv.width = w; cv.height = h;
-    const ctx = cv.getContext('2d');
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
     ctx.drawImage(img, 0, 0, w, h);
     const orig = new Uint8ClampedArray(ctx.getImageData(0, 0, w, h).data);
 
@@ -3062,7 +3063,7 @@ function analyze() {
     mCtx.drawImage(dc, 0, 0);
   }
   // Save clean photo data (used for yellow line removal)
-  window._cleanPhotoPixels = capCv.getContext('2d').getImageData(0, 0, capCv.width, capCv.height);
+  window._cleanPhotoPixels = capCv.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, capCv.width, capCv.height);
   const _isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
   const srcCanvas = resizeForAPI(mergedCv, _isMobile ? 800 : 1280);
   const beforeDataURL = srcCanvas.toDataURL('image/jpeg', _isMobile ? 0.75 : 0.88);
@@ -3296,8 +3297,8 @@ function analyze() {
       const isAuthErr = /API_KEY_INVALID|PERMISSION_DENIED|authentication|unauthorized|leaked|reported|403|401/i.test(msg);
       const isNetworkErr = /Failed to fetch|NetworkError|Load failed|network/i.test(msg);
       if (isQuotaErr && modelIndex < _GEMINI_MODELS.length - 1) {
-        showToast('Connection busy. Retrying with a different AI model...', 'info');
-        tryGeminiModel(modelIndex + 1);
+        showToast('Connection busy. Retrying with a different AI model in 2s...', 'info');
+        setTimeout(function(){ tryGeminiModel(modelIndex + 1); }, 2000);
         return;
       }
       const displayMsg = isAborted
