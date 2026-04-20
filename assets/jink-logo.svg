@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" fill="none">
+  <g fill="#C9A84C">
+    <path d="M 30 55 Q 15 70 20 95 L 60 80 Q 55 65 40 58 Z"/>
+    <path d="M 170 55 Q 185 70 180 95 L 140 80 Q 145 65 160 58 Z"/>
+    <path d="M 55 45 L 145 45 L 145 115 Q 145 150 100 170 Q 55 150 55 115 Z"/>
+  </g>
+  <g fill="#0a0a0a">
+    <rect x="70" y="62" width="60" height="14"/>
+    <rect x="93" y="62" width="14" height="68"/>
+  </g>
+  <text x="100" y="200" text-anchor="middle" font-family="Arial Black, Helvetica, sans-serif" font-weight="900" font-size="26" fill="#C9A84C" letter-spacing="1">J-INK</text>
+</svg>
