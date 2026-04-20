@@ -28,7 +28,7 @@ h2{font-size:1.1rem;font-weight:700;letter-spacing:.1em;margin:36px 0 16px;paddi
 h2 .badge{font-size:.65rem;font-weight:500;background:#C9A84C;color:#fff;padding:2px 10px;border-radius:12px;margin-left:8px;vertical-align:middle;}
 .task-list{list-style:none;padding:0;}
 .task-item{background:#fff;border:1px solid #e8e4d8;border-radius:6px;padding:14px 18px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
-.task-item.done{opacity:0.75;}
+.task-item.done{opacity:0.85;}
 .task-item .icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;margin-top:2px;}
 .task-item.done .icon{background:#4CAF50;color:#fff;}
 .task-item.todo .icon{background:#FF9800;color:#fff;}
@@ -43,12 +43,18 @@ h2 .badge{font-size:.65rem;font-weight:500;background:#C9A84C;color:#fff;padding
 .tag-critical{background:#fff3e0;color:#e65100;}
 .tag-api{background:#e8f5e9;color:#2e7d32;}
 .tag-content{background:#fff8e1;color:#f57f17;}
+.tag-security{background:#ffebee;color:#b71c1c;}
 .gh-link{text-align:center;margin:40px 0 20px;}
-.gh-link a{display:inline-block;padding:12px 32px;background:#1a1a1a;color:#C9A84C;text-decoration:none;border-radius:6px;font-size:.82rem;letter-spacing:.08em;transition:all .3s;}
+.gh-link a{display:inline-block;padding:12px 32px;background:#1a1a1a;color:#C9A84C;text-decoration:none;border-radius:6px;font-size:.82rem;letter-spacing:.08em;transition:all .3s;margin:0 6px;}
 .gh-link a:hover{background:#C9A84C;color:#1a1a1a;}
 footer{text-align:center;padding:30px 0;font-size:.68rem;color:#aaa;border-top:1px solid #e8e4d8;margin-top:40px;}
 .print-btn{position:fixed;bottom:24px;right:24px;padding:12px 24px;background:#C9A84C;color:#fff;border:none;border-radius:6px;font-size:.82rem;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:100;font-family:'Noto Sans JP',sans-serif;}
 .print-btn:hover{background:#b8973f;}
+.live-url{display:inline-block;margin-top:10px;padding:6px 16px;background:#fff;border:1px solid #C9A84C;color:#C9A84C;text-decoration:none;border-radius:20px;font-size:.74rem;letter-spacing:.04em;}
+.live-url:hover{background:#C9A84C;color:#fff;}
+.note-box{background:#fff;border-left:4px solid #C9A84C;padding:14px 18px;margin:14px 0;border-radius:4px;}
+.note-box .t{font-size:.82rem;font-weight:600;color:#1a1a1a;margin-bottom:6px;}
+.note-box .d{font-size:.74rem;color:#555;line-height:1.7;}
 </style>
 </head>
 <body>
@@ -57,224 +63,359 @@ footer{text-align:center;padding:30px 0;font-size:.68rem;color:#aaa;border-top:1
 <header>
   <h1>THE <span>SCALP INK</span> by CIMA</h1>
   <p class="subtitle">LP制作プロジェクト 進捗レポート</p>
-  <div class="date">報告日: 2026年4月10日</div>
+  <div class="date">報告日: 2026年4月20日</div>
+  <a class="live-url no-print" href="https://cima-scalpink.com/" target="_blank">本番サイト稼働中 → cima-scalpink.com</a>
 </header>
 
 <div class="summary-bar">
-  <div class="summary-card"><div class="num">14</div><div class="label">完了タスク</div></div>
-  <div class="summary-card"><div class="num">10</div><div class="label">残タスク</div></div>
-  <div class="summary-card"><div class="num">58%</div><div class="label">進捗率</div></div>
+  <div class="summary-card"><div class="num">27</div><div class="label">完了タスク</div></div>
+  <div class="summary-card"><div class="num">4</div><div class="label">残タスク</div></div>
+  <div class="summary-card"><div class="num">87%</div><div class="label">進捗率</div></div>
 </div>
 
-<h2>完了した作業タスク <span class="badge">14件</span></h2>
+<div class="note-box">
+  <div class="t">運用ステータス</div>
+  <div class="d">本番サイト <b>https://cima-scalpink.com/</b> は Cloudflare Pages で稼働中。master ブランチへの push で自動デプロイされます。残タスクはいずれも運用側のアカウント設定・コンテンツ確定に依存する項目で、コード面の構築は完了しています。</div>
+</div>
+
+<h2>完了した作業タスク <span class="badge">27件</span></h2>
 <ul class="task-list">
+
   <li class="task-item done">
     <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">LP全体のデザイン・コーディング（JP版）</div>
-      <div class="desc">ヒーロー、ABOUT、施術事例B/A、AIシミュレーター、安全性、料金、アーティスト、予約セクション</div>
+      <div class="title">LP全体のデザイン・コーディング（JP / EN 両対応）</div>
+      <div class="desc">ヒーロー / ABOUT / 施術事例B/A / AIシミュレーター / 安全性 / 料金 / アーティスト / 予約セクション。JP/EN言語切替機能付き</div>
       <span class="tag tag-design">デザイン</span><span class="tag tag-feature">機能</span>
     </div>
   </li>
+
   <li class="task-item done">
     <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">英語版LP（EN版）の完全構築</div>
-      <div class="desc">JP版と同一構成・デザインの英語版。JP/EN言語切替機能付き</div>
+      <div class="title">本番ドメイン・SSL・Cloudflare Pages デプロイ</div>
+      <div class="desc">cima-scalpink.com 独自ドメインで稼働、自動HTTPS、master push → 即時デプロイのCI/CD構築済み</div>
+      <span class="tag tag-feature">インフラ</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">AIシミュレーター v9.5 — SMP施術再現エンジン</div>
+      <div class="desc">面積ベース自動ドット計算、Poisson飽和カバレッジ、2層合成（Layer1均一化+Layer2セルドット）、ガウス近似フェザリング、condition別（薄毛/ヘアライン/傷跡/パッチ/複合）パラメータ</div>
+      <span class="tag tag-feature">機能</span><span class="tag tag-api">AI</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">AI自動範囲検出＋手書きマスクモード</div>
+      <div class="desc">Gemini の treatment_regions ポリゴン自動判定 / ユーザーが黄色ペンで施術範囲を囲む手書きモード / 両モード切替自動</div>
       <span class="tag tag-feature">機能</span>
     </div>
   </li>
+
   <li class="task-item done">
     <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">ヒーロー背景動画の実装</div>
-      <div class="desc">hero-original + 施術動画1,2を16:9フルスクリーンクロップで結合。CSS数学的フルカバー</div>
-      <span class="tag tag-design">デザイン</span><span class="tag tag-fix">修正</span>
+      <div class="title">既存毛髪保護カーブ（hairProtect smoothstep）</div>
+      <div class="desc">輝度ベースの連続関数で、毛髪の上にドットが乗らず地肌露出部のみ自然にSMPが入る。ユーザー指定マスク時は保護緩和</div>
+      <span class="tag tag-feature">機能</span><span class="tag tag-fix">精度</span>
     </div>
   </li>
+
   <li class="task-item done">
     <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">AIシミュレーター基本機能</div>
-      <div class="desc">カメラ撮影/画像アップロード → Claude Opus API解析 → B/Aフレーム結果表示</div>
-      <span class="tag tag-feature">機能</span><span class="tag tag-api">API</span>
-    </div>
-  </li>
-  <li class="task-item done">
-    <div class="icon">&#10003;</div>
-    <div class="content">
-      <div class="title">AI解析レポートのMarkdown→HTML変換</div>
-      <div class="desc">renderMarkdown()関数で表・見出し・リストをスタイル付きHTMLに変換</div>
-      <span class="tag tag-feature">機能</span>
-    </div>
-  </li>
-  <li class="task-item done">
-    <div class="icon">&#10003;</div>
-    <div class="content">
-      <div class="title">SMPシミュレーションv3（ピクセルブレンド方式）</div>
-      <div class="desc">実際のSMP施術ロジックに基づく再設計。肌色→髪色ブレンド、condition別閾値、ガウシアンぼかし</div>
-      <span class="tag tag-feature">機能</span><span class="tag tag-fix">修正</span>
-    </div>
-  </li>
-  <li class="task-item done">
-    <div class="icon">&#10003;</div>
-    <div class="content">
-      <div class="title">スコアバーのcondition別ラベル・値</div>
-      <div class="desc">Norwood/Ludwigスケール検出、thinning/scar/hairline/patch別の動的ラベル</div>
-      <span class="tag tag-feature">機能</span>
-    </div>
-  </li>
-  <li class="task-item done">
-    <div class="icon">&#10003;</div>
-    <div class="content">
-      <div class="title">ドットカウント抽出ロジック強化</div>
-      <div class="desc">合計パターン優先→個別エリア合算→condition別フォールバックの3段階ロジック</div>
-      <span class="tag tag-feature">機能</span>
-    </div>
-  </li>
-  <li class="task-item done">
-    <div class="icon">&#10003;</div>
-    <div class="content">
-      <div class="title">重複レポート・ファン画像の削除</div>
-      <div class="desc">resArea重複表示とfan-overlay画像を削除、adviceBoxに一本化</div>
+      <div class="title">ペン描画の座標精度修正</div>
+      <div class="desc">object-fit:contain + contain-fit 可視矩形計算で、ペンを動かしたエリアと黄色線表示が完全一致</div>
       <span class="tag tag-fix">修正</span>
     </div>
   </li>
+
   <li class="task-item done">
     <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">B/Aチェッカーボードエラー修正</div>
-      <div class="desc">before側の背景を#0a0a0aに設定、透過アーティファクト解消</div>
-      <span class="tag tag-fix">修正</span>
+      <div class="title">ドット数調整スライダー（5000発単位スナップ）</div>
+      <div class="desc">±3万発のリアルタイム調整。cellSize 動的調整＋densityBoost 係数で小面積エリアでも濃度差が可視化</div>
+      <span class="tag tag-feature">機能</span>
     </div>
   </li>
+
   <li class="task-item done">
     <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">AI解析中の処理時間インジケーター</div>
-      <div class="desc">「AI解析中... 約30〜60秒お待ちください」メッセージ追加</div>
-      <span class="tag tag-design">UX</span>
+      <div class="title">AI診断レポート（STEP 1〜5構造化出力）</div>
+      <div class="desc">状態タイプ特定 / 詳細状態分析 / SMP施術プラン / 施術後ビジュアルイメージ / 施術後ケア の5段構成でMarkdown→HTML変換</div>
+      <span class="tag tag-feature">機能</span>
     </div>
   </li>
+
   <li class="task-item done">
     <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">OGP画像・ファビコン設定</div>
-      <div class="desc">SNS共有用OGP画像、CIMA公式ファビコン各サイズ</div>
+      <div class="title">3指標メトリクスバー（condition別動的ラベル）</div>
+      <div class="desc">傷跡カバー率 / 自然な仕上がり / 目立ちにくさ（傷跡モード）など、症例タイプ別に動的ラベルと値を表示</div>
+      <span class="tag tag-feature">機能</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">Gemini API プロキシ（Cloudflare Worker）</div>
+      <div class="desc">APIキーをクライアントに露出させない構成。Worker が CIMA.env 経由でGemini呼び出し、4モデル自動フォールバック、429時 2秒バックオフリトライ</div>
+      <span class="tag tag-api">API</span><span class="tag tag-security">セキュリティ</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">漏洩APIキーの完全除去</div>
+      <div class="desc">index.html / en/index.html からハードコードAPIキーを削除。gitignore に env variants 追加で再発防止</div>
+      <span class="tag tag-security">セキュリティ</span><span class="tag tag-fix">修正</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">実B/A施術写真の差し替え</div>
+      <div class="desc">ヘアライン/頭頂部/傷跡の全カテゴリに実施術写真を配置。hairline-2 は色調マッチング処理済み</div>
+      <span class="tag tag-content">コンテンツ</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">特定商取引法に基づく表記ページ</div>
+      <div class="desc">事業者名 / 代表者 / 連絡窓口 / サービス内容 / 料金体系 / 予約・キャンセルポリシー / 返金規定 / 紹介特典規定を完備。支払い方法は現金のみで確定</div>
+      <span class="tag tag-content">コンテンツ</span><span class="tag tag-critical">法務</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">ヒーロー背景動画 + フルスクリーン最適化</div>
+      <div class="desc">hero-original + 施術動画1,2を16:9フルスクリーンクロップで結合、遅延ロード対応</div>
       <span class="tag tag-design">デザイン</span>
     </div>
   </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">AI解析中のローディングUX改善</div>
+      <div class="desc">90秒タイムアウト / 処理時間表示 / 中断可能（やり直す）/ エラー理由明確化（quota/auth/network別メッセージ）</div>
+      <span class="tag tag-design">UX</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">Gemini 応答の安全ポリシー対応</div>
+      <div class="desc">promptFeedback.blockReason を検知して具体的なブロック理由を表示</div>
+      <span class="tag tag-fix">修正</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">入力バリデーション・エラーガード強化</div>
+      <div class="desc">NaN/Infinity/空文字ガード、AbortController による中断制御、_userAborted フラグでリセット時UI上書き防止、500K発上限キャップ</div>
+      <span class="tag tag-fix">修正</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">ドット数リアリティキャップ</div>
+      <div class="desc">scar:30K / hairline:55K / patch:40K / thinning:95K / combined:130K 上限で非現実的値を防止</div>
+      <span class="tag tag-feature">機能</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">Console 警告・偽エラー完全除去</div>
+      <div class="desc">willReadFrequently属性追加 / img.src='' 偽エラー修正 / mobile-web-app-capable メタタグ追加</div>
+      <span class="tag tag-fix">修正</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">OGP画像・ファビコン・SEOメタタグ</div>
+      <div class="desc">SNS共有用OGP、CIMA公式ファビコン、構造化データ（JSON-LD）設定済み</div>
+      <span class="tag tag-design">SEO</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">レスポンシブ / モバイル最適化</div>
+      <div class="desc">iOS/Androidネイティブカメラ対応、iOS safe-area、800px 画像縮小、タッチ最適化（touch-action:none）</div>
+      <span class="tag tag-design">UX</span>
+    </div>
+  </li>
+
   <li class="task-item done">
     <div class="icon">&#10003;</div>
     <div class="content">
       <div class="title">パフォーマンス最適化</div>
-      <div class="desc">Intersection Observer遅延読込、CSS/JSの圧縮、動画遅延ロード</div>
+      <div class="desc">Intersection Observer 遅延読込 / CSS/JS 圧縮 / 動画遅延ロード / canvas willReadFrequently</div>
       <span class="tag tag-feature">最適化</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">LINE公式アカウント連携</div>
+      <div class="desc">予約導線、FAQ応答、友達追加リンク設定済み（@cima88_inkwork）</div>
+      <span class="tag tag-content">導線</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">Instagram DM 予約導線</div>
+      <div class="desc">@cima88_inkwork への直接導線、予約フォーム連携</div>
+      <span class="tag tag-content">導線</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">デッドコード・不要資産の削除</div>
+      <div class="desc">brushSize hidden input削除 / _isMobile変数シャドーイング解消 / 不要な cleanup 処理除去</div>
+      <span class="tag tag-fix">最適化</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">GitHub リポジトリ管理</div>
+      <div class="desc">koki-187/scalp-ink-lp master管理、40+ コミット履歴保持、force push 禁止設定</div>
+      <span class="tag tag-feature">インフラ</span>
+    </div>
+  </li>
+
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">紹介特典規定の策定</div>
+      <div class="desc">紹介者 5,000発プレゼント / 被紹介者 5,000発加算 / 有効期限12ヶ月 / 初回割引併用不可ルール確定</div>
+      <span class="tag tag-content">コンテンツ</span>
+    </div>
+  </li>
+
+</ul>
+
+<div class="page-break"></div>
+
+<h2>残タスク一覧 <span class="badge">4件</span></h2>
+<ul class="task-list">
+
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">漏洩APIキーのローテーション（ユーザー側対応）</div>
+      <div class="desc">コードからは削除済み。Anthropic Console でキー無効化、および Git 履歴からの完全除去（git filter-repo 使用、破壊的操作のため合意要）</div>
+      <span class="tag tag-security">セキュリティ</span><span class="tag tag-critical">要対応</span>
+    </div>
+  </li>
+
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">紹介特典の運用管理システム構築</div>
+      <div class="desc">LINE公式アカウント + Googleスプレッドシート + Googleカレンダーで、紹介元/紹介日/残発数/12ヶ月有効期限リマインダーを一元管理。テンプレート作成推奨</div>
+      <span class="tag tag-content">運用</span>
+    </div>
+  </li>
+
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">Google Analytics 4 導入</div>
+      <div class="desc">GA4 トラッキングコード埋め込み、予約コンバージョン計測、AIシミュレーター使用ファネル分析</div>
+      <span class="tag tag-feature">分析</span>
+    </div>
+  </li>
+
+  <li class="task-item todo">
+    <div class="icon">!</div>
+    <div class="content">
+      <div class="title">実運用開始後の効果測定・継続改善</div>
+      <div class="desc">CV率・AIシミュレーター完遂率・予約数などのKPI定点観測、ユーザーフィードバックに基づく継続改善サイクル確立</div>
+      <span class="tag tag-feature">運用</span>
+    </div>
+  </li>
+
+</ul>
+
+<h2>AIシミュレーター 主要改修履歴（2026年4月）</h2>
+<ul class="task-list">
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
+    <div class="content">
+      <div class="title">致命バグ修正: 金色ロゴ誤検出 (f0e1488)</div>
+      <div class="desc">CIMA扇子の金色ロゴが黄色マスク判定をトリガーしAI自動検出が機能しない問題。drawingCanvas実存ストローク検出でガード</div>
     </div>
   </li>
   <li class="task-item done">
     <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">GitHubリポジトリ管理・プッシュ</div>
-      <div class="desc">koki-187/scalp-ink-lp にmaster管理、全コミット履歴保持</div>
-      <span class="tag tag-feature">インフラ</span>
+      <div class="title">ペン描画座標ズレ修正 (2aeb79b)</div>
+      <div class="desc">object-fit:cover のレイアウトで描画位置と表示位置がズレる問題を contain-fit に変更して完全一致化</div>
     </div>
   </li>
-</ul>
-
-<div class="page-break"></div>
-
-<h2>残タスク一覧 <span class="badge">10件</span></h2>
-<ul class="task-list">
-  <li class="task-item todo">
-    <div class="icon">!</div>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">AIシミュレーターの精度向上</div>
-      <div class="desc">SMP施術シミュレーションの精度改善。施術エリア判定の精度向上、ブレンドパラメータのチューニング、各症例タイプ別の最適化、リアルな仕上がり品質の検証</div>
-      <span class="tag tag-critical">重要</span><span class="tag tag-feature">機能</span>
+      <div class="title">境界フェザリング拡大 (c92a12f)</div>
+      <div class="desc">薄毛施術の額下部に硬いエッジが視認される問題。featherR 拡大＋hairProtect連続化で自然な falloff</div>
     </div>
   </li>
-  <li class="task-item todo">
-    <div class="icon">!</div>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">Gemini APIキーの設定</div>
-      <div class="desc">本番用APIキーの取得・設定（現在はテスト用）</div>
-      <span class="tag tag-critical">重要</span><span class="tag tag-api">API</span>
+      <div class="title">開ループ時の凸包フォールバック除去 (7fd917c)</div>
+      <div class="desc">U字開ループで矩形治療領域が生成される問題。明示的警告＋AI自動判定フォールバックに変更</div>
     </div>
   </li>
-  <li class="task-item todo">
-    <div class="icon">!</div>
+  <li class="task-item done">
+    <div class="icon">&#10003;</div>
     <div class="content">
-      <div class="title">特定商取引法に基づく表記の完成</div>
-      <div class="desc">事業者名、所在地、電話番号、メールアドレス等の正式情報入力</div>
-      <span class="tag tag-critical">重要</span><span class="tag tag-content">コンテンツ</span>
-    </div>
-  </li>
-  <li class="task-item todo">
-    <div class="icon">!</div>
-    <div class="content">
-      <div class="title">電話番号・連絡先の設定</div>
-      <div class="desc">LP内のtel:リンク、お問い合わせ用電話番号の正式設定</div>
-      <span class="tag tag-content">コンテンツ</span>
-    </div>
-  </li>
-  <li class="task-item todo">
-    <div class="icon">!</div>
-    <div class="content">
-      <div class="title">LINE公式アカウントURL設定</div>
-      <div class="desc">LINE友達追加リンクの正式URL設定、プロフィール画像アップ</div>
-      <span class="tag tag-content">コンテンツ</span>
-    </div>
-  </li>
-  <li class="task-item todo">
-    <div class="icon">!</div>
-    <div class="content">
-      <div class="title">実際のB/A施術写真の差し替え</div>
-      <div class="desc">現在はプレースホルダー。実際の施術前後写真に差し替え</div>
-      <span class="tag tag-content">コンテンツ</span>
-    </div>
-  </li>
-  <li class="task-item todo">
-    <div class="icon">!</div>
-    <div class="content">
-      <div class="title">ホスティング・ドメイン設定</div>
-      <div class="desc">独自ドメイン取得、本番サーバーへのデプロイ（Vercel/Netlify/独自サーバー）</div>
-      <span class="tag tag-feature">インフラ</span>
-    </div>
-  </li>
-  <li class="task-item todo">
-    <div class="icon">!</div>
-    <div class="content">
-      <div class="title">Google Analytics設定</div>
-      <div class="desc">GA4トラッキングコードの埋め込み、コンバージョン計測設定</div>
-      <span class="tag tag-feature">分析</span>
-    </div>
-  </li>
-  <li class="task-item todo">
-    <div class="icon">!</div>
-    <div class="content">
-      <div class="title">お問い合わせフォーム連携</div>
-      <div class="desc">フォーム送信のバックエンド連携（メール通知、LINE通知等）</div>
-      <span class="tag tag-feature">機能</span>
-    </div>
-  </li>
-  <li class="task-item todo">
-    <div class="icon">!</div>
-    <div class="content">
-      <div class="title">SSL証明書・セキュリティ設定</div>
-      <div class="desc">HTTPS強制、セキュリティヘッダー設定</div>
-      <span class="tag tag-feature">インフラ</span>
+      <div class="title">スライダー可視化強化 (3736fe4)</div>
+      <div class="desc">cellSize下限縮小＋densityBoost乗数導入で、小面積の傷跡/パッチ型でもスライダー操作が明確に反映</div>
     </div>
   </li>
 </ul>
 
 <div class="gh-link no-print">
-  <a href="https://koki-187.github.io/scalp-ink-lp/" target="_blank">GitHub Pages でLPを確認する &#8594;</a>
+  <a href="https://cima-scalpink.com/" target="_blank">本番サイトを見る &#8594;</a>
+  <a href="https://github.com/koki-187/scalp-ink-lp" target="_blank">GitHub リポジトリ &#8594;</a>
 </div>
 
 <footer>
   <p>THE SCALP INK by CIMA &mdash; LP制作プロジェクト進捗レポート</p>
-  <p>GitHub: github.com/koki-187/scalp-ink-lp | 生成日: 2026年4月10日</p>
+  <p>GitHub: github.com/koki-187/scalp-ink-lp | 本番: cima-scalpink.com | 生成日: 2026年4月20日</p>
 </footer>
 </div>
 </body>
