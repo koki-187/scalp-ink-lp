@@ -2321,8 +2321,10 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // Dynamic cellSize: NaN/0/Infinity guarded
     let targetCellSize = Math.sqrt(treatArea / Math.max(1, totalDots));
     if (!isFinite(targetCellSize) || targetCellSize <= 0) targetCellSize = dotRadius_px * 3.0;
-    const cellSize = Math.max(dotRadius_px * 2.3, Math.min(dotRadius_px * 5.0, targetCellSize));
+    const cellSize = Math.max(dotRadius_px * 1.6, Math.min(dotRadius_px * 5.0, targetCellSize));
     const lam = totalDots * dotArea_px / treatArea;
+    const autoBaseSafe = (window._lastAutoBaseDots && window._lastAutoBaseDots > 0) ? window._lastAutoBaseDots : totalDots;
+    const densityBoost = Math.max(0.75, Math.min(1.35, totalDots / autoBaseSafe));
     // Spec: saturation correction C = 1-(1+0.3λ)·exp(-λ) (neg-binomial: suppresses overestimation at low λ)
     const baseCoverage = Math.min(0.94, 1.0 - (1.0 + 0.3 * lam) * Math.exp(-lam));
 
@@ -2343,7 +2345,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         const eMask = edgeMask[idx];
 
         // Layer 1: Poisson uniform darkening base (skin color removal)
-        const layer1 = baseCoverage * dMap * 0.93;
+        const layer1 = baseCoverage * dMap * 0.93 * densityBoost;
 
         // Layer 2: Deterministic cell dots (circular stipple texture)
         const dotA   = cellDotAlpha(x, y, cellSize, dotRadius_px, dMap, SEED);

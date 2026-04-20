@@ -2380,13 +2380,17 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // セルサイズ算出: NaN/0/Infinity ガード付き
     let targetCellSize = Math.sqrt(treatArea / Math.max(1, totalDots));
     if (!isFinite(targetCellSize) || targetCellSize <= 0) targetCellSize = dotRadius_px * 3.0;
-    const cellSize = Math.max(dotRadius_px * 2.3, Math.min(dotRadius_px * 5.0, targetCellSize));
+    // 下限を dotRadius*1.6 に引き下げ → 高ドット数時にセルが詰まり、小面積でもスライダー操作が可視化
+    const cellSize = Math.max(dotRadius_px * 1.6, Math.min(dotRadius_px * 5.0, targetCellSize));
     // λ = 平均重なり回数（仕様書準拠ポアソン飽和）
     const lam = totalDots * dotArea_px / treatArea;
     // Poisson飽和補正 v9.4: C = 1-(1+kλ)·exp(-λ)
     // k=0.25（低λ時の過大評価抑制を緩和し、中λ域の立ち上がりを改善）
-    // 上限0.92: 実際のSMP施術では完全均一化はあり得ない（自然な地肌感を残す）
-    const baseCoverage = Math.min(0.92, 1.0 - (1.0 + 0.25 * lam) * Math.exp(-lam));
+    // 上限0.96: スライダーで高密度を指定した際も可視化されるように拡大
+    const baseCoverage = Math.min(0.96, 1.0 - (1.0 + 0.25 * lam) * Math.exp(-lam));
+    // スライダー可視化補助: ユーザーが面積基準値より多く指定した時は追加の密度ブースト
+    const autoBaseSafe = (window._lastAutoBaseDots && window._lastAutoBaseDots > 0) ? window._lastAutoBaseDots : totalDots;
+    const densityBoost = Math.max(0.75, Math.min(1.35, totalDots / autoBaseSafe));
 
     // ─── STEP F: 2層合成（Layer1 Poisson均一化 + Layer2 セルドット点描） ───
     const outData = ctx.getImageData(0, 0, w, h);
@@ -2408,7 +2412,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         const l1Weight = conditionType === 'scar' ? 0.96
                        : conditionType === 'hairline' ? 0.88
                        : 0.93;
-        const layer1 = baseCoverage * dMap * l1Weight;
+        const layer1 = baseCoverage * dMap * l1Weight * densityBoost;
 
         // Layer 2: 決定論的セルドット（点描テクスチャ）
         const dotA = cellDotAlpha(x, y, cellSize, dotRadius_px, dMap, SEED);
