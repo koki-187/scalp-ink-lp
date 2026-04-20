@@ -971,10 +971,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           <button id="eraserBtn" class="btn-o" onclick="setDrawMode('eraser')" style="padding:6px 14px;font-size:.7rem;">Eraser</button>
           <button id="undoBtn" class="btn-o" onclick="undoDrawing()" style="padding:6px 14px;font-size:.7rem;" title="Undo (Ctrl+Z)">↩ Undo</button>
           <button class="btn-o" onclick="clearDrawing()" style="padding:6px 14px;font-size:.7rem;">Clear</button>
-          <div style="display:flex;align-items:center;gap:5px;">
-            <span style="font-size:.68rem;color:#888;">Size</span>
-            <input type="range" id="brushSize" min="4" max="32" value="14" style="width:72px;accent-color:#d4af37;">
-          </div>
+          <input type="hidden" id="brushSize" value="6">
         </div>
         <div style="font-size:.6rem;color:rgba(245,245,240,.3);text-align:center;margin-top:7px;">Use eraser to correct mistakes</div>
       </div>
@@ -1775,7 +1772,9 @@ function onDensitySlider(val) {
   offset = Math.max(-30000, Math.min(30000, offset));
   const baseRaw = window._lastAutoBaseDots || _baseDotsCache;
   const base = (isFinite(baseRaw) && baseRaw > 0) ? baseRaw : 30000;
-  const totalDots = Math.max(3000, Math.min(500000, base + offset));
+  // v9.5: snap to 5,000 increments
+  const rawTotal = Math.max(3000, Math.min(500000, base + offset));
+  const totalDots = Math.max(5000, Math.round(rawTotal / 5000) * 5000);
   const el = document.getElementById('densitySliderVal');
   if (el) el.textContent = totalDots >= 1000 ? Math.round(totalDots/1000) + 'k' : totalDots;
   const dotCountEl = document.getElementById('baDotCount');
@@ -1803,8 +1802,10 @@ function onDensitySlider(val) {
 }
 
 function _syncSliderToAutoBase() {
-  const base = window._lastAutoBaseDots;
-  if (!base) return;
+  const baseRaw = window._lastAutoBaseDots;
+  if (!baseRaw) return;
+  // v9.5: snap to 5,000
+  const base = Math.max(5000, Math.round(baseRaw / 5000) * 5000);
   _baseDotsCache = base;
   const sliderVal = document.getElementById('densitySliderVal');
   if (sliderVal) sliderVal.textContent = base >= 1000 ? Math.round(base/1000) + 'k' : base;
@@ -2170,16 +2171,19 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     }
 
     // ─── STEP B: Adjust densityMap by luminance exposure factor ───
-    // SMP treatment: brighten exposed scalp (bright px) fully, spare existing follicles (dark px)
+    // v9.5 hairline-specific: heavily bias toward exposed scalp only (preserve existing hair)
+    const isHairline = (conditionType === 'hairline');
+    const expGamma  = isHairline ? 0.70 : 0.55;
+    const expFloor  = isHairline ? 0.18 : 0.42;
+    const expRange  = isHairline ? 0.82 : 0.58;
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
         const idx = y*w+x;
         if (regionMask[idx] < 0.5) continue;
         const lum = getLum(idx * 4);
-        // Gamma-corrected exposeFactor: wider range [0.05,0.50], pow(0.55) for perceptual linearity
         const rawExp = Math.max(0, Math.min(1, (lum - 0.05) / 0.45));
-        const exposeFactor = Math.pow(rawExp, 0.55);
-        densityMap[idx] *= (0.42 + exposeFactor * 0.58);
+        const exposeFactor = Math.pow(rawExp, expGamma);
+        densityMap[idx] *= (expFloor + exposeFactor * expRange);
       }
     }
 

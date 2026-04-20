@@ -977,10 +977,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           <button id="eraserBtn" class="btn-o" onclick="setDrawMode('eraser')" style="padding:6px 14px;font-size:.7rem;">消しゴム</button>
           <button id="undoBtn" class="btn-o" onclick="undoDrawing()" style="padding:6px 14px;font-size:.7rem;" title="元に戻す (Ctrl+Z)">↩ 戻す</button>
           <button class="btn-o" onclick="clearDrawing()" style="padding:6px 14px;font-size:.7rem;">クリア</button>
-          <div style="display:flex;align-items:center;gap:5px;">
-            <span style="font-size:.68rem;color:#888;">太さ</span>
-            <input type="range" id="brushSize" min="4" max="32" value="14" style="width:72px;accent-color:#d4af37;">
-          </div>
+          <input type="hidden" id="brushSize" value="6">
         </div>
         <div style="font-size:.6rem;color:rgba(245,245,240,.3);text-align:center;margin-top:7px;">「戻す」で1ストローク単位でやり直し可 / Ctrl+Z 対応</div>
       </div>
@@ -1781,7 +1778,9 @@ function onDensitySlider(val) {
   // 基準値のバリデーション（NaN/0/負数を拒否）
   const baseRaw = window._lastAutoBaseDots || _baseDotsCache;
   const base = (isFinite(baseRaw) && baseRaw > 0) ? baseRaw : 30000;
-  const totalDots = Math.max(3000, Math.min(500000, base + offset));
+  // v9.5: 5000単位にスナップして表示（合計値が分かりやすい数値になる）
+  const rawTotal = Math.max(3000, Math.min(500000, base + offset));
+  const totalDots = Math.max(5000, Math.round(rawTotal / 5000) * 5000);
   const el = document.getElementById('densitySliderVal');
   if (el) el.textContent = totalDots >= 10000 ? Math.round(totalDots / 10000) + '万' : totalDots.toLocaleString();
   const dotCountEl = document.getElementById('baDotCount');
@@ -1811,8 +1810,10 @@ function onDensitySlider(val) {
 
 // drawSMPSimulation 完了後に呼び出す: 面積ベース自動計算値をUIに反映
 function _syncSliderToAutoBase() {
-  const base = window._lastAutoBaseDots;
-  if (!base) return;
+  const baseRaw = window._lastAutoBaseDots;
+  if (!baseRaw) return;
+  // v9.5: 5000単位にスナップ
+  const base = Math.max(5000, Math.round(baseRaw / 5000) * 5000);
   _baseDotsCache = base;
   const sliderVal = document.getElementById('densitySliderVal');
   if (sliderVal) sliderVal.textContent = base >= 10000 ? Math.round(base / 10000) + '万' : base.toLocaleString();
@@ -2201,16 +2202,19 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // ─── STEP B: densityMap を輝度露出係数で補正 ───
     // SMP施術 = 毛穴間の明るい頭皮（exposed scalp）を暗くする
     // 暗いピクセル（既存毛包）→ 少ない処理、明るい（頭皮肌）→ フル処理
+    // v9.5 ヘアライン強化: 既存毛髪を侵食せず、地肌露出部のみ自然に埋める
+    const isHairline = (conditionType === 'hairline');
+    const expGamma  = isHairline ? 0.70 : 0.55;
+    const expFloor  = isHairline ? 0.18 : 0.42;
+    const expRange  = isHairline ? 0.82 : 0.58;
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
         const idx = y*w+x;
         if (regionMask[idx] < 0.5) continue;
         const lum = getLum(idx * 4);
-        // ガンマ補正: rawExp を 0.55乗で知覚的に線形化（高輝度側の飽和を防ぐ）
-        // レンジ拡大: [0.05, 0.50] → 暗めの頭皮（濃い毛髪）にも適切に反応
         const rawExp = Math.max(0, Math.min(1, (lum - 0.05) / 0.45));
-        const exposeFactor = Math.pow(rawExp, 0.55);
-        densityMap[idx] *= (0.42 + exposeFactor * 0.58);
+        const exposeFactor = Math.pow(rawExp, expGamma);
+        densityMap[idx] *= (expFloor + exposeFactor * expRange);
       }
     }
 
