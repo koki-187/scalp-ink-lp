@@ -309,7 +309,7 @@ section{position:relative;z-index:1;}
 .cam-area{width:100%;aspect-ratio:4/3;background:#090909;position:relative;overflow:hidden;
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;
   border:1px solid rgba(201,168,76,.1);}
-.cam-area canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+.cam-area canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;}
 #previewImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;image-orientation:from-image;}
 .drop-zone-inner{display:flex;flex-direction:column;align-items:center;gap:13px;z-index:2;pointer-events:auto;}
 .drop-ic{font-size:3rem;opacity:.12;transition:opacity .3s;line-height:1;}
@@ -956,7 +956,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <img id="previewImg" alt="">
         <canvas id="capCv"></canvas>
         <!-- 黄色ペン描画オーバーレイ -->
-        <canvas id="drawingCanvas" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;z-index:5;cursor:crosshair;touch-action:none;"></canvas>
+        <canvas id="drawingCanvas" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;z-index:5;cursor:crosshair;touch-action:none;"></canvas>
         <!-- iOS/Android native camera capture (hidden) -->
         <input type="file" accept="image/*" capture="environment" id="camCapture" style="display:none;" onchange="handleUp(event)">
       </div>
@@ -1682,10 +1682,27 @@ function undoDrawing() {
 
 function getDrawPos(e, canvas) {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
   const src = e.touches ? e.touches[0] : e;
-  return [(src.clientX - rect.left) * scaleX, (src.clientY - rect.top) * scaleY];
+  const cx = src.clientX - rect.left;
+  const cy = src.clientY - rect.top;
+  // object-fit: contain の可視矩形を計算（キャンバスのアスペクト比をレターボックス/ピラーボックスで保持）
+  const cAspect = canvas.width / canvas.height;
+  const rAspect = rect.width / rect.height;
+  let visW, visH, visX, visY;
+  if (cAspect > rAspect) {
+    visW = rect.width;
+    visH = rect.width / cAspect;
+    visX = 0;
+    visY = (rect.height - visH) / 2;
+  } else {
+    visH = rect.height;
+    visW = rect.height * cAspect;
+    visY = 0;
+    visX = (rect.width - visW) / 2;
+  }
+  const px = (cx - visX) * (canvas.width / visW);
+  const py = (cy - visY) * (canvas.height / visH);
+  return [px, py];
 }
 
 function onDrawStart(e) {
