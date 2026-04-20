@@ -2212,8 +2212,9 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // v9.5 hairline-specific: heavily bias toward exposed scalp only (preserve existing hair)
     const isHairline = (conditionType === 'hairline');
     const expGamma  = isHairline ? 0.70 : 0.55;
-    const expFloor  = isHairline ? 0.18 : 0.42;
-    const expRange  = isHairline ? 0.82 : 0.58;
+    const expFloor  = isHairline ? 0.08 : 0.30;
+    const expRange  = isHairline ? 0.92 : 0.70;
+    // Hair-preservation: sharply reduce treatment on clearly dark pixels (existing hair)
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
         const idx = y*w+x;
@@ -2221,7 +2222,12 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         const lum = getLum(idx * 4);
         const rawExp = Math.max(0, Math.min(1, (lum - 0.05) / 0.45));
         const exposeFactor = Math.pow(rawExp, expGamma);
-        densityMap[idx] *= (expFloor + exposeFactor * expRange);
+        let densFactor = expFloor + exposeFactor * expRange;
+        if (lum < 0.35) {
+          const hairProtect = Math.max(0.12, Math.pow((lum - 0.05) / 0.30, 1.5));
+          densFactor *= hairProtect;
+        }
+        densityMap[idx] *= densFactor;
       }
     }
 
