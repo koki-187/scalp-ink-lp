@@ -1268,12 +1268,13 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         </div>
       </div>
       <div class="rv d2">
-        <div class="bk-form">
-          <div class="fg"><label class="flbl">Name</label><input type="text" class="finp" placeholder="John Smith"></div>
-          <div class="fg"><label class="flbl">Phone Number</label><input type="tel" class="finp" placeholder="090-0000-0000"></div>
-          <div class="fg"><label class="flbl">Preferred Date</label><input type="date" class="finp"></div>
+        <form class="bk-form" id="bkForm" onsubmit="return submitBooking(event)">
+          <div class="fg"><label class="flbl">Name</label><input type="text" name="name" class="finp" placeholder="John Smith" required></div>
+          <div class="fg"><label class="flbl">Phone Number</label><input type="tel" name="phone" class="finp" placeholder="090-0000-0000" required></div>
+          <div class="fg"><label class="flbl">Email</label><input type="email" name="email" class="finp" placeholder="your@email.com"></div>
+          <div class="fg"><label class="flbl">Preferred Date</label><input type="date" name="date" class="finp"></div>
           <div class="fg"><label class="flbl">Consultation Topic</label>
-            <select class="finp">
+            <select name="menu" class="finp">
               <option value="">Please select</option>
               <option>Trial (¥3,000 / 3,000 dots)</option>
               <option>Light (¥30,000 / ~30,000 dots)</option>
@@ -1283,9 +1284,9 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
               <option>Other / General Inquiry</option>
             </select>
           </div>
-          <div class="fg"><label class="flbl">Message (optional)</label><textarea class="finp" placeholder="Please enter any questions or requests"></textarea></div>
-          <button class="btn-p" style="width:100%;padding:14px;" onclick="if(window.gtag)gtag('event','generate_lead',{form_location:'booking_form'});showToast('Message sent! We will get back to you shortly.', 'info');">Send</button>
-        </div>
+          <div class="fg"><label class="flbl">Message (optional)</label><textarea name="message" class="finp" placeholder="Please enter any questions or requests"></textarea></div>
+          <button type="submit" class="btn-p" style="width:100%;padding:14px;">Send</button>
+        </form>
       </div>
     </div>
   </div>
@@ -1303,6 +1304,41 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 </footer>
 
 <script>
+
+// ===== BOOKING FORM =====
+const BOOKING_API_URL = '';
+async function submitBooking(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('button[type="submit"]');
+  const data = {
+    name: form.name?.value || '',
+    phone: form.phone?.value || '',
+    email: form.email?.value || '',
+    date: form.date?.value || '',
+    menu: form.menu?.value || '',
+    message: form.message?.value || '',
+    submittedAt: new Date().toISOString()
+  };
+  try { const q=JSON.parse(localStorage.getItem('_bookingQueue')||'[]'); q.push(data); localStorage.setItem('_bookingQueue', JSON.stringify(q.slice(-20))); } catch(_){}
+  if (window.gtag) gtag('event','generate_lead',{form_location:'booking_form'});
+  if (btn) { btn.disabled=true; btn.textContent='Sending...'; }
+  if (BOOKING_API_URL) {
+    try {
+      await fetch(BOOKING_API_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(data) });
+      showToast('Booking request received. We will contact you within 24 hours.', 'info');
+      form.reset();
+    } catch (err) {
+      showToast('Send failed. Please contact us via LINE or phone.', 'error');
+    }
+  } else {
+    showToast('Opening LINE — please paste the details and send.', 'info');
+    setTimeout(()=>window.open('https://lin.ee/8SFMOpf', '_blank'), 800);
+    try { navigator.clipboard?.writeText(`[Booking]\nName: ${data.name}\nPhone: ${data.phone}\nEmail: ${data.email}\nDate: ${data.date}\nMenu: ${data.menu}\nMessage: ${data.message}`); } catch(_){}
+  }
+  if (btn) { btn.disabled=false; btn.textContent='Send'; }
+  return false;
+}
 
 // ===== DOTS CANVAS =====
 (function() {

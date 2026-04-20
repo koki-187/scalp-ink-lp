@@ -1274,21 +1274,22 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         </div>
       </div>
       <div class="rv d2">
-        <div class="bk-form">
-          <div class="fg"><label class="flbl">お名前</label><input type="text" class="finp" placeholder="山田 太郎"></div>
-          <div class="fg"><label class="flbl">電話番号</label><input type="tel" class="finp" placeholder="090-0000-0000"></div>
-          <div class="fg"><label class="flbl">希望日時</label><input type="date" class="finp"></div>
+        <form class="bk-form" id="bkForm" onsubmit="return submitBooking(event)">
+          <div class="fg"><label class="flbl">お名前</label><input type="text" name="name" class="finp" placeholder="山田 太郎" required></div>
+          <div class="fg"><label class="flbl">電話番号</label><input type="tel" name="phone" class="finp" placeholder="090-0000-0000" required></div>
+          <div class="fg"><label class="flbl">メール</label><input type="email" name="email" class="finp" placeholder="your@email.com"></div>
+          <div class="fg"><label class="flbl">希望日時</label><input type="date" name="date" class="finp"></div>
           <div class="fg"><label class="flbl">ご相談内容</label>
-            <select class="finp">
+            <select name="menu" class="finp">
               <option value="">お選びください</option>
               <option>体験施術（¥3,000・3,000ドット）</option><option>全頭ライト（¥30,000〜30,000ドット）</option>
               <option>全頭スタンダード（¥40,000〜40,000ドット）</option><option>全頭ヘビー（¥50,000〜50,000ドット）</option>
               <option>スポット補修・傷跡（¥9,800〜）</option><option>その他・相談</option>
             </select>
           </div>
-          <div class="fg"><label class="flbl">メッセージ（任意）</label><textarea class="finp" placeholder="ご質問・ご要望などをご記入ください"></textarea></div>
-          <button class="btn-p" style="width:100%;padding:14px;" onclick="if(window.gtag)gtag('event','generate_lead',{form_location:'booking_form'});showToast('送信完了！近日中にご連絡いたします。', 'info')">送信する</button>
-        </div>
+          <div class="fg"><label class="flbl">メッセージ（任意）</label><textarea name="message" class="finp" placeholder="ご質問・ご要望などをご記入ください"></textarea></div>
+          <button type="submit" class="btn-p" style="width:100%;padding:14px;">送信する</button>
+        </form>
       </div>
     </div>
   </div>
@@ -1306,6 +1307,43 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 </footer>
 
 <script>
+
+// ===== BOOKING FORM =====
+// 予約通知先 (Google Apps Script Web App URL)。未設定時は localStorage バックアップ + LINE 誘導のみ
+const BOOKING_API_URL = '';
+async function submitBooking(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('button[type="submit"]');
+  const data = {
+    name: form.name?.value || '',
+    phone: form.phone?.value || '',
+    email: form.email?.value || '',
+    date: form.date?.value || '',
+    menu: form.menu?.value || '',
+    message: form.message?.value || '',
+    submittedAt: new Date().toISOString()
+  };
+  try { const q=JSON.parse(localStorage.getItem('_bookingQueue')||'[]'); q.push(data); localStorage.setItem('_bookingQueue', JSON.stringify(q.slice(-20))); } catch(_){}
+  if (window.gtag) gtag('event','generate_lead',{form_location:'booking_form'});
+  if (btn) { btn.disabled=true; btn.textContent='送信中...'; }
+  if (BOOKING_API_URL) {
+    try {
+      const res = await fetch(BOOKING_API_URL, { method:'POST', mode:'no-cors', body: JSON.stringify(data) });
+      showToast('予約リクエストを受付けました。24時間以内にご連絡いたします。', 'info');
+      form.reset();
+    } catch (err) {
+      showToast('送信に失敗しました。LINEまたはお電話でご連絡ください。', 'error');
+    }
+  } else {
+    const msg = encodeURIComponent(`【予約リクエスト】\nお名前: ${data.name}\n電話: ${data.phone}\nメール: ${data.email}\n希望日時: ${data.date}\nメニュー: ${data.menu}\nメッセージ: ${data.message}`);
+    showToast('LINE公式アカウントを開きます。内容をペーストして送信してください。', 'info');
+    setTimeout(()=>window.open('https://lin.ee/8SFMOpf', '_blank'), 800);
+    try { navigator.clipboard?.writeText(decodeURIComponent(msg)); } catch(_){}
+  }
+  if (btn) { btn.disabled=false; btn.textContent='送信する'; }
+  return false;
+}
 
 // ===== DOTS CANVAS =====
 (function() {
