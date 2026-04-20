@@ -1990,43 +1990,9 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         if (!outside[i] && !yMask[i]) { mask[i] = 1.0; regionPx++; }
       }
 
-      // Convex hull fallback when the loop wasn't closed
       if (regionPx < 200) {
-        const pts = [];
-        for (let i = 0; i < w * h; i++) {
-          if (yMask[i]) pts.push([i % w, (i / w) | 0]);
-        }
-        if (pts.length < 20) return null;
-        pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-        const cross = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
-        const lower = [];
-        for (const p of pts) {
-          while (lower.length >= 2 && cross(lower[lower.length-2], lower[lower.length-1], p) <= 0) lower.pop();
-          lower.push(p);
-        }
-        const upper = [];
-        for (let i = pts.length - 1; i >= 0; i--) {
-          const p = pts[i];
-          while (upper.length >= 2 && cross(upper[upper.length-2], upper[upper.length-1], p) <= 0) upper.pop();
-          upper.push(p);
-        }
-        const hull = lower.slice(0, -1).concat(upper.slice(0, -1));
-        let minX = w, maxX = 0, minY = h, maxY = 0;
-        for (const p of hull) { if (p[0]<minX)minX=p[0]; if (p[0]>maxX)maxX=p[0]; if (p[1]<minY)minY=p[1]; if (p[1]>maxY)maxY=p[1]; }
-        regionPx = 0;
-        for (let y = minY; y <= maxY; y++) {
-          for (let x = minX; x <= maxX; x++) {
-            let inside2 = false;
-            for (let ii = 0, jj = hull.length - 1; ii < hull.length; jj = ii++) {
-              const xi = hull[ii][0], yi = hull[ii][1], xj = hull[jj][0], yj = hull[jj][1];
-              if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside2 = !inside2;
-            }
-            if (inside2 && !yMask[y*w+x]) { mask[y*w+x] = 1.0; regionPx++; }
-          }
-        }
-        if (regionPx < 200) return null;
-        showToast('✏️ Yellow marker detected (convex hull mode)', 'info');
-        return { mask: mask, regionPx: regionPx, yellowMask: yMask, hullMode: true };
+        showToast('⚠️ Outline is not closed. AI will auto-detect the region.', 'warn');
+        return null;
       }
 
       showToast('✏️ Hand-drawn outline detected', 'info');
@@ -2469,7 +2435,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       ctx.putImageData(yFinalData, 0, 0);
     }
 
-    img.onload = null; img.src = '';
+    img.onload = null; img.onerror = null;
     // onComplete callback (UI post-processing: scroll etc.)
     if (typeof onComplete === 'function') onComplete();
   };
