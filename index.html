@@ -1268,9 +1268,9 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <div class="g-line"></div>
         <p>まずは無料カウンセリングからどうぞ。<br>お気軽にお問い合わせください。</p>
         <div class="c-links">
-          <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="c-link">Instagram DM で相談する</a>
-          <a href="tel:08058228855" class="c-link">お電話で予約する</a>
-          <a href="https://lin.ee/8SFMOpf" target="_blank" class="c-link">LINE で予約する</a>
+          <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="c-link" onclick="if(window.gtag)gtag('event','click_cta',{cta_type:'instagram',cta_location:'booking'})">Instagram DM で相談する</a>
+          <a href="tel:08058228855" class="c-link" onclick="if(window.gtag)gtag('event','click_cta',{cta_type:'phone',cta_location:'booking'})">お電話で予約する</a>
+          <a href="https://lin.ee/8SFMOpf" target="_blank" class="c-link" onclick="if(window.gtag)gtag('event','click_cta',{cta_type:'line',cta_location:'booking'})">LINE で予約する</a>
         </div>
       </div>
       <div class="rv d2">
@@ -1287,7 +1287,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
             </select>
           </div>
           <div class="fg"><label class="flbl">メッセージ（任意）</label><textarea class="finp" placeholder="ご質問・ご要望などをご記入ください"></textarea></div>
-          <button class="btn-p" style="width:100%;padding:14px;" onclick="showToast('送信完了！近日中にご連絡いたします。', 'info')">送信する</button>
+          <button class="btn-p" style="width:100%;padding:14px;" onclick="if(window.gtag)gtag('event','generate_lead',{form_location:'booking_form'});showToast('送信完了！近日中にご連絡いたします。', 'info')">送信する</button>
         </div>
       </div>
     </div>
@@ -2530,6 +2530,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     img.onload = null; img.onerror = null;
     // onComplete コールバック（スクロール等のUI後処理）
     if (typeof onComplete === 'function') onComplete();
+    if (window.gtag) gtag('event', 'smp_simulation_complete', { condition_type: conditionType, total_dots: totalDots });
   };
   img.src = beforeDataURL;
 }

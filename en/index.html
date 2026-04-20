@@ -1262,9 +1262,9 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <div class="g-line"></div>
         <p>Start with a free consultation.　<br>Feel free to reach out anytime.</p>
         <div class="c-links">
-          <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="c-link">Consult via Instagram DM</a>
-          <a href="tel:08058228855" class="c-link">Call to Book</a>
-          <a href="https://lin.ee/8SFMOpf" target="_blank" class="c-link">Book via LINE</a>
+          <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="c-link" onclick="if(window.gtag)gtag('event','click_cta',{cta_type:'instagram',cta_location:'booking'})">Consult via Instagram DM</a>
+          <a href="tel:08058228855" class="c-link" onclick="if(window.gtag)gtag('event','click_cta',{cta_type:'phone',cta_location:'booking'})">Call to Book</a>
+          <a href="https://lin.ee/8SFMOpf" target="_blank" class="c-link" onclick="if(window.gtag)gtag('event','click_cta',{cta_type:'line',cta_location:'booking'})">Book via LINE</a>
         </div>
       </div>
       <div class="rv d2">
@@ -1284,7 +1284,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
             </select>
           </div>
           <div class="fg"><label class="flbl">Message (optional)</label><textarea class="finp" placeholder="Please enter any questions or requests"></textarea></div>
-          <button class="btn-p" style="width:100%;padding:14px;" onclick="showToast('Message sent! We will get back to you shortly.', 'info');">Send</button>
+          <button class="btn-p" style="width:100%;padding:14px;" onclick="if(window.gtag)gtag('event','generate_lead',{form_location:'booking_form'});showToast('Message sent! We will get back to you shortly.', 'info');">Send</button>
         </div>
       </div>
     </div>
@@ -2450,6 +2450,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     img.onload = null; img.onerror = null;
     // onComplete callback (UI post-processing: scroll etc.)
     if (typeof onComplete === 'function') onComplete();
+    if (window.gtag) gtag('event', 'smp_simulation_complete', { condition_type: conditionType, total_dots: totalDots });
   };
   img.src = beforeDataURL;
 }
