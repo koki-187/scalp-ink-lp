@@ -80,7 +80,7 @@ function doPost(e) {
       const replyBody = [
         (data.name || 'お客') + ' 様',
         '',
-        SHOP_NAME + へのご予約リクエスト、ありがとうございます。',
+        SHOP_NAME + ' へのご予約リクエスト、ありがとうございます。',
         '以下の内容で受付いたしました。',
         '',
         '希望日時: ' + (data.date || '(未指定)'),
