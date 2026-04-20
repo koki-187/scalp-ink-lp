@@ -1637,7 +1637,7 @@ function initDrawingCanvas() {
   if (!photo || !dc) return;
   dc.width = photo.width;
   dc.height = photo.height;
-  _drawCtx = dc.getContext('2d');
+  _drawCtx = dc.getContext('2d', { willReadFrequently: true });
   _drawCtx.clearRect(0, 0, dc.width, dc.height);
   _drawHistory = [];
   dc.style.display = 'block';
@@ -2231,11 +2231,13 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // 暗いピクセル（既存毛包）→ 少ない処理、明るい（頭皮肌）→ フル処理
     // v9.5 ヘアライン強化: 既存毛髪を侵食せず、地肌露出部のみ自然に埋める
     const isHairline = (conditionType === 'hairline');
+    // ユーザーが明示的に範囲指定した場合は露出フロアを高めに設定し、
+    // hairProtect も弱めて「指定エリア全面に確実にSMPが入る」仕上がりにする
+    const userMarked = !!yellowDetected;
     const expGamma  = isHairline ? 0.70 : 0.55;
-    const expFloor  = isHairline ? 0.08 : 0.30;
-    const expRange  = isHairline ? 0.92 : 0.70;
-    // 毛髪保護: 明確に暗いピクセル(lum<0.22=既存毛髪)は処理を急減させる
-    // → 既存の髪の上にドットが乗って不自然に見える問題を防止
+    const expFloor  = userMarked ? 0.55 : (isHairline ? 0.08 : 0.30);
+    const expRange  = userMarked ? 0.45 : (isHairline ? 0.92 : 0.70);
+    const hpFloor   = userMarked ? 0.55 : 0.20;
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
         const idx = y*w+x;
@@ -2244,9 +2246,8 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         const rawExp = Math.max(0, Math.min(1, (lum - 0.05) / 0.45));
         const exposeFactor = Math.pow(rawExp, expGamma);
         let densFactor = expFloor + exposeFactor * expRange;
-        // 毛髪保護カーブ（連続smoothstepで硬い境界を回避）: lum=0.10→×0.20, lum=0.40→×1.0
         const hpT = Math.max(0, Math.min(1, (lum - 0.08) / 0.32));
-        const hairProtect = 0.20 + (hpT * hpT * (3 - 2 * hpT)) * 0.80;
+        const hairProtect = hpFloor + (hpT * hpT * (3 - 2 * hpT)) * (1 - hpFloor);
         densFactor *= hairProtect;
         densityMap[idx] *= densFactor;
       }
@@ -3175,7 +3176,7 @@ function analyze() {
   const dc = document.getElementById('drawingCanvas');
   const mergedCv = document.createElement('canvas');
   mergedCv.width = capCv.width; mergedCv.height = capCv.height;
-  const mCtx = mergedCv.getContext('2d');
+  const mCtx = mergedCv.getContext('2d', { willReadFrequently: true });
   mCtx.drawImage(capCv, 0, 0);
   // ユーザーが実際にペン描画したか確認（drawingCanvas の alpha>0 ピクセル検出）
   // これを行わないと、写真内のゴールドロゴ等が誤検出される

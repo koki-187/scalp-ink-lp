@@ -1635,7 +1635,7 @@ function initDrawingCanvas() {
   if (!photo || !dc) return;
   dc.width = photo.width;
   dc.height = photo.height;
-  _drawCtx = dc.getContext('2d');
+  _drawCtx = dc.getContext('2d', { willReadFrequently: true });
   _drawCtx.clearRect(0, 0, dc.width, dc.height);
   _drawHistory = [];
   dc.style.display = 'block';
@@ -2189,9 +2189,11 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // ─── STEP B: Adjust densityMap by luminance exposure factor ───
     // v9.5 hairline-specific: heavily bias toward exposed scalp only (preserve existing hair)
     const isHairline = (conditionType === 'hairline');
+    const userMarked = !!yellowDetected;
     const expGamma  = isHairline ? 0.70 : 0.55;
-    const expFloor  = isHairline ? 0.08 : 0.30;
-    const expRange  = isHairline ? 0.92 : 0.70;
+    const expFloor  = userMarked ? 0.55 : (isHairline ? 0.08 : 0.30);
+    const expRange  = userMarked ? 0.45 : (isHairline ? 0.92 : 0.70);
+    const hpFloor   = userMarked ? 0.55 : 0.20;
     // Hair-preservation: sharply reduce treatment on clearly dark pixels (existing hair)
     for (let y = 0; y < h; y++) {
       for (let x = 0; x < w; x++) {
@@ -2202,7 +2204,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         const exposeFactor = Math.pow(rawExp, expGamma);
         let densFactor = expFloor + exposeFactor * expRange;
         const hpT = Math.max(0, Math.min(1, (lum - 0.08) / 0.32));
-        const hairProtect = 0.20 + (hpT * hpT * (3 - 2 * hpT)) * 0.80;
+        const hairProtect = hpFloor + (hpT * hpT * (3 - 2 * hpT)) * (1 - hpFloor);
         densFactor *= hairProtect;
         densityMap[idx] *= densFactor;
       }
@@ -3058,7 +3060,7 @@ function analyze() {
   const dc = document.getElementById('drawingCanvas');
   const mergedCv = document.createElement('canvas');
   mergedCv.width = capCv.width; mergedCv.height = capCv.height;
-  const mCtx = mergedCv.getContext('2d');
+  const mCtx = mergedCv.getContext('2d', { willReadFrequently: true });
   mCtx.drawImage(capCv, 0, 0);
   // Detect actual user strokes (prevent false positives from gold logos, etc.)
   let hasUserStrokes = false;
