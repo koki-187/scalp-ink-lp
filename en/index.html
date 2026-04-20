@@ -1930,6 +1930,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // ─── Yellow outline detection (hand-drawn mask takes priority) ───
     // If user drew yellow lines on image marking treatment area, detect and use directly
     function detectYellowRegion() {
+      if (!window._hasUserStrokes) return null;
       const yMask = new Uint8Array(w * h);
       let yCount = 0;
       for (let i = 0; i < w * h; i++) {
@@ -3059,9 +3060,19 @@ function analyze() {
   mergedCv.width = capCv.width; mergedCv.height = capCv.height;
   const mCtx = mergedCv.getContext('2d');
   mCtx.drawImage(capCv, 0, 0);
+  // Detect actual user strokes (prevent false positives from gold logos, etc.)
+  let hasUserStrokes = false;
   if (dc && dc.width === capCv.width && dc.style.display !== 'none') {
-    mCtx.drawImage(dc, 0, 0);
+    const dcCtx = dc.getContext('2d', { willReadFrequently: true });
+    const dcData = dcCtx.getImageData(0, 0, dc.width, dc.height).data;
+    let strokePx = 0;
+    for (let pi = 3; pi < dcData.length; pi += 4) {
+      if (dcData[pi] > 10) { strokePx++; if (strokePx > 50) break; }
+    }
+    hasUserStrokes = (strokePx > 50);
+    if (hasUserStrokes) mCtx.drawImage(dc, 0, 0);
   }
+  window._hasUserStrokes = hasUserStrokes;
   // Save clean photo data (used for yellow line removal)
   window._cleanPhotoPixels = capCv.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, capCv.width, capCv.height);
   const _isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;

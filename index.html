@@ -1957,6 +1957,8 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     // ユーザーが画像に黄色線で施術範囲を描いた場合、Geminiポリゴンをバイパスして直接マスク生成
     // 検出条件: R>150, G>140, B<110, R-B>80, G-B>60
     function detectYellowRegion() {
+      // ユーザーがペン描画していなければ黄色検出をスキップ（写真内の金色ロゴ等の誤検出防止）
+      if (!window._hasUserStrokes) return null;
       // Step1: 黄色ピクセルバイナリマスク
       const yMask = new Uint8Array(w * h);
       let yCount = 0;
@@ -3175,9 +3177,20 @@ function analyze() {
   mergedCv.width = capCv.width; mergedCv.height = capCv.height;
   const mCtx = mergedCv.getContext('2d');
   mCtx.drawImage(capCv, 0, 0);
+  // ユーザーが実際にペン描画したか確認（drawingCanvas の alpha>0 ピクセル検出）
+  // これを行わないと、写真内のゴールドロゴ等が誤検出される
+  let hasUserStrokes = false;
   if (dc && dc.width === capCv.width && dc.style.display !== 'none') {
-    mCtx.drawImage(dc, 0, 0);
+    const dcCtx = dc.getContext('2d', { willReadFrequently: true });
+    const dcData = dcCtx.getImageData(0, 0, dc.width, dc.height).data;
+    let strokePx = 0;
+    for (let pi = 3; pi < dcData.length; pi += 4) {
+      if (dcData[pi] > 10) { strokePx++; if (strokePx > 50) break; }
+    }
+    hasUserStrokes = (strokePx > 50);
+    if (hasUserStrokes) mCtx.drawImage(dc, 0, 0);
   }
+  window._hasUserStrokes = hasUserStrokes;
   // クリーン写真データを保存（黄色線削除⑤で使用）
   window._cleanPhotoPixels = capCv.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, capCv.width, capCv.height);
   const _isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
