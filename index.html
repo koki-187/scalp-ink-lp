@@ -2174,7 +2174,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       ? Math.max(5, Math.min(16, Math.round(Math.min(w, h) * 0.012)))
       : conditionType === 'hairline'
       ? Math.max(3, Math.min(14, Math.round(Math.min(w, h) * 0.013)))
-      : Math.max(6, Math.min(28, Math.round(Math.min(w, h) * 0.024)));
+      : Math.max(10, Math.min(42, Math.round(Math.min(w, h) * 0.036)));
     const edgeMask = new Float32Array(w * h);
     let tempBuf  = new Float32Array(w * h);
     let tempBuf2 = new Float32Array(w * h);
@@ -2260,11 +2260,10 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
         const rawExp = Math.max(0, Math.min(1, (lum - 0.05) / 0.45));
         const exposeFactor = Math.pow(rawExp, expGamma);
         let densFactor = expFloor + exposeFactor * expRange;
-        // 毛髪保護カーブ: lum=0.10→×0.15, lum=0.22→×0.55, lum=0.35+→×1.0
-        if (lum < 0.35) {
-          const hairProtect = Math.max(0.12, Math.pow((lum - 0.05) / 0.30, 1.5));
-          densFactor *= hairProtect;
-        }
+        // 毛髪保護カーブ（連続smoothstepで硬い境界を回避）: lum=0.10→×0.20, lum=0.40→×1.0
+        const hpT = Math.max(0, Math.min(1, (lum - 0.08) / 0.32));
+        const hairProtect = 0.20 + (hpT * hpT * (3 - 2 * hpT)) * 0.80;
+        densFactor *= hairProtect;
         densityMap[idx] *= densFactor;
       }
     }
