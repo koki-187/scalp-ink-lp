@@ -12,6 +12,9 @@ desktop.ini
 
 # OMC state
 .omc/
+.claude/worktrees/
+.claude/scheduled_tasks.lock
+.wrangler/
 
 # Node / Next.js
 node_modules/

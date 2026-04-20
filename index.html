@@ -978,7 +978,6 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           <button id="eraserBtn" class="btn-o" onclick="setDrawMode('eraser')" style="padding:6px 14px;font-size:.7rem;">消しゴム</button>
           <button id="undoBtn" class="btn-o" onclick="undoDrawing()" style="padding:6px 14px;font-size:.7rem;" title="元に戻す (Ctrl+Z)">↩ 戻す</button>
           <button class="btn-o" onclick="clearDrawing()" style="padding:6px 14px;font-size:.7rem;">クリア</button>
-          <input type="hidden" id="brushSize" value="6">
         </div>
         <div style="font-size:.6rem;color:rgba(245,245,240,.3);text-align:center;margin-top:7px;">「戻す」で1ストローク単位でやり直し可 / Ctrl+Z 対応</div>
       </div>
@@ -1409,9 +1408,6 @@ function _startPgAuto() {
 }
 window.addEventListener('DOMContentLoaded', function() {
   _startPgAuto();
-  // APIキー自動セット
-  const k = document.getElementById('apiKey');
-  if (k && !k.value) k.value = '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';
 });
 
 // ===== RESULTS TAB =====
@@ -1727,7 +1723,7 @@ function onDrawEnd() { _isDrawing = false; }
 
 function applyBrush(x1, y1, x2, y2) {
   if (!_drawCtx) return;
-  const sz = parseInt(document.getElementById('brushSize').value) || 14;
+  const sz = 6;
   if (_drawMode === 'eraser') {
     const r = sz * 1.5;
     _drawCtx.clearRect(x2 - r, y2 - r, r * 2, r * 2);
@@ -3198,9 +3194,9 @@ function analyze() {
   window._hasUserStrokes = hasUserStrokes;
   // クリーン写真データを保存（黄色線削除⑤で使用）
   window._cleanPhotoPixels = capCv.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, capCv.width, capCv.height);
-  const _isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
-  const srcCanvas = resizeForAPI(mergedCv, _isMobile ? 800 : 1280);
-  const beforeDataURL = srcCanvas.toDataURL('image/jpeg', _isMobile ? 0.75 : 0.88);
+  const _smallForm = _isMobile || window.innerWidth < 768;
+  const srcCanvas = resizeForAPI(mergedCv, _smallForm ? 800 : 1280);
+  const beforeDataURL = srcCanvas.toDataURL('image/jpeg', _smallForm ? 0.75 : 0.88);
   const b64 = beforeDataURL.split(',')[1];
   const prompt = 'あなたはTHE SCALP INK by CIMAの上級SMPスペシャリストです。\n' +
 'この頭部・頭皮の画像を精密に観察し、以下の5ステップで日本語の詳細診断レポートを作成してください。\n\n' +
@@ -3406,7 +3402,10 @@ function analyze() {
       try {
         txt = data.candidates[0].content.parts[0].text;
       } catch(ex) {
-        txt = 'AIからの応答を取得できませんでした。';
+        const block = data && data.promptFeedback && data.promptFeedback.blockReason;
+        txt = block
+          ? 'AIがこの画像の解析を安全ポリシー上ブロックしました（理由: ' + block + '）。別の画像でお試しください。'
+          : 'AIからの応答を取得できませんでした。';
       }
       showBAResult(beforeDataURL, txt);
       setStep(3);

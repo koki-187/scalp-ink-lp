@@ -972,7 +972,6 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           <button id="eraserBtn" class="btn-o" onclick="setDrawMode('eraser')" style="padding:6px 14px;font-size:.7rem;">Eraser</button>
           <button id="undoBtn" class="btn-o" onclick="undoDrawing()" style="padding:6px 14px;font-size:.7rem;" title="Undo (Ctrl+Z)">↩ Undo</button>
           <button class="btn-o" onclick="clearDrawing()" style="padding:6px 14px;font-size:.7rem;">Clear</button>
-          <input type="hidden" id="brushSize" value="6">
         </div>
         <div style="font-size:.6rem;color:rgba(245,245,240,.3);text-align:center;margin-top:7px;">Use eraser to correct mistakes</div>
       </div>
@@ -1404,9 +1403,6 @@ function _startPgAuto() {
 }
 window.addEventListener('DOMContentLoaded', function() {
   _startPgAuto();
-  // Auto-set API key
-  const k = document.getElementById('apiKey');
-  if (k && !k.value) k.value = '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';
 });
 
 // ===== RESULTS TAB =====
@@ -1716,7 +1712,7 @@ function onDrawEnd() { _isDrawing = false; }
 
 function applyBrush(x1, y1, x2, y2) {
   if (!_drawCtx) return;
-  const sz = parseInt(document.getElementById('brushSize').value) || 14;
+  const sz = 6;
   if (_drawMode === 'eraser') {
     const r = sz * 1.5;
     _drawCtx.clearRect(x2 - r, y2 - r, r * 2, r * 2);
@@ -3079,9 +3075,9 @@ function analyze() {
   window._hasUserStrokes = hasUserStrokes;
   // Save clean photo data (used for yellow line removal)
   window._cleanPhotoPixels = capCv.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, capCv.width, capCv.height);
-  const _isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 768;
-  const srcCanvas = resizeForAPI(mergedCv, _isMobile ? 800 : 1280);
-  const beforeDataURL = srcCanvas.toDataURL('image/jpeg', _isMobile ? 0.75 : 0.88);
+  const _smallForm = _isMobile || window.innerWidth < 768;
+  const srcCanvas = resizeForAPI(mergedCv, _smallForm ? 800 : 1280);
+  const beforeDataURL = srcCanvas.toDataURL('image/jpeg', _smallForm ? 0.75 : 0.88);
   const b64 = beforeDataURL.split(',')[1];
   const prompt = 'You are a senior SMP specialist at THE SCALP INK by CIMA.\n' +
 'Please carefully examine this head/scalp image and create a detailed diagnostic report following the 5 steps below.\n\n' +
@@ -3296,7 +3292,12 @@ function analyze() {
       stopLdTimer();
       let txt = '';
       try { txt = data.candidates[0].content.parts[0].text; }
-      catch(ex) { txt = 'Could not retrieve AI response. Please try again.'; }
+      catch(ex) {
+        const block = data && data.promptFeedback && data.promptFeedback.blockReason;
+        txt = block
+          ? 'AI safety policy blocked this image (reason: ' + block + '). Please try a different photo.'
+          : 'Could not retrieve AI response. Please try again.';
+      }
       showBAResult(beforeDataURL, txt);
       setStep(3);
       if (ldDots) ldDots.classList.remove('on');
