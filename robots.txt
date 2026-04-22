@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /status-report.html
+Disallow: /business-model.html
+Disallow: /salon-partnership-deck.html
 
 Sitemap: https://cima-scalpink.com/sitemap.xml
