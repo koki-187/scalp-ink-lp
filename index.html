@@ -1842,7 +1842,7 @@ function onDensitySlider(val) {
   _sliderTimer = setTimeout(function() {
     // _smpCache 欠損時は描画をスキップ（ラベル更新のみで中断）
     if (!_smpCache || !_smpCache.beforeDataURL) {
-      console.warn('[SMP] スライダー操作: キャッシュ未構築のため描画スキップ');
+      console.debug('[SMP] スライダー操作: キャッシュ未構築のため描画スキップ');
       return;
     }
     try {
@@ -2367,7 +2367,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
     }
     // treatArea=0（領域検出失敗）ガード: 最低面積として headW×15% × 同等高さを仮定
     if (treatArea <= 0) {
-      console.warn('[SMP] 施術領域が検出できません。フォールバック面積を使用します。');
+      console.debug('[SMP] 施術領域が検出できません。フォールバック面積を使用します。');
       treatArea = Math.max(1, Math.round(headW_px * headW_px * 0.05));
     }
     treatArea = Math.max(1, Math.min(w * h, treatArea));
@@ -2611,7 +2611,7 @@ function extractStructuredData(responseText) {
     else if (/patch|areata|alopecia|circle/.test(ct)) data.condition_type = 'patch';
     else if (/combined|mixed|multiple/.test(ct)) data.condition_type = 'combined';
     else data.condition_type = 'thinning'; // デフォルト
-    console.warn('[SMP] condition_type を自動マッピング:', data.condition_type);
+    console.debug('[SMP] condition_type を自動マッピング:', data.condition_type);
   }
 
   // ポリゴン座標のバリデーション＆サニタイズ
@@ -2623,10 +2623,10 @@ function extractStructuredData(responseText) {
         return Array.isArray(p) && p.length >= 2 &&
           p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1;
       });
-      if (!valid) { console.warn('[SMP Sim] Invalid polygon filtered:', r.label); return false; }
+      if (!valid) { console.debug('[SMP Sim] Invalid polygon filtered:', r.label); return false; }
       // 面積チェック（極端に小さいor大きいポリゴンを除外）
       const area = _polyArea(r.polygon);
-      if (area < 0.001 || area > 0.95) { console.warn('[SMP Sim] Polygon area out of range:', r.label, area); return false; }
+      if (area < 0.001 || area > 0.95) { console.debug('[SMP Sim] Polygon area out of range:', r.label, area); return false; }
       r.density_hint = Math.max(0, Math.min(1, r.density_hint || 0.5));
       return true;
     });

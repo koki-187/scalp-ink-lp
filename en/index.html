@@ -1827,7 +1827,7 @@ function onDensitySlider(val) {
   clearTimeout(_sliderTimer);
   _sliderTimer = setTimeout(function() {
     if (!_smpCache || !_smpCache.beforeDataURL) {
-      console.warn('[SMP] Slider: cache missing, skipping redraw');
+      console.debug('[SMP] Slider: cache missing, skipping redraw');
       return;
     }
     try {
@@ -2314,7 +2314,7 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       if (regionMask[ii] > 0.5) treatArea++;
     }
     if (treatArea <= 0) {
-      console.warn('[SMP] No treatment region detected. Using fallback area.');
+      console.debug('[SMP] No treatment region detected. Using fallback area.');
       treatArea = Math.max(1, Math.round(headW_px * headW_px * 0.05));
     }
     treatArea = Math.max(1, Math.min(w * h, treatArea));
@@ -2534,7 +2534,7 @@ function extractStructuredData(responseText) {
     else if (/patch|areata|alopecia|circle/.test(ct)) data.condition_type = 'patch';
     else if (/combined|mixed|multiple/.test(ct)) data.condition_type = 'combined';
     else data.condition_type = 'thinning';
-    console.warn('[SMP] condition_type auto-mapped to:', data.condition_type);
+    console.debug('[SMP] condition_type auto-mapped to:', data.condition_type);
   }
 
   // Polygon coordinate validation & sanitization
@@ -2544,9 +2544,9 @@ function extractStructuredData(responseText) {
       const valid = r.polygon.every(function(p) {
         return Array.isArray(p) && p.length >= 2 && p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1;
       });
-      if (!valid) { console.warn('[SMP Sim] Invalid polygon filtered:', r.label); return false; }
+      if (!valid) { console.debug('[SMP Sim] Invalid polygon filtered:', r.label); return false; }
       const area = _polyArea(r.polygon);
-      if (area < 0.001 || area > 0.95) { console.warn('[SMP Sim] Polygon area out of range:', r.label, area); return false; }
+      if (area < 0.001 || area > 0.95) { console.debug('[SMP Sim] Polygon area out of range:', r.label, area); return false; }
       r.density_hint = Math.max(0, Math.min(1, r.density_hint || 0.5));
       return true;
     });
