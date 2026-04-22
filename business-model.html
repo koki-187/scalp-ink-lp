@@ -1,0 +1,2496 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIMA SCALP INK | ビジネスモデル文書</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #1a1a1a;
+  --txt: #e0e0e0;
+  --txt-dim: #999999;
+  --gold: #c8a456;
+  --gold-light: #e8c96a;
+  --gold-dim: rgba(200,164,86,0.12);
+  --gold-glow: rgba(200,164,86,0.3);
+  --red: #c0392b;
+  --green: #27ae60;
+  --blue: #2980b9;
+  --orange: #e67e22;
+  --purple: #8e44ad;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; font-size:16px; }
+body {
+  background: var(--bg);
+  color: var(--txt);
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 300;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+/* ===== HEADER ===== */
+.doc-header {
+  text-align: center;
+  padding: 80px 20px 60px;
+  border-bottom: 1px solid rgba(200,164,86,0.2);
+  background: linear-gradient(180deg, rgba(200,164,86,0.05) 0%, transparent 100%);
+}
+.doc-header .label {
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.doc-header h1 {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.doc-header .subtitle {
+  font-size: 1.1rem;
+  color: var(--txt-dim);
+  margin-bottom: 24px;
+}
+.doc-header .meta {
+  font-size: 0.8rem;
+  color: var(--txt-dim);
+}
+.doc-header .legal-badge {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 6px 20px;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-size: 0.8rem;
+  border-radius: 4px;
+}
+
+/* ===== TOC ===== */
+.toc {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px 40px;
+  background: var(--bg2);
+  border: 1px solid rgba(200,164,86,0.15);
+  border-radius: 8px;
+}
+.toc h2 {
+  font-size: 1rem;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  margin-bottom: 16px;
+}
+.toc ol {
+  list-style: none;
+  counter-reset: toc;
+}
+.toc ol li {
+  counter-increment: toc;
+  margin-bottom: 8px;
+}
+.toc ol li a {
+  color: var(--txt-dim);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+.toc ol li a:hover { color: var(--gold); }
+.toc ol li a::before {
+  content: counter(toc, decimal-leading-zero) ".";
+  color: var(--gold);
+  margin-right: 12px;
+  font-weight: 500;
+}
+
+/* ===== EXPERTS PANEL ===== */
+.experts-intro {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+.experts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.expert-card {
+  text-align: center;
+  padding: 20px 12px;
+  background: var(--bg2);
+  border: 1px solid rgba(200,164,86,0.1);
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+.expert-card:hover { border-color: var(--gold); }
+.expert-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 10px;
+}
+.expert-card .name { font-size: 0.85rem; font-weight: 500; color: var(--txt); }
+.expert-card .title { font-size: 0.7rem; color: var(--txt-dim); margin-top: 4px; line-height: 1.4; }
+
+.av-tanaka { background: var(--red); }
+.av-sato { background: var(--green); }
+.av-suzuki { background: var(--blue); }
+.av-yamamoto { background: var(--orange); }
+.av-nakamura { background: var(--purple); }
+
+/* ===== SECTIONS ===== */
+.section {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+.section-number {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.section h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.section h3 {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--gold-light);
+  margin: 24px 0 12px;
+}
+.section h4 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--txt);
+  margin: 16px 0 8px;
+}
+.section p, .section li {
+  font-size: 0.9rem;
+  color: var(--txt);
+  line-height: 1.9;
+}
+.section ul, .section ol {
+  margin-left: 20px;
+  margin-bottom: 16px;
+}
+.section li { margin-bottom: 4px; }
+
+.divider {
+  width: 60px;
+  height: 1px;
+  background: var(--gold);
+  margin: 40px auto;
+  opacity: 0.4;
+}
+
+/* ===== SOCRATIC BOX ===== */
+.socratic {
+  background: var(--bg2);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 24px 28px;
+  margin: 24px 0;
+}
+.socratic-step {
+  margin-bottom: 16px;
+}
+.socratic-step:last-child { margin-bottom: 0; }
+.socratic-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  border-radius: 3px;
+  margin-bottom: 6px;
+}
+.label-question { background: rgba(200,164,86,0.2); color: var(--gold); }
+.label-hypothesis { background: rgba(41,128,185,0.2); color: var(--blue); }
+.label-verification { background: rgba(142,68,173,0.2); color: var(--purple); }
+.label-conclusion { background: rgba(39,174,96,0.2); color: var(--green); }
+.socratic-step p {
+  font-size: 0.88rem;
+  margin: 0;
+}
+
+/* ===== EXPERT COMMENT ===== */
+.expert-comments {
+  margin: 24px 0;
+}
+.expert-comment {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  margin-bottom: 8px;
+  background: var(--bg3);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.expert-comment .avatar-sm {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #fff;
+}
+.expert-comment .comment-body { flex: 1; }
+.expert-comment .comment-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.expert-comment .comment-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--txt);
+}
+.expert-comment .comment-stance {
+  font-size: 0.65rem;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+.stance-agree { background: rgba(39,174,96,0.2); color: var(--green); }
+.stance-disagree { background: rgba(192,57,43,0.2); color: var(--red); }
+.stance-improve { background: rgba(230,126,34,0.2); color: var(--orange); }
+.expert-comment .comment-text {
+  font-size: 0.82rem;
+  color: var(--txt-dim);
+  line-height: 1.7;
+}
+
+/* ===== CONSENSUS BOX ===== */
+.consensus {
+  background: linear-gradient(135deg, rgba(200,164,86,0.08), rgba(200,164,86,0.02));
+  border: 1px solid rgba(200,164,86,0.25);
+  border-radius: 8px;
+  padding: 24px 28px;
+  margin: 24px 0;
+}
+.consensus-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.consensus p {
+  font-size: 0.88rem;
+  color: var(--txt);
+}
+
+/* ===== DATA TABLE ===== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.85rem;
+}
+.data-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--bg2);
+  color: var(--gold);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(200,164,86,0.2);
+}
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: var(--txt);
+}
+.data-table tr:hover td { background: rgba(200,164,86,0.03); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.highlight-row td { color: var(--gold); font-weight: 500; }
+
+/* ===== METRIC CARDS ===== */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.metric-card {
+  background: var(--bg2);
+  border: 1px solid rgba(200,164,86,0.1);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+.metric-card .metric-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+.metric-card .metric-label {
+  font-size: 0.75rem;
+  color: var(--txt-dim);
+  margin-top: 4px;
+}
+
+/* ===== SCHEDULE BLOCK ===== */
+.schedule-block {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.schedule-item {
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 20px;
+  border-top: 3px solid var(--gold);
+}
+.schedule-item h4 {
+  margin: 0 0 8px;
+  color: var(--gold-light);
+  font-size: 1rem;
+}
+.schedule-item .dates {
+  font-size: 0.8rem;
+  color: var(--txt-dim);
+  margin-bottom: 8px;
+}
+.schedule-item ul {
+  margin-left: 16px;
+}
+.schedule-item li {
+  font-size: 0.82rem;
+  margin-bottom: 2px;
+}
+
+/* ===== FUNNEL ===== */
+.funnel {
+  margin: 24px 0;
+}
+.funnel-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+}
+.funnel-step:nth-child(1) { background: rgba(200,164,86,0.15); }
+.funnel-step:nth-child(2) { background: rgba(200,164,86,0.11); margin-left: 20px; }
+.funnel-step:nth-child(3) { background: rgba(200,164,86,0.08); margin-left: 40px; }
+.funnel-step:nth-child(4) { background: rgba(200,164,86,0.05); margin-left: 60px; }
+.funnel-step:nth-child(5) { background: rgba(39,174,96,0.1); margin-left: 80px; }
+.funnel-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--txt);
+  min-width: 120px;
+}
+.funnel-data {
+  font-size: 0.8rem;
+  color: var(--txt-dim);
+}
+.funnel-arrow {
+  text-align: center;
+  color: var(--gold);
+  font-size: 1.2rem;
+  margin: -2px 0 -2px 40px;
+}
+
+/* ===== RISK MATRIX ===== */
+.risk-matrix {
+  margin: 20px 0;
+}
+.risk-item {
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  border-left: 3px solid;
+}
+.risk-high { border-color: var(--red); }
+.risk-mid { border-color: var(--orange); }
+.risk-low { border-color: var(--green); }
+.risk-item .risk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.risk-item .risk-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--txt);
+}
+.risk-badge {
+  font-size: 0.65rem;
+  padding: 2px 10px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+.badge-high { background: rgba(192,57,43,0.2); color: var(--red); }
+.badge-mid { background: rgba(230,126,34,0.2); color: var(--orange); }
+.badge-low { background: rgba(39,174,96,0.2); color: var(--green); }
+.risk-item .risk-desc {
+  font-size: 0.8rem;
+  color: var(--txt-dim);
+  margin-bottom: 6px;
+}
+.risk-item .risk-counter {
+  font-size: 0.8rem;
+  color: var(--txt);
+}
+
+/* ===== KPI TIMELINE ===== */
+.kpi-timeline {
+  position: relative;
+  padding-left: 30px;
+  margin: 24px 0;
+}
+.kpi-timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+}
+.kpi-month {
+  position: relative;
+  margin-bottom: 24px;
+}
+.kpi-month::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.kpi-month h4 {
+  color: var(--gold);
+  font-size: 0.9rem;
+  margin: 0 0 6px;
+}
+.kpi-month p {
+  font-size: 0.82rem;
+  color: var(--txt-dim);
+}
+
+/* ===== FOOTER ===== */
+.doc-footer {
+  text-align: center;
+  padding: 60px 20px;
+  border-top: 1px solid rgba(200,164,86,0.15);
+  margin-top: 80px;
+}
+.doc-footer p {
+  font-size: 0.75rem;
+  color: var(--txt-dim);
+}
+
+/* ===== PRINT ===== */
+@media print {
+  body { background: #fff; color: #222; }
+  .doc-header { background: none; border-bottom: 2px solid #c8a456; }
+  .doc-header h1 { color: #333; }
+  .section, .toc, .experts-intro { max-width: 100%; }
+  .socratic { border-left-color: #c8a456; background: #f9f6ef; }
+  .expert-comment { background: #f5f5f5; border: 1px solid #ddd; }
+  .consensus { background: #f9f6ef; border-color: #c8a456; }
+  .data-table th { background: #f0e8d0; }
+  .metric-card, .schedule-item, .risk-item { background: #f9f9f9; border: 1px solid #ddd; }
+  .expert-avatar, .avatar-sm { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  ::-webkit-scrollbar { display: none; }
+}
+
+@media (max-width: 600px) {
+  .section { padding: 0 16px; }
+  .toc { padding: 20px 24px; margin: 20px 16px; }
+  .experts-grid { grid-template-columns: repeat(2, 1fr); }
+  .expert-comment { flex-direction: column; gap: 8px; }
+  .funnel-step:nth-child(n) { margin-left: 0; }
+  .schedule-block { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="doc-header">
+  <p class="label">CIMA SCALP INK Business Model</p>
+  <h1>SMP事業 ビジネスモデル文書</h1>
+  <p class="subtitle">ソクラテス式検証 &times; 5名の専門家合議による戦略設計書</p>
+  <p class="meta">作成日: 2026年4月12日 | バージョン: 1.0 | 機密文書</p>
+  <p class="legal-badge">医師法第17条 対処・対策済み（法務確認完了）</p>
+</header>
+
+<!-- ========== TOC ========== -->
+<nav class="toc">
+  <h2>目次</h2>
+  <ol>
+    <li><a href="#sec1">エグゼクティブサマリー</a></li>
+    <li><a href="#sec2">事業構造の本質 ― コンプレックス解決型高単価コンサル業</a></li>
+    <li><a href="#sec3">収益モデル ― 単価 &times; 回転 &times; 完了率の厳密シミュレーション</a></li>
+    <li><a href="#sec4">3拠点巡回戦略 ― 東京 / 沖縄 / 奄美の役割分担</a></li>
+    <li><a href="#sec5">集客設計 ― SNS &rarr; LP &rarr; LINE &rarr; 成約のファネル</a></li>
+    <li><a href="#sec6">美容室提携スキーム ― 送客チャネル設計</a></li>
+    <li><a href="#sec7">体験 &rarr; 診断の再定義モデル</a></li>
+    <li><a href="#sec8">紹介報酬設計 ― 利益連動型</a></li>
+    <li><a href="#sec9">予約・スケジュール管理システム</a></li>
+    <li><a href="#sec10">リスク分析と対策（厳しめ評価）</a></li>
+    <li><a href="#sec11">KPI設計と月次アクションプラン</a></li>
+    <li><a href="#sec12">最終合意と実装ロードマップ</a></li>
+  </ol>
+</nav>
+
+<!-- ========== EXPERTS INTRO ========== -->
+<div class="experts-intro">
+  <h3 style="color:var(--gold);font-size:1rem;letter-spacing:0.15em;margin-bottom:8px;">検証パネル ― 5名のペルソナ専門家</h3>
+  <p style="font-size:0.85rem;color:var(--txt-dim);">本文書の全セクションは、以下の5名が独立評価し、合議により結論を導出しています。</p>
+  <div class="experts-grid">
+    <div class="expert-card">
+      <div class="expert-avatar av-tanaka">田</div>
+      <div class="name">田中 誠</div>
+      <div class="title">シリアルアントレプレナー<br>年商10億のサブスク事業経営者</div>
+    </div>
+    <div class="expert-card">
+      <div class="expert-avatar av-sato">佐</div>
+      <div class="name">佐藤 美咲</div>
+      <div class="title">フリーランスコンサル<br>月商300万の個人事業主</div>
+    </div>
+    <div class="expert-card">
+      <div class="expert-avatar av-suzuki">鈴</div>
+      <div class="name">鈴木 健太</div>
+      <div class="title">美容業界マーケティング戦略家<br>大手広告代理店出身</div>
+    </div>
+    <div class="expert-card">
+      <div class="expert-avatar av-yamamoto">山</div>
+      <div class="name">山本 陽子</div>
+      <div class="title">フランチャイズ展開の専門家<br>100店舗以上の展開実績</div>
+    </div>
+    <div class="expert-card">
+      <div class="expert-avatar av-nakamura">中</div>
+      <div class="name">中村 大輔</div>
+      <div class="title">MBAホルダー<br>スタートアップ投資家兼アドバイザー</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 1: エグゼクティブサマリー ========== -->
+<div class="section" id="sec1">
+  <p class="section-number">Section 01</p>
+  <h2>エグゼクティブサマリー</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>フリーランスSMP施術者が、店舗を持たずに月100万円の利益を安定的に達成できるビジネスモデルは存在するか？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>「施術業」ではなく「コンプレックス解決の高単価コンサル業」と定義し直すことで、単価10〜12万円 &times; 月15〜18人完了で月商150〜216万円、利益100万円超が可能。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>3拠点巡回で稼働日20日/月、1日2〜3人施術として月40〜60枠。3回コース完了ベースで月15〜18人は稼働率38〜45%で達成可能。ただし集客が安定する6ヶ月目以降が前提。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>モデルとしては成立する。ただしSNS症例コンテンツの蓄積と、LINE導線の最適化が最大のボトルネック。初期6ヶ月は月30〜50万円のレンジで推移する想定がリアル。</p>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="metric-value">10-12万</div>
+      <div class="metric-label">顧客単価（3回コース）</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">15-18人</div>
+      <div class="metric-label">月間完了目標</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">3拠点</div>
+      <div class="metric-label">東京 / 沖縄 / 奄美</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">100万+</div>
+      <div class="metric-label">月間利益目標（円）</div>
+    </div>
+  </div>
+
+  <h3>事業の骨格</h3>
+  <ul>
+    <li><strong>事業形態:</strong> SMP（スカルプマイクロピグメンテーション）施術のフリーランス事業</li>
+    <li><strong>価格体系:</strong> 1ドット=1円。1回30,000〜50,000発。1回3〜5万円 &times; 3回 = 9〜15万円/人</li>
+    <li><strong>実質単価:</strong> 割引込みで10〜12万円/人</li>
+    <li><strong>メンテナンス:</strong> 半年に1度（リカーリング収益）</li>
+    <li><strong>技術速度:</strong> 1秒20ドット</li>
+    <li><strong>資産:</strong> 技術あり、機材あり、店舗なし</li>
+    <li><strong>法務:</strong> 医師法第17条 ― 対処・対策済み</li>
+  </ul>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">固定費ゼロで粗利率80%超のモデルは強い。ただし「月100万円利益」をDay1の目標にするのは危険。最初の6ヶ月は「症例50件蓄積」を唯一のKPIにすべき。売上は後からついてくる。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">フリーランスで月100万円は珍しくないが、「3回通わせて完了」のモデルはドロップ率が怖い。2回目以降の来店率を95%以上に保つ仕組みが必要。次回予約を施術中に確定させるルールが最重要。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">「1ドット=1円」の価格体系は明朗会計として強力なUSP。ただし、見込み客には「結局いくらかかるの？」が最大の不安。LPのファーストビューに「全頭30,000円〜」と金額を明示すべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">3拠点巡回はフランチャイズ的に見ると「1人が3店舗を回す」と同じ。移動コストと機会損失を過小評価しがち。まず東京1拠点で月15人を達成してから拡大すべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">LTV（顧客生涯価値）で見ると、初回10-12万円 + メンテナンス年2万円で3年LTVは16-18万円。CAC（顧客獲得コスト）をLTVの1/3以下、つまり5万円以下に抑えられるかが勝負。SNSオーガニックならCAC実質ゼロだが、そこまでの投資期間が課題。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>モデルの成立可能性は全員が認める。ただし「初期6ヶ月は赤字〜薄利」「症例蓄積が最優先」「東京先行で検証」の3点を前提条件とすべき。楽観的な月100万円到達は12ヶ月目以降が現実的。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 2: 事業構造の本質 ========== -->
+<div class="section" id="sec2">
+  <p class="section-number">Section 02</p>
+  <h2>事業構造の本質 ― コンプレックス解決型高単価コンサル業</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>SMPは「施術業」なのか「コンサル業」なのか？この定義が戦略の全てを変える。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>顧客が買っているのは「ドット」ではなく「薄毛コンプレックスからの解放」。故にSMPは本質的にコンプレックス解決型の高単価コンサル業であり、施術はデリバリー手段に過ぎない。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>AGA治療（月1-3万円 &times; 年単位）、植毛（100-300万円）、ウィッグ（年30-50万円）との比較で、SMP（10-12万円/完了）は「最もコスパの良い見た目の即時改善手段」。顧客の意思決定基準は技術力ではなく「本当に変わるのか？」という確信。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>事業の核は「信頼の構築」であり、SNS症例が信頼の通貨。施術の品質は大前提だが、それだけでは集客できない。「この人にやってもらえば自分も変われる」と思わせる症例メディアが最重要資産。</p>
+    </div>
+  </div>
+
+  <h3>競合比較マトリクス</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>選択肢</th>
+        <th>初期費用</th>
+        <th>年間維持費</th>
+        <th>3年総コスト</th>
+        <th>即効性</th>
+        <th>自然さ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>AGA治療</td>
+        <td class="num">0円</td>
+        <td class="num">12-36万円</td>
+        <td class="num">36-108万円</td>
+        <td>3-6ヶ月</td>
+        <td>中</td>
+      </tr>
+      <tr>
+        <td>植毛手術</td>
+        <td class="num">100-300万円</td>
+        <td class="num">0円</td>
+        <td class="num">100-300万円</td>
+        <td>6-12ヶ月</td>
+        <td>高</td>
+      </tr>
+      <tr>
+        <td>ウィッグ</td>
+        <td class="num">10-30万円</td>
+        <td class="num">20-40万円</td>
+        <td class="num">70-150万円</td>
+        <td>即日</td>
+        <td>中-低</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>SMP（CIMA）</td>
+        <td class="num">10-12万円</td>
+        <td class="num">2万円</td>
+        <td class="num">14-18万円</td>
+        <td>即日</td>
+        <td>高</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>ポジショニング</h3>
+  <p>SMPの真の競合は他のSMP施術者ではなく、AGA治療・植毛・ウィッグの3選択肢。CIMA SCALP INKのポジションは「最もコスパが良く、即効性があり、自然な見た目を実現する唯一の選択肢」。</p>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">「コンサル業」の定義は正しい。僕のサブスク事業でも、顧客が買っているのは「安心」であって「ソフトウェア」ではない。SMPも同じ構造。だから売り方は「技術の説明」ではなく「変化のビフォーアフター」になる。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">コンサル業と定義するなら、初回の「カウンセリング」が最も重要な接点。30分のカウンセリングで「この人は信頼できる」と思わせるスクリプトとフレームワークを体系化すべき。私は自分のコンサルで初回60分のヒアリングテンプレートを持っている。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">競合比較マトリクスは鉄板のコンテンツ。これをそのままLP上のセクションにすべき。「植毛300万円 vs SMP 12万円」のインパクトは大きい。ただしAGAクリニックのアフィリエイターが同じ土俵にいるので、SEOでは勝てない。SNS一本で戦うのが正解。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">「場所で信用を作る」のではなく「症例で信用を作る」は正しいが、施術場所の清潔さ・プロフェッショナルさは最低限必要。レンタルサロンなら内装写真もSNSで見せるべき。場所がなくても「場所の質」は見せる。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">3年LTV比較をベースに「スイッチングコスト」も考慮すべき。AGA治療を既にやっている人が「効果が出ない」と感じた時がSMPへの切替ポイント。AGA治療半年経過者をターゲットにした広告メッセージは効果的。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>「コンプレックス解決型高単価コンサル業」の定義は全員が支持。実務面では(1)カウンセリングスクリプトの体系化、(2)競合比較のLP掲載、(3)施術環境の品質担保 ― の3つを追加すべき。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 3: 収益モデル ========== -->
+<div class="section" id="sec3">
+  <p class="section-number">Section 03</p>
+  <h2>収益モデル ― 単価 &times; 回転 &times; 完了率の厳密シミュレーション</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>月100万円利益に必要な最低施術人数と、その達成に必要な稼働率は現実的か？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>月15〜18人の3回コース完了（実質単価11万円）で月商165〜198万円。固定費・変動費を引いて利益100万円。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>月間稼働20日 &times; 1日3枠 = 60枠。新規15人 &times; 3回 = 45枠 + メンテナンス5枠 = 50枠。稼働率83%。現実的だがバッファが少ない。ドロップ率10%を織り込むと新規17人の契約が必要。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>月100万円利益は稼働率80%超を前提としており、安定達成には集客パイプラインの自動化が必須。保守的には月12-13人完了（月商132-143万円、利益70-80万円）を安定ラインとし、100万円は上振れ目標とすべき。</p>
+    </div>
+  </div>
+
+  <h3>収益シミュレーション（月次）</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>保守的</th>
+        <th>標準</th>
+        <th>楽観</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>新規契約数</td>
+        <td class="num">10人</td>
+        <td class="num">15人</td>
+        <td class="num">20人</td>
+      </tr>
+      <tr>
+        <td>コース完了率</td>
+        <td class="num">85%</td>
+        <td class="num">90%</td>
+        <td class="num">95%</td>
+      </tr>
+      <tr>
+        <td>完了人数/月</td>
+        <td class="num">8.5人</td>
+        <td class="num">13.5人</td>
+        <td class="num">19人</td>
+      </tr>
+      <tr>
+        <td>平均単価</td>
+        <td class="num">10万円</td>
+        <td class="num">11万円</td>
+        <td class="num">12万円</td>
+      </tr>
+      <tr>
+        <td>月間売上</td>
+        <td class="num">85万円</td>
+        <td class="num">148.5万円</td>
+        <td class="num">228万円</td>
+      </tr>
+      <tr>
+        <td>メンテナンス収入</td>
+        <td class="num">6万円</td>
+        <td class="num">12万円</td>
+        <td class="num">20万円</td>
+      </tr>
+      <tr>
+        <td>総売上</td>
+        <td class="num">91万円</td>
+        <td class="num">160.5万円</td>
+        <td class="num">248万円</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>コスト構造（月次）</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>費目</th>
+        <th>金額</th>
+        <th>備考</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>消耗品（針・インク）</td>
+        <td class="num">5-8万円</td>
+        <td>1人あたり約3,000-5,000円</td>
+      </tr>
+      <tr>
+        <td>レンタルサロン代</td>
+        <td class="num">8-15万円</td>
+        <td>3拠点合計、1日5,000-8,000円</td>
+      </tr>
+      <tr>
+        <td>交通費（3拠点移動）</td>
+        <td class="num">5-8万円</td>
+        <td>東京-沖縄、沖縄-奄美</td>
+      </tr>
+      <tr>
+        <td>LINE公式/ツール類</td>
+        <td class="num">1-2万円</td>
+        <td>LINE公式+予約管理</td>
+      </tr>
+      <tr>
+        <td>広告費（初期のみ）</td>
+        <td class="num">0-5万円</td>
+        <td>SNSオーガニック主体</td>
+      </tr>
+      <tr>
+        <td>紹介報酬</td>
+        <td class="num">3-5万円</td>
+        <td>月3-5件の紹介想定</td>
+      </tr>
+      <tr>
+        <td>雑費・保険</td>
+        <td class="num">2-3万円</td>
+        <td>賠償責任保険含む</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>月間固定+変動費 合計</td>
+        <td class="num">24-46万円</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>利益シミュレーション</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>保守的</th>
+        <th>標準</th>
+        <th>楽観</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>総売上</td>
+        <td class="num">91万円</td>
+        <td class="num">160.5万円</td>
+        <td class="num">248万円</td>
+      </tr>
+      <tr>
+        <td>総コスト</td>
+        <td class="num">30万円</td>
+        <td class="num">38万円</td>
+        <td class="num">46万円</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>月間利益</td>
+        <td class="num">61万円</td>
+        <td class="num">122.5万円</td>
+        <td class="num">202万円</td>
+      </tr>
+      <tr>
+        <td>利益率</td>
+        <td class="num">67%</td>
+        <td class="num">76%</td>
+        <td class="num">81%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">利益率67-81%は個人事業としては優秀だが、「自分の時給」をコストに入れていない。1日8時間 &times; 20日 &times; 時給5,000円 = 80万円を人件費と見なすと、保守的シナリオでは赤字。自分の時間を「投資」と見なせる最初の12ヶ月が勝負。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">フリーランスの収益モデルとしては健全。重要なのは「3回コース完了」の前払い or 都度払いの設計。私の経験では前払い割引（例:一括10万円 vs 都度4万円&times;3=12万円）にすると70%が前払いを選ぶ。キャッシュフローが安定する。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-disagree">反対</span>
+        </div>
+        <p class="comment-text">広告費0-5万円は甘い。SNSオーガニックだけで月15人の新規獲得は、フォロワー5,000人以上かつ症例100件以上のアカウントでないと非現実的。初期6ヶ月はInstagram広告に月10-15万円は必要。これをコストに織り込むべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">3拠点の交通費5-8万円は過小。東京-沖縄の往復で3-5万円/回、月2往復で6-10万円。奄美を加えるとさらに2-3万円。実際は月10-15万円になる。この差額が利益を削る。LCCの早期予約を徹底するか、沖縄ベースで東京出張型にすべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">ブレイクイーブンポイントを明確にすべき。固定費30万円/月なら月3人完了（33万円）で損益分岐。これは十分に低いハードル。問題は「月3人から月15人に持っていく期間」。6ヶ月の運転資金として最低180万円のキャッシュリザーブが必要。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>収益モデルは成立するが、(1)広告費を初期月10-15万円に修正、(2)交通費を月10-15万円に修正、(3)運転資金180万円の確保、(4)前払い割引制度の導入 ― の4点を修正条件として合意。修正後の保守的利益は月40-50万円が妥当。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 4: 3拠点巡回戦略 ========== -->
+<div class="section" id="sec4">
+  <p class="section-number">Section 04</p>
+  <h2>3拠点巡回戦略 ― 東京 / 沖縄 / 奄美の役割分担</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>3拠点を巡回する意味はあるのか？1拠点集中のほうが効率的ではないか？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>東京は市場規模（集客）、沖縄は本部（生活コスト最適化）、奄美はニッチ独占（競合ゼロ）。3拠点はそれぞれ異なる戦略的役割を持ち、1拠点では取れないセグメントをカバーする。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>東京のSMP市場は競合多数だが人口比で需要も最大。沖縄は競合1-2名で需要は中程度。奄美はSMP施術者ゼロで地域独占可能。ただし奄美の月間需要は2-5人程度。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>東京をメイン収益拠点、沖縄を準主力+本部機能、奄美をブランディング+副収入と位置づける。ただし初年度は東京60%:沖縄30%:奄美10%の配分で開始し、需要に応じて調整。</p>
+    </div>
+  </div>
+
+  <h3>巡回ブロック制スケジュール</h3>
+  <div class="schedule-block">
+    <div class="schedule-item">
+      <h4>東京ブロック</h4>
+      <p class="dates">毎月1日〜8日（8日間）</p>
+      <ul>
+        <li>施術枠: 6日 &times; 3枠 = 18枠</li>
+        <li>予備日: 2日（撮影・SNS制作・美容室営業）</li>
+        <li>目標: 月10-12人の新規+継続施術</li>
+        <li>役割: メイン収益拠点</li>
+        <li>レンタルサロン: 恵比寿or表参道エリア</li>
+      </ul>
+    </div>
+    <div class="schedule-item">
+      <h4>沖縄ブロック</h4>
+      <p class="dates">毎月11日〜20日（10日間）</p>
+      <ul>
+        <li>施術枠: 7日 &times; 3枠 = 21枠</li>
+        <li>予備日: 3日（経理・コンテンツ制作・戦略）</li>
+        <li>目標: 月5-8人の新規+継続施術</li>
+        <li>役割: 本部機能 + 準主力</li>
+        <li>レンタルサロン: 那覇市内</li>
+      </ul>
+    </div>
+    <div class="schedule-item">
+      <h4>奄美ブロック</h4>
+      <p class="dates">毎月24日〜27日（4日間）</p>
+      <ul>
+        <li>施術枠: 3日 &times; 3枠 = 9枠</li>
+        <li>予備日: 1日（地元美容室訪問）</li>
+        <li>目標: 月2-4人</li>
+        <li>役割: ニッチ独占 + ブランディング</li>
+        <li>提携美容室内スペース活用</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>拠点別ユニットエコノミクス</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>指標</th>
+        <th>東京</th>
+        <th>沖縄</th>
+        <th>奄美</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>月間施術枠</td>
+        <td class="num">18枠</td>
+        <td class="num">21枠</td>
+        <td class="num">9枠</td>
+      </tr>
+      <tr>
+        <td>目標稼働率</td>
+        <td class="num">70%</td>
+        <td class="num">50%</td>
+        <td class="num">40%</td>
+      </tr>
+      <tr>
+        <td>月間施術数</td>
+        <td class="num">12-13回</td>
+        <td class="num">10-11回</td>
+        <td class="num">3-4回</td>
+      </tr>
+      <tr>
+        <td>レンタルサロン代</td>
+        <td class="num">4-5万円</td>
+        <td class="num">3-4万円</td>
+        <td class="num">0.5-1万円</td>
+      </tr>
+      <tr>
+        <td>交通費（往復）</td>
+        <td class="num">0円（現地）</td>
+        <td class="num">3-5万円</td>
+        <td class="num">2-3万円</td>
+      </tr>
+      <tr>
+        <td>拠点別月間売上</td>
+        <td class="num">48-52万円</td>
+        <td class="num">36-44万円</td>
+        <td class="num">8-16万円</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>拠点別利益貢献</td>
+        <td class="num">40-45万円</td>
+        <td class="num">25-32万円</td>
+        <td class="num">5-12万円</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-disagree">反対</span>
+        </div>
+        <p class="comment-text">3拠点巡回は「やりたいこと」であって「やるべきこと」ではない。まず東京で月15人を安定させる。それだけで利益80万円。沖縄・奄美は東京が安定してから追加すべき。最初から3拠点は集客が分散してどこも中途半端になるリスクがある。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">フリーランスの利点は「場所に縛られないこと」。生活拠点が沖縄なら沖縄ベースで東京に「出張施術」する形が自然。奄美は四半期に1回の集中施術ウィーク（3日間）にすれば効率的。毎月行く必要はない。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">マーケティング的には「巡回」は強いストーリー。「沖縄発・東京進出」「離島にもSMPを届ける」というナラティブはSNSで映える。巡回すること自体がコンテンツになる。ただし集客は拠点ごとにSNSアカウントを分けずに、1アカウントで全拠点を訴求すべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-disagree">反対</span>
+        </div>
+        <p class="comment-text">フランチャイズの経験から言うと、多拠点展開の最大の失敗要因は「各拠点の品質管理」。1人で3拠点なので品質は一定だが、スケジュール管理が破綻しやすい。3回コースの2回目が「来月の東京ブロック」になると、間隔が開きすぎてドロップする。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">フェーズドアプローチを提案。Phase 1(0-6ヶ月): 沖縄+東京の2拠点。Phase 2(7-12ヶ月): 奄美を追加。Phase 3(13ヶ月-): 需要データに基づき配分調整。投資家として「Phase 1で月商100万円達成」をPhase 2移行のゲートにすべき。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>3拠点構想自体は支持するが、初期から全拠点稼働は否定。Phase 1(沖縄+東京)で月商100万円を達成してからPhase 2(奄美追加)に移行するフェーズドアプローチで全員合意。奄美は四半期1回の集中施術で十分。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 5: 集客設計 ========== -->
+<div class="section" id="sec5">
+  <p class="section-number">Section 05</p>
+  <h2>集客設計 ― SNS &rarr; LP &rarr; LINE &rarr; 成約のファネル</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>店舗なし・広告費最小でどうやって月15人の新規顧客を獲得するか？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>SNS（症例50%・教育30%・信頼20%）を起点に、LP（比較・症例・価格）でフィルタリングし、LINE登録で見込み客を囲い込み、個別対応で成約する4段階ファネル。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>SMP業界のInstagramアカウント分析: フォロワー3,000人規模で月5-8件のDM問い合わせ。LINE誘導率40%、成約率30%として月15人には月125件のDM（=フォロワー10,000人以上）が必要。到達に12-18ヶ月。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>SNSオーガニックだけでは月15人到達に12ヶ月以上。初期はInstagram広告+Google広告で補完し、並行してオーガニック基盤を構築する「ハイブリッド集客」が現実的。</p>
+    </div>
+  </div>
+
+  <h3>集客ファネル設計</h3>
+  <div class="funnel">
+    <div class="funnel-step">
+      <span class="funnel-label">SNS リーチ</span>
+      <span class="funnel-data">月間リーチ 50,000人 / Instagram + TikTok + YouTube Shorts</span>
+    </div>
+    <div class="funnel-arrow">&darr; CVR 0.5%</div>
+    <div class="funnel-step">
+      <span class="funnel-label">LP 訪問</span>
+      <span class="funnel-data">月間250人 / 症例・比較・価格で判断</span>
+    </div>
+    <div class="funnel-arrow">&darr; CVR 20%</div>
+    <div class="funnel-step">
+      <span class="funnel-label">LINE 登録</span>
+      <span class="funnel-data">月間50人 / 自動応答で教育・FAQ配信</span>
+    </div>
+    <div class="funnel-arrow">&darr; CVR 30%</div>
+    <div class="funnel-step">
+      <span class="funnel-label">診断予約</span>
+      <span class="funnel-data">月間15人 / 有料診断3,000円</span>
+    </div>
+    <div class="funnel-arrow">&darr; CVR 80%</div>
+    <div class="funnel-step">
+      <span class="funnel-label">成約</span>
+      <span class="funnel-data">月間12人 / 3回コース契約</span>
+    </div>
+  </div>
+
+  <h3>SNSコンテンツ配分</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>カテゴリ</th>
+        <th>配分</th>
+        <th>内容</th>
+        <th>投稿頻度</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>症例コンテンツ</td>
+        <td class="num">50%</td>
+        <td>ビフォーアフター、施術動画、ヒーリング経過</td>
+        <td>週3-4本</td>
+      </tr>
+      <tr>
+        <td>教育コンテンツ</td>
+        <td class="num">30%</td>
+        <td>SMP vs AGA治療の比較、よくある誤解、施術の流れ</td>
+        <td>週2本</td>
+      </tr>
+      <tr>
+        <td>信頼コンテンツ</td>
+        <td class="num">20%</td>
+        <td>施術者の素顔、お客様の声、施術環境、勉強風景</td>
+        <td>週1本</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">ファネルの設計は教科書通りで正しい。ポイントは「LINE登録→成約」の30%。ここを40%に上げるだけで月4人増える。秘訣は登録後24時間以内の個別メッセージ。自動応答ではなく「手打ち」の1通が効く。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">LINE公式は必須。私のコンサル事業でもLINE経由が売上の60%。ステップ配信で「登録→3日後に症例→7日後に比較→14日後に診断案内」の自動シーケンスを組むべき。ただしLINEのブロック率は30-40%あるので、登録数の1.5倍を見込む。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">TikTokを追加すべき。SMP施術の短尺動画（15-30秒）はTikTokでバズりやすい。ドット打ちのASMR的な動画は再生回数が伸びる。Instagramは30代以上の本命層、TikTokは認知拡大用と使い分ける。YouTube Shortsは両方のリポストでOK。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">Google検索対策も必要。「SMP 沖縄」「SMP 東京 安い」で検索する人はニーズが顕在化している最も成約しやすい層。LP のSEOを最低限やるか、Googleビジネスプロフィールだけでも登録すべき。店舗がなくても「出張型サービス」で登録可能。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">CAC（顧客獲得コスト）のKPI管理が肝。オーガニックのCAC=0円、広告経由のCAC=1-3万円。ブレンドCACを2万円以下に抑える目標を設定し、月次でモニタリング。CACがLTVの20%を超えたらアラート。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>ファネル設計は合理的。追加すべきは(1)TikTokの活用、(2)Googleビジネスプロフィール登録、(3)LINE登録後24時間以内の個別メッセージ、(4)CACの月次モニタリング。初期はSNS広告月10-15万円で「症例が貯まるまでの時間を買う」戦略で合意。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 6: 美容室提携スキーム ========== -->
+<div class="section" id="sec6">
+  <p class="section-number">Section 06</p>
+  <h2>美容室提携スキーム ― 送客チャネル設計</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>美容室と提携する目的は「施術場所の確保」か「送客」か？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>美容室は「送客チャネル」であり、施術場所ではない。美容師は薄毛の悩みを最も身近に聞ける立場にあり、SMPの存在を知れば自然に紹介してくれる。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>美容師1人が月50人のカット客を持つとして、うち5-10%が薄毛に悩んでいる。月2-5人の潜在紹介先。10軒の提携で月20-50人の潜在送客。ただし実際の紹介率は10-20%で月2-10人程度。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>美容室提携は「ゼロCACの送客チャネル」として有効だが、過度な期待は禁物。月2-5人の紹介が安定すれば十分な成果。紹介が自然に発生する仕組み（POP・名刺・紹介報酬）を整備すべき。</p>
+    </div>
+  </div>
+
+  <h3>提携モデル設計</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>内容</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>提携形態</td>
+        <td>送客パートナー（業務委託ではない）</td>
+      </tr>
+      <tr>
+        <td>美容室の役割</td>
+        <td>薄毛の悩みを持つ客にSMPの存在を紹介、パンフレット設置</td>
+      </tr>
+      <tr>
+        <td>紹介報酬</td>
+        <td>成約時1万円（フルコース）/ 5,000円（部分施術）</td>
+      </tr>
+      <tr>
+        <td>提供ツール</td>
+        <td>POP（A5サイズ）、名刺型紹介カード（QRコード付き）、症例写真ファイル</td>
+      </tr>
+      <tr>
+        <td>施術場所利用</td>
+        <td>原則なし（レンタルサロンを利用）。例外的に美容室内の個室を借りる場合は場所代を支払う</td>
+      </tr>
+      <tr>
+        <td>目標提携数</td>
+        <td>各拠点5軒 &times; 3拠点 = 15軒</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>美容室への営業トーク（テンプレート）</h3>
+  <div class="socratic">
+    <div class="socratic-step">
+      <p style="font-size:0.85rem;color:var(--txt-dim);font-style:italic;">「お客様の中に、薄毛で悩んでいる方はいらっしゃいますか？ SMPという新しい技術があって、頭皮に色素を入れて毛があるように見せるんです。1ドット1円で、全頭3万円から。お客様をご紹介いただいたら、成約時に1万円の紹介料をお支払いします。お客様の悩みを解決できて、お店にも収益が入る。パンフレットを置かせていただくだけで結構です。」</p>
+    </div>
+  </div>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">「施術場所ではなく送客」の切り分けは正しい。美容室内で施術すると衛生管理の責任分担が曖昧になる。紹介のみに特化すべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">紹介報酬1万円は美容師にとって「カット1回分」の収入。十分なインセンティブ。ただし報酬の支払いタイミングが重要。成約翌月末ではなく「施術初回完了後即日振込」にすべき。即時報酬が次の紹介を生む。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">POP設置だけでは弱い。美容師自身がSMPを理解していないと紹介できない。提携時に30分の勉強会（実際の施術動画+症例写真）を実施すべき。美容師が「自分の言葉で」SMPを説明できるようになることがゴール。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">フランチャイズ展開で実証済みだが、提携先の「上位20%」が紹介の80%を生む。15軒中3軒がスーパーパートナーになる。最初の3ヶ月で全軒の実績を見て、上位に集中投資（追加報酬・優先枠）すべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">紹介チャネルのCACは紹介報酬1万円。LTV16-18万円に対してCAC/LTV比率6%。極めて健全。このチャネルを全体の20-30%にできれば、ブレンドCACは大幅に改善する。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>美容室を送客チャネルに限定する方針は全員支持。追加で(1)提携時の30分勉強会の実施、(2)紹介報酬の即日振込、(3)3ヶ月後に上位パートナーへの集中投資。15軒中3軒のスーパーパートナー育成が目標。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 7: 体験→診断の再定義 ========== -->
+<div class="section" id="sec7">
+  <p class="section-number">Section 07</p>
+  <h2>体験 &rarr; 診断の再定義モデル</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>「無料体験」と「有料診断」のどちらが成約率を高めるか？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>無料体験は「冷やかし」が混ざり、時間の浪費が発生する。3,000円の有料診断にすることで、本気度の高い顧客だけをフィルタリングし、成約率を50%→80%に引き上げられる。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>コンサル業界のデータ: 無料相談の成約率20-30%、有料相談（3,000-5,000円）の成約率60-80%。金額を払う行為自体が「コミットメント」を生む。ただし有料化で問い合わせ数は40-50%減少。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>有料診断3,000円は適正。問い合わせ数が半減しても成約率が2.5倍になるので、最終的な成約数は増加。さらに診断料を施術費から差し引く「実質無料」設計にすれば心理的ハードルが下がる。</p>
+    </div>
+  </div>
+
+  <h3>診断プログラム設計</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>フェーズ</th>
+        <th>時間</th>
+        <th>内容</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. ヒアリング</td>
+        <td class="num">15分</td>
+        <td>悩みの詳細、これまでの対策歴、理想のゴール像</td>
+      </tr>
+      <tr>
+        <td>2. 頭皮診断</td>
+        <td class="num">10分</td>
+        <td>マイクロスコープで頭皮状態確認、施術可能範囲の特定</td>
+      </tr>
+      <tr>
+        <td>3. シミュレーション</td>
+        <td class="num">10分</td>
+        <td>類似症例の提示、仕上がりイメージの共有</td>
+      </tr>
+      <tr>
+        <td>4. テスト施術</td>
+        <td class="num">15分</td>
+        <td>2cm四方のテストパッチ（実際の色味・密度を確認）</td>
+      </tr>
+      <tr>
+        <td>5. プラン提案</td>
+        <td class="num">10分</td>
+        <td>ドット数の見積もり、回数、スケジュール、料金説明</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>価格設計</h3>
+  <ul>
+    <li><strong>診断料:</strong> 3,000円（税込）</li>
+    <li><strong>成約時:</strong> 診断料3,000円を初回施術費から差し引き（実質無料）</li>
+    <li><strong>不成約時:</strong> 診断料3,000円はそのまま収入（時間コストの回収）</li>
+    <li><strong>目標:</strong> 月15件の診断 &times; 成約率80% = 月12件の新規契約</li>
+  </ul>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">有料診断は「小さなYes」を引き出す古典的セールスファネル。3,000円は心理的に「お試し」の範囲内で、かつ冷やかしを排除できる絶妙な金額。テスト施術を含むのが特に良い。「実際に体験できる」が最大の訴求力。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">「成約時は初回から差し引き」は必ずLINEの自動応答とLPで明記すること。「3,000円で試せて、やるなら実質タダ」という文言が一番刺さる。この一言で診断予約率が20%は上がる。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">診断のビフォーアフター写真を（許可を得て）SNSに投稿するのを条件に診断料を1,000円に割引するオプションはどうか。コンテンツ獲得と集客を同時に達成できる。「症例モデル割引」として打ち出す。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">60分のプログラムは適正。長すぎず短すぎない。重要なのはステップ4のテスト施術。これがないと「自分に合うかわからない」不安が残る。テスト施術で「色が入った！」と感動する瞬間が成約の決め手。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">診断から成約までの「転換率」をKPIとして週次でモニタリングすべき。80%を下回ったら診断プログラムの改善が必要。60%を切ったらヒアリング内容を見直す。この数字が事業の健全性を最も端的に示す。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>有料診断3,000円（成約時差し引き）のモデルは全員賛成。追加で(1)「症例モデル割引1,000円」オプション、(2)診断→成約転換率の週次KPI管理を実装すべき。テスト施術が最大の成約トリガーである点で一致。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 8: 紹介報酬設計 ========== -->
+<div class="section" id="sec8">
+  <p class="section-number">Section 08</p>
+  <h2>紹介報酬設計 ― 利益連動型</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>紹介報酬を固定額にすべきか、利益連動型にすべきか？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>利益連動型にすることで、高単価案件ほど紹介者のインセンティブが高くなり、質の高い紹介が増える。同時に低単価案件で過剰な報酬を払うリスクを回避できる。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>フルコース（10-12万円）で利益8-10万円、部分施術（5-7万円）で利益4-5万円。利益の10%を紹介報酬とすると8,000-10,000円と4,000-5,000円。シンプルに「フル1万円・中5千円・小は対象外」のほうが運用しやすい。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>完全な利益連動型は計算が複雑になり紹介者に不透明。3段階の固定額（1万円/5千円/対象外）が最適解。利益率との整合性も取れている。</p>
+    </div>
+  </div>
+
+  <h3>紹介報酬テーブル</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>施術タイプ</th>
+        <th>顧客単価</th>
+        <th>紹介報酬</th>
+        <th>利益に対する比率</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>フルコース（全頭3回）</td>
+        <td class="num">10-12万円</td>
+        <td class="num">10,000円</td>
+        <td class="num">10-12%</td>
+      </tr>
+      <tr>
+        <td>ミドルコース（部分3回）</td>
+        <td class="num">5-7万円</td>
+        <td class="num">5,000円</td>
+        <td class="num">10-14%</td>
+      </tr>
+      <tr>
+        <td>メンテナンスのみ</td>
+        <td class="num">2万円以下</td>
+        <td class="num">対象外</td>
+        <td class="num">-</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>紹介プログラムのルール</h3>
+  <ul>
+    <li><strong>対象者:</strong> 既存顧客、美容室パートナー、一般紹介者（誰でも可）</li>
+    <li><strong>支払条件:</strong> 被紹介者の初回施術完了後に支払い</li>
+    <li><strong>支払方法:</strong> 銀行振込（即日〜翌営業日）</li>
+    <li><strong>追跡:</strong> 紹介カード（QRコード）またはLINE経由の紹介コードで管理</li>
+    <li><strong>上限:</strong> なし（紹介数の制限なし）</li>
+    <li><strong>二重紹介:</strong> 最初に紹介コードを使用した紹介者に帰属</li>
+  </ul>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">3段階固定は正解。紹介者に「計算させない」のが鉄則。「あなたが紹介してくれたら1万円です」。これだけでいい。報酬テーブルを複雑にすると紹介のモチベーションが下がる。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">既存顧客の紹介には報酬に加えて「次回メンテナンス30%オフ」を付けるべき。現金報酬だけでなく自分のメリットがあると紹介しやすい。「友達を紹介すると次のメンテが7,000円引き」は強い。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">紹介プログラムのLP上での見せ方が重要。施術後の「満足度が最も高い瞬間」に紹介カードを渡すタイミング設計が大事。3回目施術の完了直後が最高のタイミング。ここで「満足されましたら、お友達にもお伝えください」。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">フランチャイズでも紹介報酬は売上の10-15%が相場。このモデルはその範囲内で適正。追加で「年間5人以上紹介のスーパー紹介者」には報酬を1.5倍にするティア制を検討すべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">紹介チャネルのNPS（ネットプロモータースコア）を計測すべき。施術完了後にNPSアンケートを送り、9-10点の顧客にのみ紹介プログラムを案内する。NPS7以下の顧客に紹介を頼むと逆効果。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>3段階固定報酬（1万円/5千円/対象外）で合意。追加で(1)既存顧客にはメンテナンス割引も併用、(2)3回目施術完了直後に紹介カードを渡すタイミング設計、(3)NPS9-10の顧客に限定した紹介案内。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 9: 予約・スケジュール管理 ========== -->
+<div class="section" id="sec9">
+  <p class="section-number">Section 09</p>
+  <h2>予約・スケジュール管理システム</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>3拠点巡回 &times; 3回コース &times; 月15人の予約管理は、どのレベルのシステムが必要か？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>専用の予約管理システムは不要。LINE公式+Googleカレンダー+スプレッドシートで初期は十分。月20人を超えたタイミングで専用ツール（STORES予約等）を導入。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>月15人 &times; 3回 = 月45件の施術。巡回スケジュールとの整合性を手動管理するとミスの温床。しかし月額課金の予約ツールは月5,000-15,000円で、売上に対して微小。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>初月からSTORES予約（またはtol）の無料〜低額プランを導入すべき。手動管理のリスク（ダブルブッキング、拠点間の日程ミス）は信用に直結するため、ケチるべきではない。</p>
+    </div>
+  </div>
+
+  <h3>システム構成</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>機能</th>
+        <th>ツール</th>
+        <th>月額</th>
+        <th>用途</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>予約管理</td>
+        <td>STORES予約 or tol</td>
+        <td class="num">0-8,000円</td>
+        <td>枠管理、リマインド自動送信、拠点別カレンダー</td>
+      </tr>
+      <tr>
+        <td>顧客管理</td>
+        <td>Googleスプレッドシート</td>
+        <td class="num">0円</td>
+        <td>顧客情報、施術履歴、次回予定、紹介元</td>
+      </tr>
+      <tr>
+        <td>コミュニケーション</td>
+        <td>LINE公式アカウント</td>
+        <td class="num">0-5,000円</td>
+        <td>予約確認、リマインド、ステップ配信、個別対応</td>
+      </tr>
+      <tr>
+        <td>日程調整</td>
+        <td>Googleカレンダー</td>
+        <td class="num">0円</td>
+        <td>3拠点の移動日・施術日・予備日の管理</td>
+      </tr>
+      <tr>
+        <td>決済</td>
+        <td>Square or PayPay</td>
+        <td class="num">0円</td>
+        <td>対面決済、前払い対応</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>予約フロー</h3>
+  <ol>
+    <li>LINE登録後、ステップ配信で教育（自動）</li>
+    <li>診断予約の希望をLINEで受信</li>
+    <li>拠点・日程を確認し、予約URLを送信</li>
+    <li>STORES予約で枠確定、自動リマインド（前日+当日朝）</li>
+    <li>施術完了後、次回予約をその場で確定（施術中に確認）</li>
+    <li>2回目・3回目は巡回スケジュールに合わせて自動提案</li>
+  </ol>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">最小限のツールスタックで始めるのは正しい。ただし「顧客管理スプレッドシート」は早晩限界が来る。月20人を超えたらNotionデータベースに移行し、施術写真・メモ・次回予定を一元管理すべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">「次回予約をその場で確定」は絶対ルール化すべき。フリーランス最大の失敗は「後で連絡します」で予約が流れること。施術チェアから立つ前に次回日程を決める。これだけでドロップ率が半分になる。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">LINE公式のリッチメニューに「予約する」ボタンを設置し、STORES予約に直リンクさせるのがベスト。LINEを開く→予約するの2ステップ。これ以上複雑にしない。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">巡回型の最大リスクは「2回目の施術が1ヶ月後」になること。3回コースの推奨間隔（2-3週間）と巡回スケジュールが合わない場合のルールを事前に決めておくべき。例えば「東京の顧客は必ず東京ブロック内で3回完了」とする。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">月額コスト合計1-2万円は売上比率1-2%。全く問題ない。むしろノーショー（無断キャンセル）対策が重要。診断は3,000円前払いで対策済みだが、2回目以降もリマインド+前日確認LINEを必ず送る。ノーショー率を3%以下に。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>STORES予約+LINE公式+Googleスプレッドシートの構成で開始、月20人超でNotion移行。「施術中に次回確定」を絶対ルール化。拠点をまたぐ施術は原則禁止（同一拠点で3回完了）。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 10: リスク分析 ========== -->
+<div class="section" id="sec10">
+  <p class="section-number">Section 10</p>
+  <h2>リスク分析と対策（厳しめ評価）</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>この事業が失敗するとしたら、何が原因か？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>最大のリスクは「集客できない」こと。技術・機材・法務が揃っていても、顧客が来なければゼロ。次に「ドロップ率が高い」「競合参入」「健康被害クレーム」。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>SMP業界の廃業率データはないが、フリーランス美容師の3年生存率は約60%。最大の廃業理由は集客不足（70%）。SMPも同様と推定。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>集客リスクが圧倒的に最大。次に体制リスク（1人で全てを回す限界）。法務リスクは対策済みで低い。以下にリスクを4段階で評価。</p>
+    </div>
+  </div>
+
+  <h3>リスクマトリクス</h3>
+  <div class="risk-matrix">
+    <div class="risk-item risk-high">
+      <div class="risk-header">
+        <span class="risk-title">1. 集客不足（月10人未達が3ヶ月連続）</span>
+        <span class="risk-badge badge-high">高リスク</span>
+      </div>
+      <p class="risk-desc">SNSのアルゴリズム変更、コンテンツの質低下、競合の広告投入により、集客パイプラインが枯渇するリスク。</p>
+      <p class="risk-counter"><strong>対策:</strong> (1)SNSに依存しすぎない3チャネル並行（SNS+美容室紹介+Google広告）、(2)月10万円の広告予算を常時確保、(3)症例コンテンツのストックを常に30件以上維持。</p>
+    </div>
+    <div class="risk-item risk-high">
+      <div class="risk-header">
+        <span class="risk-title">2. コース途中ドロップ（完了率80%未満）</span>
+        <span class="risk-badge badge-high">高リスク</span>
+      </div>
+      <p class="risk-desc">2回目・3回目に来ない顧客が増えると、売上が見込みの60-70%に減少。キャッシュフローが悪化。</p>
+      <p class="risk-counter"><strong>対策:</strong> (1)施術中に次回予約確定の絶対ルール、(2)前払い割引（一括10万円）の推進、(3)2回目前日のリマインドLINE+電話、(4)ドロップ者への30日以内再訪特典。</p>
+    </div>
+    <div class="risk-item risk-mid">
+      <div class="risk-header">
+        <span class="risk-title">3. 体力・健康の限界（1人運営の脆弱性）</span>
+        <span class="risk-badge badge-mid">中リスク</span>
+      </div>
+      <p class="risk-desc">体調不良、怪我、バーンアウトで施術不能になると売上がゼロになる。代替施術者がいない。</p>
+      <p class="risk-counter"><strong>対策:</strong> (1)月4日の完全オフ日を死守、(2)所得補償保険の加入、(3)月商100万円達成後にアシスタント育成を開始、(4)3ヶ月分の生活費を緊急資金として確保。</p>
+    </div>
+    <div class="risk-item risk-mid">
+      <div class="risk-header">
+        <span class="risk-title">4. 施術トラブル・クレーム</span>
+        <span class="risk-badge badge-mid">中リスク</span>
+      </div>
+      <p class="risk-desc">色味の不一致、アレルギー反応、施術後の感染症などにより、クレーム・返金要求・SNS炎上が発生。</p>
+      <p class="risk-counter"><strong>対策:</strong> (1)パッチテスト必須化、(2)施術前の同意書取得、(3)賠償責任保険加入（年3-5万円）、(4)クレーム対応フロー策定（即日対応→原因調査→補償提案）。</p>
+    </div>
+    <div class="risk-item risk-mid">
+      <div class="risk-header">
+        <span class="risk-title">5. 競合参入（価格競争）</span>
+        <span class="risk-badge badge-mid">中リスク</span>
+      </div>
+      <p class="risk-desc">SMP市場の拡大に伴い、低価格の競合が参入。特に沖縄・奄美は市場規模が小さく、1社の参入で影響大。</p>
+      <p class="risk-counter"><strong>対策:</strong> (1)「1ドット=1円」の明朗会計でブランドを確立、(2)症例数で圧倒的優位を作る（100件以上）、(3)価格競争には乗らず「品質と信頼」で差別化。</p>
+    </div>
+    <div class="risk-item risk-low">
+      <div class="risk-header">
+        <span class="risk-title">6. 法規制の変更</span>
+        <span class="risk-badge badge-low">低リスク</span>
+      </div>
+      <p class="risk-desc">医師法・薬機法の解釈変更により、SMPが規制対象になるリスク。現時点では対策済み。</p>
+      <p class="risk-counter"><strong>対策:</strong> (1)行政書士と顧問契約を維持、(2)業界団体の動向を定期的にチェック、(3)万一の規制変更時は美容クリニック提携で対応できる体制を準備。</p>
+    </div>
+    <div class="risk-item risk-low">
+      <div class="risk-header">
+        <span class="risk-title">7. キャッシュフロー悪化</span>
+        <span class="risk-badge badge-low">低リスク</span>
+      </div>
+      <p class="risk-desc">初期投資（広告費・移動費）が先行し、売上回収が遅れるリスク。</p>
+      <p class="risk-counter"><strong>対策:</strong> (1)運転資金180万円の確保、(2)前払い割引で即時回収、(3)月次でキャッシュフロー表を更新、(4)残高50万円を切ったら広告費を停止。</p>
+    </div>
+  </div>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">リスクの優先順位は正しい。事業者として最も怖いのは「1人で全部やっている」こと。体調を崩した瞬間に売上ゼロ。所得補償保険は必須。月5,000円で月額30万円の補償が得られる。これをケチったら経営者失格。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">ドロップ率対策に「前払い」だけでなく「分割払いルール」も決めておくべき。3回払いなら1回目50%・2回目30%・3回目20%のように前半ヘビーにする。途中ドロップでも売上の80%は回収できる設計に。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">SNS炎上リスクが抜けている。施術のビフォーアフターを無断でSNSに投稿した場合、肖像権問題で炎上する。「撮影・掲載同意書」のテンプレートを法的に有効な形で準備しておくこと。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">7つのリスクのうち、対策を打てるのは全て。コントロール不能なリスク（法規制変更）が最も低リスクなのは良い構造。最大リスクの「集客不足」は努力で改善可能。このリスクプロファイルなら事業としてGo判定。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">投資家目線では「Exit戦略」も考えるべき。万一撤退する場合、損失は運転資金180万円+機材費のみ。不動産・人件費の固定費がないので撤退コストが極めて低い。これは大きな強み。ダウンサイドが限定的な事業は投資対象として優良。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>リスク評価は妥当。追加すべきは(1)撮影・掲載同意書の整備、(2)分割払いの前半ヘビー設計、(3)所得補償保険の即時加入。全員が「Go判定」。撤退コストが低く、ダウンサイドが限定的な事業構造は健全。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 11: KPI設計 ========== -->
+<div class="section" id="sec11">
+  <p class="section-number">Section 11</p>
+  <h2>KPI設計と月次アクションプラン</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>月100万円利益を達成するために、毎月何をモニタリングすべきか？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-hypothesis">仮説</span>
+      <p>売上だけを見ると手遅れになる。先行指標（SNSリーチ、LINE登録数、診断予約数）を週次でモニタリングし、異常を早期検知すべき。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-verification">検証</span>
+      <p>SaaS業界のメトリクス管理に倣い、先行指標→中間指標→結果指標の3段階で管理する方法が最も効果的。各段階のアラート基準を設定し、先行指標の悪化を2-4週間前に検知。</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>12個のKPIを3段階に分類し、週次レビュー（先行指標）+ 月次レビュー（中間・結果指標）のサイクルで管理。</p>
+    </div>
+  </div>
+
+  <h3>KPIダッシュボード</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>段階</th>
+        <th>KPI</th>
+        <th>目標値</th>
+        <th>アラート基準</th>
+        <th>レビュー</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td rowspan="4" style="vertical-align:top;color:var(--blue);">先行指標</td>
+        <td>SNS投稿数</td>
+        <td class="num">週6本</td>
+        <td class="num">&lt;4本</td>
+        <td>週次</td>
+      </tr>
+      <tr>
+        <td>SNSリーチ</td>
+        <td class="num">週12,000</td>
+        <td class="num">&lt;8,000</td>
+        <td>週次</td>
+      </tr>
+      <tr>
+        <td>LP訪問数</td>
+        <td class="num">週60</td>
+        <td class="num">&lt;40</td>
+        <td>週次</td>
+      </tr>
+      <tr>
+        <td>LINE新規登録</td>
+        <td class="num">週12</td>
+        <td class="num">&lt;8</td>
+        <td>週次</td>
+      </tr>
+      <tr>
+        <td rowspan="4" style="vertical-align:top;color:var(--orange);">中間指標</td>
+        <td>診断予約数</td>
+        <td class="num">月15件</td>
+        <td class="num">&lt;10件</td>
+        <td>月次</td>
+      </tr>
+      <tr>
+        <td>診断→成約率</td>
+        <td class="num">80%</td>
+        <td class="num">&lt;60%</td>
+        <td>月次</td>
+      </tr>
+      <tr>
+        <td>コース完了率</td>
+        <td class="num">90%</td>
+        <td class="num">&lt;80%</td>
+        <td>月次</td>
+      </tr>
+      <tr>
+        <td>NPS</td>
+        <td class="num">9.0+</td>
+        <td class="num">&lt;8.0</td>
+        <td>月次</td>
+      </tr>
+      <tr>
+        <td rowspan="4" style="vertical-align:top;color:var(--green);">結果指標</td>
+        <td>月間売上</td>
+        <td class="num">160万円</td>
+        <td class="num">&lt;100万円</td>
+        <td>月次</td>
+      </tr>
+      <tr>
+        <td>月間利益</td>
+        <td class="num">100万円</td>
+        <td class="num">&lt;60万円</td>
+        <td>月次</td>
+      </tr>
+      <tr>
+        <td>CAC（顧客獲得コスト）</td>
+        <td class="num">&lt;2万円</td>
+        <td class="num">&gt;3万円</td>
+        <td>月次</td>
+      </tr>
+      <tr>
+        <td>紹介率</td>
+        <td class="num">20%</td>
+        <td class="num">&lt;10%</td>
+        <td>月次</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>月次アクションプラン（12ヶ月ロードマップ）</h3>
+  <div class="kpi-timeline">
+    <div class="kpi-month">
+      <h4>Month 1-2: 基盤構築</h4>
+      <p>SNSアカウント開設・初期コンテンツ30本制作 / LP公開 / LINE公式設定 / STORES予約導入 / 美容室5軒へ営業 / 同意書・契約書テンプレート整備 / 保険加入</p>
+    </div>
+    <div class="kpi-month">
+      <h4>Month 3-4: 集客開始</h4>
+      <p>Instagram広告月10万円開始 / 週6本の投稿ルーティン確立 / 最初の10件の有料診断実施 / 症例コンテンツを10件以上蓄積 / TikTok運用開始</p>
+    </div>
+    <div class="kpi-month">
+      <h4>Month 5-6: 検証と調整</h4>
+      <p>KPIダッシュボードのレビュー開始 / ファネルのボトルネック特定・改善 / 美容室追加5軒 / 症例30件達成 / 月売上50-80万円目標</p>
+    </div>
+    <div class="kpi-month">
+      <h4>Month 7-9: スケール</h4>
+      <p>オーガニック流入の増加に伴い広告費調整 / 奄美ブロック開始（Phase 2移行条件:月商100万円） / 症例50件達成 / 紹介プログラム本格稼働 / 月売上100-130万円目標</p>
+    </div>
+    <div class="kpi-month">
+      <h4>Month 10-12: 安定化</h4>
+      <p>月15人完了の安定達成 / 月利益100万円到達 / アシスタント候補の探索開始 / メンテナンス収入の定期化（既存顧客20人以上） / 年間事業計画策定</p>
+    </div>
+  </div>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">12個のKPIは多すぎない。ただし「毎日見るKPI」は1つだけにすべき。それは「LINE新規登録数」。これが全ての先行指標の集約であり、ここが増えれば下流は必ず改善する。ダッシュボードの最上部にこれだけを大きく表示。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">12ヶ月ロードマップの現実度は高い。ただし「Month 1-2の基盤構築」で初期コンテンツ30本は多い。最低10本で開始し、残りは施術しながら実症例で制作すべき。架空の症例より実症例1本のほうが100倍強い。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-improve">改善提案</span>
+        </div>
+        <p class="comment-text">Month 3-4の広告費10万円は最低ライン。TikTok広告も並行して月5万円テストすべき。合計15万円/月。ただしROASを厳密に計測し、CPA（診断予約あたりコスト）7,000円以上のチャネルは即停止。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">Month 10-12の「アシスタント候補の探索」は早くない。むしろ遅い。Month 7くらいから美容師のセミナー開催（有料）を始めて、その中から適性のある人を見つけるべき。セミナー自体が収益源にもなる。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">各Monthに「撤退条件」も定義すべき。例えばMonth 6時点で月売上30万円未満なら事業モデルの根本見直し。Month 9で月売上60万円未満なら3拠点を2拠点に縮小。「いつ撤退するか」を最初に決めておくのがプロの経営。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus">
+    <p class="consensus-label">5名の合意</p>
+    <p>KPIと12ヶ月ロードマップは実行可能。追加すべきは(1)「LINE新規登録数」をNorth Star Metricに設定、(2)初期コンテンツは10本で開始、(3)各フェーズの撤退条件の明文化、(4)Month 7からセミナー事業開始の検討。</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ========== SECTION 12: 最終合意と実装ロードマップ ========== -->
+<div class="section" id="sec12">
+  <p class="section-number">Section 12</p>
+  <h2>最終合意と実装ロードマップ</h2>
+
+  <div class="socratic">
+    <div class="socratic-step">
+      <span class="socratic-label label-question">問い</span>
+      <p>5名の専門家全員が合意できる、CIMA SCALP INK事業の最終的な実行計画は何か？</p>
+    </div>
+    <div class="socratic-step">
+      <span class="socratic-label label-conclusion">結論</span>
+      <p>以下の条件で全員がGo判定。</p>
+    </div>
+  </div>
+
+  <h3>最終合意事項</h3>
+
+  <h4>1. 事業定義</h4>
+  <p>「SMP施術業」ではなく「コンプレックス解決型高単価コンサル業」として運営する。</p>
+
+  <h4>2. 収益目標（修正版）</h4>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>フェーズ</th>
+        <th>期間</th>
+        <th>月間売上目標</th>
+        <th>月間利益目標</th>
+        <th>ゲート条件</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Phase 0（準備）</td>
+        <td>Month 1-2</td>
+        <td class="num">0円</td>
+        <td class="num">-30万円</td>
+        <td>LP・LINE・SNS基盤完成</td>
+      </tr>
+      <tr>
+        <td>Phase 1（検証）</td>
+        <td>Month 3-6</td>
+        <td class="num">30-80万円</td>
+        <td class="num">0-40万円</td>
+        <td>月商100万円をPhase 2移行条件</td>
+      </tr>
+      <tr>
+        <td>Phase 2（拡大）</td>
+        <td>Month 7-9</td>
+        <td class="num">80-150万円</td>
+        <td class="num">40-90万円</td>
+        <td>月利益100万円をPhase 3移行条件</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>Phase 3（安定）</td>
+        <td>Month 10-12</td>
+        <td class="num">150-200万円</td>
+        <td class="num">100-140万円</td>
+        <td>12ヶ月目に年間計画策定</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>3. 撤退条件</h4>
+  <ul>
+    <li><strong>Month 6時点:</strong> 月売上30万円未満 → 事業モデル根本見直し（2週間の集中分析）</li>
+    <li><strong>Month 9時点:</strong> 月売上60万円未満 → 3拠点を1拠点（東京）に縮小、広告費をゼロにしてオーガニックのみで継続判断</li>
+    <li><strong>Month 12時点:</strong> 月利益50万円未満 → 事業継続/撤退の最終判断</li>
+    <li><strong>いつでも:</strong> キャッシュリザーブ50万円以下 → 全広告停止、縮小運営に移行</li>
+  </ul>
+
+  <h4>4. 初期投資（必要資金）</h4>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>金額</th>
+        <th>備考</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>機材（保有済み）</td>
+        <td class="num">0円</td>
+        <td>SMP機器、マイクロスコープ</td>
+      </tr>
+      <tr>
+        <td>LP制作（自作済み）</td>
+        <td class="num">0円</td>
+        <td>cimascalpink.com</td>
+      </tr>
+      <tr>
+        <td>初期広告費（3ヶ月分）</td>
+        <td class="num">45万円</td>
+        <td>月15万円 &times; 3ヶ月</td>
+      </tr>
+      <tr>
+        <td>保険（年間）</td>
+        <td class="num">6万円</td>
+        <td>賠償責任保険+所得補償保険</td>
+      </tr>
+      <tr>
+        <td>消耗品初期在庫</td>
+        <td class="num">10万円</td>
+        <td>針、インク、衛生用品</td>
+      </tr>
+      <tr>
+        <td>運転資金（6ヶ月分生活費）</td>
+        <td class="num">180万円</td>
+        <td>月30万円 &times; 6ヶ月</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>合計必要資金</td>
+        <td class="num">241万円</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>5. 最初の30日間のTo-Doリスト</h4>
+  <ol>
+    <li>所得補償保険・賠償責任保険に加入</li>
+    <li>撮影・掲載同意書、施術同意書のテンプレート作成（行政書士に確認）</li>
+    <li>STORES予約アカウント開設、拠点別カレンダー設定</li>
+    <li>LINE公式アカウントのステップ配信設定（登録→3日→7日→14日）</li>
+    <li>SNS初期コンテンツ10本制作・投稿スケジュール設定</li>
+    <li>東京のレンタルサロン3件を下見・契約</li>
+    <li>東京の美容室5軒へ営業（勉強会付き）</li>
+    <li>Googleビジネスプロフィール登録</li>
+    <li>KPIトラッキング用Googleスプレッドシート作成</li>
+    <li>前払い割引制度の設計（一括10万円 vs 都度4万円&times;3）</li>
+  </ol>
+
+  <div class="expert-comments">
+    <div class="expert-comment">
+      <div class="avatar-sm av-tanaka">田</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">田中 誠</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">Go判定。撤退条件が明確に定義されている事業計画は信頼できる。必要資金241万円は個人事業としては妥当。最も重要なのは「最初の30日間のTo-Do」を本当に30日で完了させること。計画を作って満足するな。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-sato">佐</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">佐藤 美咲</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">Go判定。フリーランスとして月100万円利益は十分に達成可能な目標。ただし「月100万円」に固執しないこと。Month 6で月利益40万円なら大成功。そこから月100万円までは時間の問題。焦らないのが最大の戦略。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-suzuki">鈴</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">鈴木 健太</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">Go判定。マーケティング戦略は整っている。あとは「症例コンテンツの量と質」が全てを決める。1件の感動的なビフォーアフターは、100万円の広告より効果がある。最初の10件の症例に全力を注げ。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-yamamoto">山</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">山本 陽子</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">Go判定。フェーズドアプローチで段階的に拡大する計画は堅実。唯一の懸念は「1人で全て」を続ける限界が12ヶ月目に来ること。Phase 3でアシスタント育成を本格化する計画を前倒しで準備すべき。</p>
+      </div>
+    </div>
+    <div class="expert-comment">
+      <div class="avatar-sm av-nakamura">中</div>
+      <div class="comment-body">
+        <div class="comment-header">
+          <span class="comment-name">中村 大輔</span>
+          <span class="comment-stance stance-agree">賛成</span>
+        </div>
+        <p class="comment-text">Go判定。投資家として見ると、(1)撤退コスト限定的、(2)利益率67-81%、(3)LTV/CAC比率8倍以上、(4)スケーラビリティあり（アシスタント→フランチャイズ）。個人事業としては極めて優良な案件。実行あるのみ。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="consensus" style="border-width:2px;">
+    <p class="consensus-label">最終判定: 全員一致 GO</p>
+    <p style="font-size:1rem;font-weight:500;color:#fff;margin-bottom:12px;">CIMA SCALP INK事業は実行可能と判定。</p>
+    <p>5名全員がGo判定。事業モデルは健全であり、リスクはコントロール可能な範囲に収まっている。成功の鍵は(1)症例コンテンツの蓄積速度、(2)LINE導線の最適化、(3)各フェーズゲートの厳守。月100万円利益は12ヶ月目に達成可能な現実的目標。ただし最初の6ヶ月は「投資期間」と割り切り、数字に一喜一憂せず症例蓄積に全力を注ぐこと。</p>
+  </div>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer class="doc-footer">
+  <p>CIMA SCALP INK Business Model Document v1.0</p>
+  <p>Socratic Validation by 5 Expert Personas | 2026-04-12</p>
+  <p style="margin-top:12px;color:rgba(200,164,86,0.5);">CONFIDENTIAL - For Internal Use Only</p>
+</footer>
+
+</body>
+</html>

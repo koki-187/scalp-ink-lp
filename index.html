@@ -552,7 +552,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
     "streetAddress": "野嵩2-34-3 2002y 202号室",
     "addressLocality": "宜野湾市",
     "addressRegion": "沖縄県",
-    "postalCode": "901-2203",
+    "postalCode": "901-2223",
     "addressCountry": "JP"
   },
   "geo": {
@@ -564,9 +564,9 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
   "priceRange": "¥3,000〜",
   "openingHoursSpecification": {
     "@type": "OpeningHoursSpecification",
-    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
     "opens": "10:00",
-    "closes": "20:00"
+    "closes": "19:00"
   },
   "sameAs": [
     "https://line.me/R/ti/p/@045ovoxr",
@@ -1251,7 +1251,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
       <div class="faq-item rv d2"><button class="faq-q" onclick="tFaq(this)">料金プランについて教えてください<span class="faq-ic">+</span></button><div class="faq-a"><p>体験施術¥3,000（3,000ドット）から、全頭ライト¥30,000・スタンダード¥40,000・ヘビー¥50,000の4プランをご用意しています。1ドット=1円の明朗会計で、施術機械が自動カウントします。</p></div></div>
       <div class="faq-item rv"><button class="faq-q" onclick="tFaq(this)">傷跡にも対応できますか？<span class="faq-ic">+</span></button><div class="faq-a"><p>はい、傷跡のカバーも得意施術の一つです。まずはカウンセリングでご相談ください。</p></div></div>
       <div class="faq-item rv d1"><button class="faq-q" onclick="tFaq(this)">施術後のケアは？<span class="faq-ic">+</span></button><div class="faq-a"><p>施術後1週間は激しい運動・サウナ・直射日光を避けていただくことをお勧めします。</p></div></div>
-      <div class="faq-item rv d2"><button class="faq-q" onclick="tFaq(this)">紹介制度について教えてください<span class="faq-ic">+</span></button><div class="faq-a"><p>ご紹介いただいた方が予約完了した場合、紹介者の方に5,000ドット（5,000円分）をプレゼントいたします。</p></div></div>
+      <div class="faq-item rv d2"><button class="faq-q" onclick="tFaq(this)">紹介制度について教えてください<span class="faq-ic">+</span></button><div class="faq-a"><p>ご紹介いただいた方が予約完了した場合、紹介者様・被紹介者様の双方に5,000ドット（5,000円分）をプレゼントいたします（有効期限12ヶ月）。</p></div></div>
     </div>
   </div>
 </section>
@@ -2734,7 +2734,7 @@ function showBAResult(beforeDataURL, claudeText) {
       treatment_plan: textDots > 0 ? { total_dots: textDots } : {},
       _syntheticFromText: true
     };
-    console.log('[SMP] JSON未返却 → 合成:', { condType, textDots, usingAutoBase: textDots === 0 });
+    // 診断合成: JSON未返却時のフォールバック処理（本番ログ抑制）
   }
   const frame = document.getElementById('baResultFrame');
   const beforeImg = document.getElementById('baBeforeImg');
