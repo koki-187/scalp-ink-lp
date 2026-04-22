@@ -84,14 +84,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:15px 44px;
 }
 .hero-bg{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;}
 .hero-bg video{
-  /* 数学的フルカバー: ビューポートの幅・高さどちらが大きくても完全にカバー */
+  /* 全デバイス対応フルカバー: 親要素(.hero-bg = #hero全体)を確実に覆う */
   position:absolute;
-  top:50%;left:50%;
-  width:100vw;height:56.25vw;   /* 16:9: width=100vw → height=56.25vw */
-  min-height:100%;min-width:177.78vh; /* height=100vh → width=177.78vh */
-  transform:translate(-50%,-50%);
-  -webkit-transform:translate(-50%,-50%);
+  top:0;left:0;
+  width:100%;height:100%;
   object-fit:cover;
+  object-position:center;
   filter:brightness(0.45);
   -webkit-filter:brightness(0.45);
   z-index:0;
@@ -963,8 +961,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <canvas id="capCv"></canvas>
         <!-- 黄色ペン描画オーバーレイ -->
         <canvas id="drawingCanvas" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;z-index:5;cursor:crosshair;touch-action:none;"></canvas>
-        <!-- iOS/Android native camera capture (hidden) -->
-        <input type="file" accept="image/*" capture="environment" id="camCapture" style="display:none;" onchange="handleUp(event)">
+        <!-- iOS/Android native camera capture (iOS対応: display:noneを避け視覚的に非表示) -->
+        <input type="file" accept="image/*" capture="environment" id="camCapture" style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;" onchange="handleUp(event)">
       </div>
       <div class="sim-ctrls">
         <!-- Desktop camera controls (shown only during getUserMedia) -->
@@ -1248,7 +1246,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
   <div class="s-in">
     <div class="faq-hd rv"><span class="s-lbl">FAQ</span><h2 class="s-ttl">よくあるご質問</h2><div class="g-line"></div></div>
     <div class="faq-list">
-      <div class="faq-item rv"><button class="faq-q" onclick="tFaq(this)">痛みはありますか？<span class="faq-ic">+</span></button><div class="faq-a"><p>個人差はありますが、一般的には軽微なチクチク感程度です。麻酔クリームの使用についてはカウンセリング時にご相談ください。</p></div></div>
+      <div class="faq-item rv"><button class="faq-q" onclick="tFaq(this)">痛みはありますか？<span class="faq-ic">+</span></button><div class="faq-a"><p>個人差はありますが、一般的には軽微なチクチク感程度です。気になる箇所があればカウンセリング時にご相談ください。</p></div></div>
       <div class="faq-item rv d1"><button class="faq-q" onclick="tFaq(this)">何回通えば完成しますか？<span class="faq-ic">+</span></button><div class="faq-a"><p>お肌の定着率によって異なりますが、最高の仕上がりには2〜3回をお勧めしています。</p></div></div>
       <div class="faq-item rv d2"><button class="faq-q" onclick="tFaq(this)">料金プランについて教えてください<span class="faq-ic">+</span></button><div class="faq-a"><p>体験施術¥3,000（3,000ドット）から、全頭ライト¥30,000・スタンダード¥40,000・ヘビー¥50,000の4プランをご用意しています。1ドット=1円の明朗会計で、施術機械が自動カウントします。</p></div></div>
       <div class="faq-item rv"><button class="faq-q" onclick="tFaq(this)">傷跡にも対応できますか？<span class="faq-ic">+</span></button><div class="faq-a"><p>はい、傷跡のカバーも得意施術の一つです。まずはカウンセリングでご相談ください。</p></div></div>
