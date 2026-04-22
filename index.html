@@ -3575,8 +3575,11 @@ function resetSim() {
   vid.addEventListener('loadedmetadata', showVideo);
   vid.addEventListener('loadeddata', function() { if (vid.readyState >= 2) showVideo(); });
   vid.addEventListener('timeupdate', function() { if (vid.currentTime > 0) showVideo(); });
-  // エラー時はフォールバック画像のまま（グレースフルデグラデーション）
-  vid.addEventListener('error', function() { vid.style.display = 'none'; });
+  // エラー時はフォールバック画像のまま（display:noneで0x0化を避け、visibility+opacityで隠す）
+  vid.addEventListener('error', function() {
+    vid.style.visibility = 'hidden';
+    if (bgImg) bgImg.style.opacity = '1';
+  });
   // 即座に再生可能なら表示（ブラウザキャッシュ対応）
   if (vid.readyState >= 2) showVideo();
   // 自動再生トリガー（全OS共通）
@@ -3599,10 +3602,10 @@ function resetSim() {
   // フォールバック: 4秒後に動画が少しでもロードされていれば表示
   setTimeout(function() {
     if (!shown && vid.readyState >= 1) showVideo();
-    // 8秒後: 何も起きなければ動画を諦めてフォールバック画像を確実表示
+    // 8秒後: 何も起きなければフォールバック画像を確実表示（動画は裏で待機）
     setTimeout(function() {
       if (!shown && vid.readyState < 1) {
-        vid.style.display = 'none';
+        vid.style.visibility = 'hidden';
         if (bgImg) bgImg.style.opacity = '1';
       }
     }, 4000);

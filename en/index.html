@@ -3463,7 +3463,7 @@ function resetSim() {
   vid.addEventListener('loadedmetadata', showVideo);
   vid.addEventListener('loadeddata', function() { if (vid.readyState >= 2) showVideo(); });
   vid.addEventListener('timeupdate', function() { if (vid.currentTime > 0) showVideo(); });
-  vid.addEventListener('error', function() { vid.style.display = 'none'; });
+  vid.addEventListener('error', function() { vid.style.visibility = 'hidden'; if (bgImg) bgImg.style.opacity = '1'; });
   if (vid.readyState >= 2) showVideo();
   const playPromise = vid.play();
   if (playPromise !== undefined) {
@@ -3483,7 +3483,7 @@ function resetSim() {
     if (!shown && vid.readyState >= 1) showVideo();
     setTimeout(function() {
       if (!shown && vid.readyState < 1) {
-        vid.style.display = 'none';
+        vid.style.visibility = 'hidden';
         if (bgImg) bgImg.style.opacity = '1';
       }
     }, 4000);
