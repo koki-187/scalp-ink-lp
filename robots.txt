@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /status-report.html
 
 Sitemap: https://cima-scalpink.com/sitemap.xml
