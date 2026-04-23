@@ -3,7 +3,7 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://cima-scalpink.com/</loc>
-    <lastmod>2026-04-22</lastmod>
+    <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/"/>
@@ -12,43 +12,11 @@
   </url>
   <url>
     <loc>https://cima-scalpink.com/en/</loc>
-    <lastmod>2026-04-22</lastmod>
+    <lastmod>2026-04-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://cima-scalpink.com/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://cima-scalpink.com/"/>
-  </url>
-  <url>
-    <loc>https://cima-scalpink.com/privacy-policy.html</loc>
-    <lastmod>2026-04-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/privacy-policy.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cima-scalpink.com/en/privacy-policy.html"/>
-  </url>
-  <url>
-    <loc>https://cima-scalpink.com/tokushoho.html</loc>
-    <lastmod>2026-04-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/tokushoho.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cima-scalpink.com/en/tokushoho.html"/>
-  </url>
-  <url>
-    <loc>https://cima-scalpink.com/en/privacy-policy.html</loc>
-    <lastmod>2026-04-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.2</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/privacy-policy.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cima-scalpink.com/en/privacy-policy.html"/>
-  </url>
-  <url>
-    <loc>https://cima-scalpink.com/en/tokushoho.html</loc>
-    <lastmod>2026-04-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.2</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/tokushoho.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://cima-scalpink.com/en/tokushoho.html"/>
   </url>
 </urlset>

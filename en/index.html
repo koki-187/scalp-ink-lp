@@ -16,10 +16,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#080808">
 <meta name="format-detection" content="telephone=no">
-<title>THE SCALP INK | Scalp Ink by CIMA</title>
-<meta name="description" content="Latest technology from Korea! Color your scalp! Instant results! THE SCALP INK by CIMA. Transparent pricing: 1 dot = ¥1. Trial session from ¥3,000. Full-head plans from ¥30,000.">
-<meta property="og:title" content="THE SCALP INK | Scalp Ink by CIMA">
-<meta property="og:description" content="Korean-origin SMP technology. Transparent pricing: 1 dot = ¥1. Trial session ¥3,000. Full-head plans from ¥30,000.">
+<title>SMP / Scalp Micropigmentation | Hair Loss, Hairline & Scar Cover | THE SCALP INK by CIMA (Tokyo & Okinawa)</title>
+<meta name="description" content="Korean-origin SMP (Scalp Micropigmentation) specialist in Tokyo & Okinawa. Hair loss, receding hairline, scar & alopecia coverage. Transparent pricing: 1 dot = ¥1. Trial from ¥3,000. Free consultation available.">
+<meta name="keywords" content="SMP,Scalp Micropigmentation,hair loss,hairline,scar cover,alopecia,Tokyo,Okinawa,trial">
+<meta property="og:title" content="SMP / Scalp Micropigmentation | THE SCALP INK by CIMA (Tokyo & Okinawa)">
+<meta property="og:description" content="Korean-origin SMP specialist. Hair loss, hairline & scar cover. Transparent pricing. Tokyo/Okinawa, trial from ¥3,000.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cima-scalpink.com/en/">
 <meta property="og:image" content="https://cima-scalpink.com/assets/ogp.png">
@@ -34,6 +35,9 @@
 <link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/">
 <link rel="alternate" hreflang="en" href="https://cima-scalpink.com/en/">
 <link rel="alternate" hreflang="x-default" href="https://cima-scalpink.com/">
+<link rel="preload" as="image" href="../assets/hero-fallback.jpg" fetchpriority="high">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://gemini-proxy.navigator-187.workers.dev" crossorigin>
 <link rel="icon" type="image/x-icon" href="../favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="../assets/favicon-192.png">
@@ -537,26 +541,54 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "THE SCALP INK by CIMA",
-  "description": "Korean-origin SMP (Scalp Micropigmentation) specialist. Transparent pricing: 1 dot = 1 yen.",
-  "url": "https://cima-scalpink.com/en/",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "Tokyo / Okinawa",
-    "addressCountry": "JP"
-  },
-  "image": "https://cima-scalpink.com/assets/ogp.png",
-  "priceRange": "¥3,000~",
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-    "opens": "10:00",
-    "closes": "19:00"
-  },
-  "sameAs": [
-    "https://line.me/R/ti/p/@045ovoxr",
-    "https://www.instagram.com/cima88_inkwork"
+  "@graph": [
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://cima-scalpink.com/en/#business",
+      "name": "THE SCALP INK by CIMA",
+      "description": "Korean-origin SMP (Scalp Micropigmentation) specialist in Tokyo & Okinawa. Hair loss, hairline & scar coverage.",
+      "url": "https://cima-scalpink.com/en/",
+      "image": "https://cima-scalpink.com/assets/ogp.png",
+      "priceRange": "¥3,000~",
+      "areaServed": [
+        {"@type":"City","name":"Tokyo"},
+        {"@type":"City","name":"Ginowan, Okinawa"}
+      ],
+      "address": {"@type":"PostalAddress","addressCountry":"JP"},
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+        "opens": "10:00",
+        "closes": "19:00"
+      },
+      "sameAs": [
+        "https://line.me/R/ti/p/@045ovoxr",
+        "https://www.instagram.com/cima88_inkwork"
+      ],
+      "makesOffer": [
+        {"@type":"Offer","name":"Trial Session (3,000 dots)","price":"3000","priceCurrency":"JPY","availability":"https://schema.org/InStock"},
+        {"@type":"Offer","name":"Full-Head Light (~30,000 dots)","price":"30000","priceCurrency":"JPY","availability":"https://schema.org/InStock"},
+        {"@type":"Offer","name":"Full-Head Standard (~40,000 dots)","price":"40000","priceCurrency":"JPY","availability":"https://schema.org/InStock"},
+        {"@type":"Offer","name":"Full-Head Heavy (~50,000 dots)","price":"50000","priceCurrency":"JPY","availability":"https://schema.org/InStock"},
+        {"@type":"Offer","name":"Spot / Scar Cover","price":"9800","priceCurrency":"JPY","availability":"https://schema.org/InStock"}
+      ]
+    },
+    {
+      "@type": "Service",
+      "serviceType": "Scalp Micropigmentation (SMP)",
+      "provider": {"@id":"https://cima-scalpink.com/en/#business"},
+      "areaServed": ["Tokyo","Okinawa"],
+      "description": "SMP treatment for hair loss, receding hairline, scars and alopecia using Korean cutting-edge technique."
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type":"Question","name":"Is it painful?","acceptedAnswer":{"@type":"Answer","text":"Individual experiences vary, but most clients feel only a mild prickling sensation. Please feel free to discuss any concerns during your consultation."}},
+        {"@type":"Question","name":"How many sessions are needed?","acceptedAnswer":{"@type":"Answer","text":"It varies based on your skin's retention rate, but we typically recommend 2-3 sessions for optimal results."}},
+        {"@type":"Question","name":"What about pricing plans?","acceptedAnswer":{"@type":"Answer","text":"We offer 4 plans from the ¥3,000 trial (3,000 dots) to Full-Head Light ¥30,000, Standard ¥40,000, and Heavy ¥50,000. Transparent pricing at 1 dot = ¥1, counted automatically by our machine."}},
+        {"@type":"Question","name":"Can you cover scars?","acceptedAnswer":{"@type":"Answer","text":"Yes, scar coverage is one of our specialties. Please consult with us first."}}
+      ]
+    }
   ]
 }
 </script>

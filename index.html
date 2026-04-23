@@ -16,10 +16,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#080808">
 <meta name="format-detection" content="telephone=no">
-<title>THE SCALP INK | スカルプインク by CIMA</title>
-<meta name="description" content="韓国発の最新技術！頭皮にカラー！驚きの即効性！THE SCALP INK by CIMA。1ドット=1円の明朗会計。全頭30,000発〜。体験¥3,000から。">
-<meta property="og:title" content="THE SCALP INK | スカルプインク by CIMA">
-<meta property="og:description" content="韓国発SMP技術。1ドット=1円の明朗会計。全頭30,000発〜。体験¥3,000から。">
+<title>SMP・頭皮アートメイク｜薄毛/生え際/傷跡カバー｜THE SCALP INK by CIMA（東京・沖縄）</title>
+<meta name="description" content="韓国発SMP（スカルプマイクロピグメンテーション）専門店。薄毛・生え際後退・傷跡・円形脱毛に1ドット1円の明朗会計で対応。東京・沖縄2拠点、体験施術¥3,000から。無料カウンセリング受付中。">
+<meta name="keywords" content="SMP,スカルプマイクロピグメンテーション,薄毛,生え際,M字,頭皮アートメイク,傷跡カバー,円形脱毛,沖縄,東京,体験施術">
+<meta property="og:title" content="SMP・頭皮アートメイク｜THE SCALP INK by CIMA（東京・沖縄）">
+<meta property="og:description" content="韓国発SMP専門。薄毛・生え際・傷跡に1ドット1円の明朗会計。東京/沖縄2拠点、体験¥3,000〜。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cima-scalpink.com/">
 <meta property="og:image" content="https://cima-scalpink.com/assets/ogp.png">
@@ -34,6 +35,9 @@
 <link rel="alternate" hreflang="ja" href="https://cima-scalpink.com/">
 <link rel="alternate" hreflang="en" href="https://cima-scalpink.com/en/">
 <link rel="alternate" hreflang="x-default" href="https://cima-scalpink.com/">
+<link rel="preload" as="image" href="assets/hero-fallback.jpg" fetchpriority="high">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://gemini-proxy.navigator-187.workers.dev" crossorigin>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png">
@@ -541,27 +545,57 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "THE SCALP INK by CIMA",
-  "alternateName": "スカルプインク by シーマ",
-  "description": "韓国発SMP（スカルプマイクロピグメンテーション）技術による頭皮アートメイク専門店。1ドット=1円の明朗会計。",
-  "url": "https://cima-scalpink.com/",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "東京・沖縄",
-    "addressCountry": "JP"
-  },
-  "image": "https://cima-scalpink.com/assets/ogp.png",
-  "priceRange": "¥3,000〜",
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-    "opens": "10:00",
-    "closes": "19:00"
-  },
-  "sameAs": [
-    "https://line.me/R/ti/p/@045ovoxr",
-    "https://www.instagram.com/cima88_inkwork"
+  "@graph": [
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://cima-scalpink.com/#business",
+      "name": "THE SCALP INK by CIMA",
+      "alternateName": "スカルプインク by シーマ",
+      "description": "韓国発SMP（スカルプマイクロピグメンテーション）技術による頭皮アートメイク専門店。薄毛・生え際・傷跡をカバー。1ドット=1円の明朗会計。",
+      "url": "https://cima-scalpink.com/",
+      "image": "https://cima-scalpink.com/assets/ogp.png",
+      "priceRange": "¥3,000〜",
+      "areaServed": [
+        {"@type":"City","name":"東京都"},
+        {"@type":"City","name":"沖縄県宜野湾市"}
+      ],
+      "address": {"@type":"PostalAddress","addressCountry":"JP"},
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+        "opens": "10:00",
+        "closes": "19:00"
+      },
+      "sameAs": [
+        "https://line.me/R/ti/p/@045ovoxr",
+        "https://www.instagram.com/cima88_inkwork"
+      ],
+      "makesOffer": [
+        {"@type":"Offer","name":"体験施術（3,000ドット）","price":"3000","priceCurrency":"JPY","availability":"https://schema.org/InStock"},
+        {"@type":"Offer","name":"全頭ライト（〜30,000ドット）","price":"30000","priceCurrency":"JPY","availability":"https://schema.org/InStock"},
+        {"@type":"Offer","name":"全頭スタンダード（〜40,000ドット）","price":"40000","priceCurrency":"JPY","availability":"https://schema.org/InStock"},
+        {"@type":"Offer","name":"全頭ヘビー（〜50,000ドット）","price":"50000","priceCurrency":"JPY","availability":"https://schema.org/InStock"},
+        {"@type":"Offer","name":"スポット補修・傷跡カバー","price":"9800","priceCurrency":"JPY","availability":"https://schema.org/InStock"}
+      ]
+    },
+    {
+      "@type": "Service",
+      "serviceType": "スカルプマイクロピグメンテーション（SMP）",
+      "provider": {"@id":"https://cima-scalpink.com/#business"},
+      "areaServed": ["東京都","沖縄県"],
+      "description": "薄毛・生え際後退・傷跡・円形脱毛に対応するSMP施術。韓国発の最新技術。"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type":"Question","name":"痛みはありますか？","acceptedAnswer":{"@type":"Answer","text":"個人差はありますが、一般的には軽微なチクチク感程度です。気になる箇所があればカウンセリング時にご相談ください。"}},
+        {"@type":"Question","name":"何回通えば完成しますか？","acceptedAnswer":{"@type":"Answer","text":"お肌の定着率によって異なりますが、最高の仕上がりには2〜3回をお勧めしています。"}},
+        {"@type":"Question","name":"料金プランについて教えてください","acceptedAnswer":{"@type":"Answer","text":"体験施術¥3,000（3,000ドット）から、全頭ライト¥30,000・スタンダード¥40,000・ヘビー¥50,000の4プランをご用意しています。1ドット=1円の明朗会計で、施術機械が自動カウントします。"}},
+        {"@type":"Question","name":"傷跡にも対応できますか？","acceptedAnswer":{"@type":"Answer","text":"はい、傷跡のカバーも得意施術の一つです。まずはカウンセリングでご相談ください。"}},
+        {"@type":"Question","name":"施術後のケアは？","acceptedAnswer":{"@type":"Answer","text":"施術後1週間は激しい運動・サウナ・直射日光を避けていただくことをお勧めします。"}},
+        {"@type":"Question","name":"紹介制度について教えてください","acceptedAnswer":{"@type":"Answer","text":"ご紹介いただいた方が予約完了した場合、紹介者様・被紹介者様の双方に5,000ドット（5,000円分）をプレゼントいたします（有効期限12ヶ月）。"}}
+      ]
+    }
   ]
 }
 </script>
