@@ -1,0 +1,53 @@
+{
+  "name": "THE SCALP INK by CIMA",
+  "short_name": "SCALP INK",
+  "description": "韓国発SMP（スカルプマイクロピグメンテーション）専門店。薄毛・生え際・傷跡カバー。東京・沖縄。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080808",
+  "theme_color": "#080808",
+  "lang": "ja",
+  "categories": ["health", "beauty", "lifestyle"],
+  "icons": [
+    {
+      "src": "/assets/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "AIシミュレーター",
+      "short_name": "シミュレーター",
+      "url": "/#simulator",
+      "icons": [{"src": "/assets/favicon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "予約・お問い合わせ",
+      "short_name": "予約",
+      "url": "/#booking",
+      "icons": [{"src": "/assets/favicon-192.png", "sizes": "192x192"}]
+    }
+  ]
+}
