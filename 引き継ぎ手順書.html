@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>THE SCALP INK by CIMA — システム引き継ぎ手順書</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap');
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 8.8pt;
+  line-height: 1.45;
+  color: #1a1a1a;
+  background: #f3f1ea;
+}
+
+.page {
+  width: 210mm;
+  height: 297mm;
+  background: #fff;
+  margin: 0 auto;
+  padding: 10mm 12mm;
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  display: flex;
+  flex-direction: column;
+}
+
+.page:last-child { page-break-after: auto; }
+
+/* ===== Cover Page ===== */
+.cover {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2316 100%);
+  color: #f3f1ea;
+  justify-content: space-between;
+  padding: 22mm 18mm;
+}
+.cover-top { text-align: center; }
+.cover-brand { font-size: 11pt; letter-spacing: .35em; color: #C9A84C; font-weight: 300; margin-bottom: 6mm; }
+.cover-title { font-size: 26pt; font-weight: 900; letter-spacing: .04em; line-height: 1.25; margin-bottom: 4mm; }
+.cover-title span { color: #C9A84C; }
+.cover-sub { font-size: 11pt; color: rgba(243,241,234,.65); letter-spacing: .08em; }
+.cover-mid { display: flex; justify-content: center; align-items: center; }
+.cover-emblem {
+  width: 70mm; height: 70mm;
+  border: 2px solid #C9A84C;
+  border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative;
+}
+.cover-emblem::before {
+  content: ""; position: absolute; inset: 6mm;
+  border: 1px solid rgba(201,168,76,.35);
+  border-radius: 50%;
+}
+.cover-emblem-num { font-size: 38pt; font-weight: 900; color: #C9A84C; line-height: 1; }
+.cover-emblem-lbl { font-size: 8pt; letter-spacing: .25em; color: rgba(243,241,234,.7); margin-top: 3mm; }
+.cover-bottom { font-size: 8.5pt; line-height: 1.9; color: rgba(243,241,234,.75); border-top: 1px solid rgba(201,168,76,.3); padding-top: 5mm; }
+.cover-bottom strong { color: #C9A84C; font-weight: 500; }
+.cover-bottom .row { display: flex; justify-content: space-between; margin: 1mm 0; }
+
+/* ===== Section Header ===== */
+.section-header {
+  display: flex; align-items: center; gap: 4mm;
+  padding-bottom: 2.5mm; margin-bottom: 4mm;
+  border-bottom: 2px solid #C9A84C;
+}
+.section-num {
+  width: 12mm; height: 12mm;
+  background: linear-gradient(135deg, #C9A84C 0%, #8a6f2a 100%);
+  color: #fff; font-size: 14pt; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.section-title { font-size: 16pt; font-weight: 700; color: #1a1a1a; }
+.section-title small { display: block; font-size: 8.5pt; font-weight: 400; color: #888; letter-spacing: .08em; margin-top: 1mm; }
+
+h2 { font-size: 10pt; font-weight: 700; color: #C9A84C; margin: 3mm 0 1.5mm; padding-left: 2mm; border-left: 3px solid #C9A84C; }
+h3 { font-size: 9pt; font-weight: 600; color: #1a1a1a; margin: 2mm 0 1mm; }
+p { margin-bottom: 1.5mm; }
+ul, ol { margin: 1mm 0 1.5mm 5mm; }
+li { margin-bottom: 0.5mm; }
+
+/* ===== Boxes ===== */
+.box {
+  border: 1px solid #d8d3c2;
+  background: #faf8f1;
+  padding: 3mm 4mm;
+  border-radius: 1.5mm;
+  margin: 2mm 0;
+}
+.box.gold { background: linear-gradient(135deg,#fdfaef,#f8f2dc); border-color: #C9A84C; }
+.box.warn { background: #fdf4e6; border-color: #d99b3a; }
+.box.danger { background: #fce8e6; border-color: #c93a3a; }
+.box.tip { background: #e8f3fc; border-color: #3a7bc9; }
+.box-title { font-size: 9pt; font-weight: 700; margin-bottom: 1.5mm; display: flex; align-items: center; gap: 2mm; }
+.box.gold .box-title { color: #8a6f2a; }
+.box.warn .box-title { color: #8a5a14; }
+.box.danger .box-title { color: #8a1414; }
+.box.tip .box-title { color: #1a4a8a; }
+.icon-sq { width: 5mm; height: 5mm; background: currentColor; color: #fff; font-size: 7pt; display:inline-flex; align-items:center; justify-content:center; border-radius:1mm; font-weight: 700; }
+
+/* ===== Tables ===== */
+table { width: 100%; border-collapse: collapse; margin: 2mm 0; font-size: 8.5pt; }
+table th { background: #1a1a1a; color: #C9A84C; padding: 1.5mm 2mm; text-align: left; font-weight: 500; letter-spacing: .04em; }
+table td { padding: 1.5mm 2mm; border-bottom: 1px solid #e0dbc8; vertical-align: top; }
+table tr:nth-child(even) td { background: #faf8f1; }
+
+/* ===== Step blocks ===== */
+.step {
+  display: flex; gap: 2.5mm; margin: 1.5mm 0;
+  padding: 1.8mm 2.5mm; background: #fff; border: 1px solid #e0dbc8; border-radius: 1.5mm;
+}
+.step-no {
+  flex-shrink: 0; width: 6.5mm; height: 6.5mm; background: #C9A84C; color: #fff;
+  display: flex; align-items: center; justify-content: center; font-weight: 700; border-radius: 50%; font-size: 8pt;
+}
+.step-body { flex: 1; font-size: 8pt; line-height: 1.4; }
+.step-body strong { color: #1a1a1a; }
+
+/* ===== Flowchart SVG container ===== */
+.flowchart { display: flex; justify-content: center; margin: 3mm 0; }
+
+/* ===== Comparison cards ===== */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin: 3mm 0; }
+.compare-card { padding: 3mm; border-radius: 2mm; font-size: 8pt; }
+.compare-bad { background: #fce8e6; border: 1px solid #c93a3a; }
+.compare-good { background: #e6f4e9; border: 1px solid #3a8a44; }
+.compare-title { font-weight: 700; margin-bottom: 2mm; font-size: 9pt; }
+
+/* ===== Checklist ===== */
+.checklist li { list-style: none; padding-left: 6mm; position: relative; margin-bottom: 1.5mm; font-size: 8.5pt; }
+.checklist li::before { content: "☐"; position: absolute; left: 0; font-size: 11pt; color: #C9A84C; top: -1mm; }
+
+/* ===== Footer ===== */
+.page-footer {
+  position: absolute; bottom: 6mm; left: 14mm; right: 14mm;
+  font-size: 7pt; color: #999; display: flex; justify-content: space-between;
+  border-top: 1px solid #e0dbc8; padding-top: 1.5mm;
+}
+
+/* ===== Highlight ===== */
+.hl { background: linear-gradient(transparent 60%, #fbe7a8 60%); font-weight: 500; }
+.code { font-family: 'Consolas','Courier New',monospace; background: #f0ede1; padding: 0 1mm; border-radius: 0.5mm; font-size: 8.5pt; color: #5a4710; }
+
+/* ===== Two column layout ===== */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+
+/* ===== Pillar / Phase boxes ===== */
+.phase-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2mm; margin: 3mm 0; }
+.phase-card {
+  background: linear-gradient(180deg,#fdfaef,#f3edd6);
+  border: 1px solid #C9A84C;
+  border-radius: 2mm; padding: 3mm 2mm; text-align: center;
+}
+.phase-card-num { font-size: 14pt; font-weight: 900; color: #C9A84C; line-height: 1; }
+.phase-card-lbl { font-size: 7.5pt; font-weight: 600; margin: 1.5mm 0; }
+.phase-card-time { font-size: 7pt; color: #888; }
+
+/* Print specific */
+@media print {
+  body { background: #fff; }
+  .page { box-shadow: none; margin: 0; }
+}
+
+/* Screen preview shadow */
+@media screen {
+  body { padding: 20px 0; }
+  .page { box-shadow: 0 4px 20px rgba(0,0,0,.15); margin-bottom: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Page 1: Cover ===== -->
+<div class="page cover">
+  <div class="cover-top">
+    <div class="cover-brand">THE SCALP INK by CIMA</div>
+    <div class="cover-title">システム<span>引き継ぎ</span>手順書</div>
+    <div class="cover-sub">SYSTEM HANDOVER GUIDE — for non-technical operator</div>
+  </div>
+  <div class="cover-mid">
+    <div class="cover-emblem">
+      <div class="cover-emblem-num">4</div>
+      <div class="cover-emblem-lbl">PHASES</div>
+    </div>
+  </div>
+  <div class="cover-bottom">
+    <div class="row"><span><strong>対象</strong></span><span>LP 運用ご担当者様</span></div>
+    <div class="row"><span><strong>目的</strong></span><span>サイト・予約・分析・SNS の自立運用</span></div>
+    <div class="row"><span><strong>完了想定</strong></span><span>1日（約6時間）+ 段階離脱（3ヶ月）</span></div>
+    <div class="row"><span><strong>本書発行</strong></span><span>2026年4月23日 / 制作: 開発担当</span></div>
+    <div class="row"><span><strong>サイトURL</strong></span><span>https://cima-scalpink.com/</span></div>
+  </div>
+</div>
+
+<!-- ===== Page 2: Big Picture & Phases ===== -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">0</div>
+    <div class="section-title">全体像と引き継ぎ4フェーズ<small>WHY THIS GUIDE — そして3つの理念</small></div>
+  </div>
+
+  <h2>本引き継ぎが目指すもの</h2>
+  <div class="box gold">
+    <p><strong>目的: 「自立」</strong> — クライアント様ご自身で<span class="hl">サイト編集・予約対応・分析・SNS運用</span>のすべてを完結できる状態へ。</p>
+    <p style="margin-top:1.5mm;">そのために <strong>AI アシスタント（Claude）が常時クライアント様の隣にいる</strong>環境を構築します。困った時はいつでも日本語で相談でき、過去の運用ルール・コード構造・トラブル対応をすべて記憶した状態で待機します。</p>
+  </div>
+
+  <h2>システム全体構成図</h2>
+  <div class="flowchart">
+    <svg width="180mm" height="68mm" viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#E8C968"/><stop offset="100%" stop-color="#8a6f2a"/>
+        </linearGradient>
+      </defs>
+      <!-- Center: site -->
+      <rect x="280" y="100" width="160" height="70" rx="8" fill="url(#gold)" stroke="#5a4710" stroke-width="2"/>
+      <text x="360" y="130" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">cima-scalpink.com</text>
+      <text x="360" y="150" text-anchor="middle" font-size="11" fill="#fff" opacity="0.9">本番LP（Cloudflare Pages）</text>
+
+      <!-- Top: GitHub -->
+      <rect x="280" y="10" width="160" height="50" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+      <text x="360" y="32" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a1a">GitHub リポジトリ</text>
+      <text x="360" y="48" text-anchor="middle" font-size="9" fill="#666">push → 自動デプロイ</text>
+      <line x1="360" y1="60" x2="360" y2="100" stroke="#C9A84C" stroke-width="2" marker-end="url(#arrow)"/>
+
+      <!-- Left: Apps Script -->
+      <rect x="20" y="100" width="220" height="70" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+      <text x="130" y="125" text-anchor="middle" font-size="12" font-weight="700" fill="#1a1a1a">予約フォーム連携</text>
+      <text x="130" y="143" text-anchor="middle" font-size="9" fill="#666">Apps Script → Sheet</text>
+      <text x="130" y="158" text-anchor="middle" font-size="9" fill="#666">+ メール通知</text>
+      <line x1="240" y1="135" x2="280" y2="135" stroke="#C9A84C" stroke-width="2"/>
+
+      <!-- Right: Claude AI -->
+      <rect x="480" y="100" width="220" height="70" rx="6" fill="#1a1a1a" stroke="#C9A84C" stroke-width="2"/>
+      <text x="590" y="125" text-anchor="middle" font-size="12" font-weight="700" fill="#C9A84C">Claude.ai アシスタント</text>
+      <text x="590" y="143" text-anchor="middle" font-size="9" fill="#fff" opacity="0.85">24時間相談可能</text>
+      <text x="590" y="158" text-anchor="middle" font-size="9" fill="#fff" opacity="0.85">過去の知識を全保持</text>
+      <line x1="440" y1="135" x2="480" y2="135" stroke="#C9A84C" stroke-width="2"/>
+
+      <!-- Bottom: LINE, Instagram, GA4 -->
+      <rect x="60" y="200" width="160" height="50" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+      <text x="140" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1a1a">LINE公式 @045ovoxr</text>
+      <text x="140" y="238" text-anchor="middle" font-size="8" fill="#666">予約・お問合せ</text>
+
+      <rect x="270" y="200" width="180" height="50" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+      <text x="360" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1a1a">Instagram @cima88_inkwork</text>
+      <text x="360" y="238" text-anchor="middle" font-size="8" fill="#666">事例投稿・DM予約</text>
+
+      <rect x="500" y="200" width="160" height="50" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+      <text x="580" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#1a1a1a">GA4 + Search Console</text>
+      <text x="580" y="238" text-anchor="middle" font-size="8" fill="#666">アクセス分析</text>
+
+      <line x1="360" y1="170" x2="360" y2="200" stroke="#999" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <line x1="140" y1="170" x2="140" y2="200" stroke="#999" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <line x1="580" y1="170" x2="580" y2="200" stroke="#999" stroke-width="1.5" stroke-dasharray="3,3"/>
+    </svg>
+  </div>
+
+  <h2>引き継ぎの4フェーズ</h2>
+  <div class="phase-grid">
+    <div class="phase-card"><div class="phase-card-num">1</div><div class="phase-card-lbl">所有権移管</div><div class="phase-card-time">60〜90分</div></div>
+    <div class="phase-card"><div class="phase-card-num">2</div><div class="phase-card-lbl">AI環境構築</div><div class="phase-card-time">30〜45分</div></div>
+    <div class="phase-card"><div class="phase-card-num">3</div><div class="phase-card-lbl">操作実習</div><div class="phase-card-time">90分</div></div>
+    <div class="phase-card"><div class="phase-card-num">4</div><div class="phase-card-lbl">緊急時準備</div><div class="phase-card-time">30分</div></div>
+  </div>
+
+  <div class="box tip">
+    <div class="box-title"><span class="icon-sq">i</span>なぜ Claude Code（CLI）ではなく Claude.ai を選ぶか</div>
+    <p style="font-size:8pt;">Claude Code（端末操作版）は強力ですが、コマンド操作・インストール・Git知識が必要で、非エンジニアの継続運用には不向きです。Claude.ai（ブラウザ版）は<span class="hl">ブックマーク1つで起動・対話のみ</span>で完結します。月$20でスマホからもアクセス可能。</p>
+  </div>
+
+  <div class="page-footer"><span>引き継ぎ手順書 / Page 2</span><span>THE SCALP INK by CIMA</span></div>
+</div>
+
+<!-- ===== Page 3: Phase 1 - Account Transfer ===== -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">アカウント所有権の移管<small>PHASE 1 — 60〜90分 / 画面共有しながら</small></div>
+  </div>
+
+  <h2>移管対象アカウント一覧</h2>
+  <table>
+    <tr><th width="22%">サービス</th><th width="36%">現状</th><th width="42%">移管後</th></tr>
+    <tr><td>GitHub リポジトリ</td><td>koki-187 所有</td><td>クライアント様 (Owner) + 旧開発者 (Collaborator)</td></tr>
+    <tr><td>Cloudflare Pages</td><td>開発者管理</td><td>クライアント様アカウント (Team招待)</td></tr>
+    <tr><td>Google アカウント</td><td>cimascalp.lp@gmail.com</td><td>そのまま継続 (既にクライアント様所有)</td></tr>
+    <tr><td>Apps Script / Sheet</td><td>cimascalp.lp 所有</td><td>そのまま継続</td></tr>
+    <tr><td>GA4 / Search Console</td><td>cimascalp.lp 所有</td><td>そのまま継続</td></tr>
+    <tr><td>LINE公式 @045ovoxr</td><td>共同管理者あり</td><td>クライアント様を主管理者に</td></tr>
+    <tr><td>Instagram @cima88_inkwork</td><td>クライアント様所有</td><td>そのまま継続</td></tr>
+    <tr><td>ドメイン cima-scalpink.com</td><td>登録者: 開発者</td><td>所有権移管 or DNS委任継続</td></tr>
+  </table>
+
+  <h2>GitHub リポジトリ移管手順</h2>
+  <div class="step"><div class="step-no">1</div><div class="step-body">クライアント様の GitHub アカウントを <span class="code">github.com</span> で新規作成（5分・メール認証必須）</div></div>
+  <div class="step"><div class="step-no">2</div><div class="step-body">開発者側で <strong>Settings → Collaborators → Add people</strong> でクライアント様を招待</div></div>
+  <div class="step"><div class="step-no">3</div><div class="step-body">クライアント様メールの招待リンクをクリックして受諾</div></div>
+  <div class="step"><div class="step-no">4</div><div class="step-body">開発者側で <strong>Settings → General → Transfer ownership</strong> → クライアント様のユーザー名を入力 → 移管</div></div>
+  <div class="step"><div class="step-no">5</div><div class="step-body">移管後、開発者は <strong>Collaborator</strong> として残留（緊急対応用）</div></div>
+
+  <h2>パスワード一元管理: Bitwarden 導入</h2>
+  <div class="box gold">
+    <div class="box-title"><span class="icon-sq">★</span>すべての認証情報を <span class="code">Bitwarden Free</span> に集約</div>
+    <p style="font-size:8.5pt;">無料・日本語対応・スマホ＆PC同期。マスターパスワード1つで全アカウント管理。</p>
+    <ol style="font-size:8.5pt;margin-top:1.5mm;">
+      <li><span class="code">bitwarden.com</span> で無料アカウント作成（cimascalp.lp@gmail.com 推奨）</li>
+      <li>Chrome 拡張機能をインストール</li>
+      <li>GitHub / Cloudflare / Google / LINE / ドメイン管理 のパスワードを順次保存</li>
+      <li>「緊急連絡先」項目に開発者の連絡先を保存</li>
+    </ol>
+  </div>
+
+  <div class="box danger">
+    <div class="box-title"><span class="icon-sq">!</span>絶対に避けるべきこと</div>
+    <ul style="font-size:8.5pt;">
+      <li>パスワードを<strong>紙やメモ帳</strong>に書く（紛失リスク）</li>
+      <li>パスワードを<strong>ブラウザにだけ保存</strong>する（端末故障で全消失）</li>
+      <li>2段階認証を<strong>SMSのみ</strong>に設定（SIMスワップ攻撃のリスク）→ Google Authenticator 併用推奨</li>
+    </ul>
+  </div>
+
+  <div class="page-footer"><span>Phase 1: Account Transfer / Page 3</span><span>THE SCALP INK by CIMA</span></div>
+</div>
+
+<!-- ===== Page 4: Phase 2 - Claude.ai Setup ===== -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">AI アシスタント環境構築<small>PHASE 2 — 30〜45分 / クライアント様のPCで実施</small></div>
+  </div>
+
+  <h2>Claude.ai Projects とは</h2>
+  <div class="box gold">
+    <p>Anthropic 社が提供する AI チャットサービス（claude.ai）の機能。<span class="hl">特定の業務・プロジェクト専用のAIアシスタント</span>を作成でき、過去のドキュメント・ルール・コードを「Project Knowledge」として登録すると、AIがそれらを常に参照しながら回答します。</p>
+    <p style="margin-top:1.5mm;"><strong>料金:</strong> Claude Pro $20/月（約3,200円）— 月数百回の利用が可能</p>
+  </div>
+
+  <h2>セットアップ手順</h2>
+  <div class="step"><div class="step-no">1</div><div class="step-body"><strong>claude.ai</strong> にアクセス → <span class="code">cimascalp.lp@gmail.com</span> で Sign up → メール認証</div></div>
+  <div class="step"><div class="step-no">2</div><div class="step-body">左下メニュー <strong>「Upgrade Plan」</strong> → Claude Pro を選択 → クレジットカード登録 ($20/月)</div></div>
+  <div class="step"><div class="step-no">3</div><div class="step-body">左メニュー <strong>「Projects」</strong> → <strong>「Create Project」</strong></div></div>
+  <div class="step"><div class="step-no">4</div><div class="step-body">プロジェクト名: <span class="code">CIMA SCALP INK 運用アシスタント</span></div></div>
+  <div class="step"><div class="step-no">5</div><div class="step-body"><strong>Custom Instructions</strong>（カスタム指示）に下記の文章を貼り付け</div></div>
+
+  <div class="box" style="background:#1a1a1a;color:#f3f1ea;font-size:7pt;font-family:Consolas,monospace;line-height:1.45;padding:2mm 3mm;">
+あなたは「THE SCALP INK by CIMA」のLP運用専属アシスタント。ユーザーはサロン経営者で技術知識は限定的。常に日本語の優しい言葉で、クリック箇所・入力内容まで丁寧に案内。サイト: cima-scalpink.com / Repo: github.com/[クライアント様]/scalp-ink-lp / 住所電話非公開（特商法）/ LINE @045ovoxr / IG @cima88_inkwork / 料金1ドット=1円・現金のみ / 東京・沖縄2拠点。
+  </div>
+
+  <div class="step"><div class="step-no">6</div><div class="step-body"><strong>Project Knowledge</strong> セクションに以下のファイルを順次アップロード（ドラッグ&ドロップ可）</div></div>
+
+  <h3>Project Knowledge アップロードファイル</h3>
+  <table>
+    <tr><th width="38%">ファイル名</th><th>役割</th></tr>
+    <tr><td>運用指南書.md</td><td>日常運用マニュアル本体</td></tr>
+    <tr><td>docs/booking-setup.md</td><td>予約フォーム連携の仕組み</td></tr>
+    <tr><td>status-report.html</td><td>構築履歴（コミット履歴付き）</td></tr>
+    <tr><td>LINE公式アカウント設定資料.md</td><td>LINE OAM 設定詳細</td></tr>
+    <tr><td>index.html / en/index.html</td><td>サイト本体コード（参照用）</td></tr>
+    <tr><td>引き継ぎ手順書.html</td><td>本書（引き継ぎ全体像）</td></tr>
+  </table>
+
+  <div class="step"><div class="step-no">7</div><div class="step-body">ブックマーク追加「SCALP INK アシスタント」+ スマホでも claude.ai ホーム画面追加</div></div>
+
+  <div class="box tip">
+    <div class="box-title"><span class="icon-sq">i</span>動作確認テスト</div>
+    <p style="font-size:8pt;">セットアップ完了後、「<span class="hl">料金の体験施術価格を変更したいです、手順を教えて</span>」と質問してみてください。具体的なファイル名・編集箇所・GitHubでの操作方法が回答されれば成功です。</p>
+  </div>
+
+  <div class="page-footer"><span>Phase 2: AI Environment / Page 4</span><span>THE SCALP INK by CIMA</span></div>
+</div>
+
+<!-- ===== Page 5: Phase 3 - Training ===== -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">操作トレーニング（実習）<small>PHASE 3 — 90分 / 実際にやってみる</small></div>
+  </div>
+
+  <h2>トレーニング方針</h2>
+  <div class="box gold">
+    <p><strong>「クライアント様自身が手を動かす」</strong>形式で進めます。開発者はサポートに徹し、つまずいた箇所のみ補助。実際に画面を触ることで体感的に習得できます。</p>
+  </div>
+
+  <h2>実習シナリオ（7パターン）</h2>
+  <table>
+    <tr><th width="6%">#</th><th width="34%">シナリオ</th><th width="60%">実習で身につく操作</th></tr>
+    <tr><td>1</td><td>料金プランの価格を変更する</td><td>GitHub.com で <span class="code">index.html</span> を開く → 鉛筆アイコン → 該当箇所を編集 → Commit → 1〜2分待ってサイト反映確認</td></tr>
+    <tr><td>2</td><td>Before/After 写真を追加する</td><td>GitHub の <span class="code">assets/ba/</span> フォルダを開く → Add file → Upload files → ドラッグ&ドロップ → Commit</td></tr>
+    <tr><td>3</td><td>FAQに新しい質問を追加する</td><td>Claude.ai に「FAQに○○の質問を追加して。回答は××」と依頼 → 提示された手順通り GitHub で編集</td></tr>
+    <tr><td>4</td><td>予約への返信を作成する</td><td>予約管理シートを開く → 内容コピー → Claude に「この方への返信文を作って」と依頼 → LINE/Instagram で送信</td></tr>
+    <tr><td>5</td><td>営業時間を変更する</td><td>Claude に依頼 → 変更すべき6ファイルの一覧と編集箇所が提示される → 順次編集</td></tr>
+    <tr><td>6</td><td>キャンペーン告知を追加する</td><td>Claude に「TOPにキャンペーンバナーを追加したい」と相談 → HTMLとCSS生成 → GitHub に貼り付け</td></tr>
+    <tr><td>7</td><td>月次のアクセス分析確認</td><td>GA4 を開く → レポート → ユーザー → 不明点を Claude に質問</td></tr>
+  </table>
+
+  <h2>GitHub Web Editor の基本操作（必須スキル）</h2>
+  <div class="flowchart">
+    <svg width="180mm" height="40mm" viewBox="0 0 720 160" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="40" width="120" height="80" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+      <text x="70" y="68" text-anchor="middle" font-size="11" font-weight="700">① 開く</text>
+      <text x="70" y="86" text-anchor="middle" font-size="9" fill="#666">github.com</text>
+      <text x="70" y="100" text-anchor="middle" font-size="9" fill="#666">→ scalp-ink-lp</text>
+
+      <rect x="155" y="40" width="120" height="80" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+      <text x="215" y="68" text-anchor="middle" font-size="11" font-weight="700">② 編集</text>
+      <text x="215" y="86" text-anchor="middle" font-size="9" fill="#666">ファイルクリック</text>
+      <text x="215" y="100" text-anchor="middle" font-size="9" fill="#666">→ 鉛筆アイコン</text>
+
+      <rect x="300" y="40" width="120" height="80" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+      <text x="360" y="68" text-anchor="middle" font-size="11" font-weight="700">③ Commit</text>
+      <text x="360" y="86" text-anchor="middle" font-size="9" fill="#666">変更内容を</text>
+      <text x="360" y="100" text-anchor="middle" font-size="9" fill="#666">緑ボタンで保存</text>
+
+      <rect x="445" y="40" width="120" height="80" rx="6" fill="#fff" stroke="#1a1a1a" stroke-width="1.5"/>
+      <text x="505" y="68" text-anchor="middle" font-size="11" font-weight="700">④ 自動デプロイ</text>
+      <text x="505" y="86" text-anchor="middle" font-size="9" fill="#666">Cloudflare が</text>
+      <text x="505" y="100" text-anchor="middle" font-size="9" fill="#666">1〜2分で反映</text>
+
+      <rect x="590" y="40" width="120" height="80" rx="6" fill="url(#g2)" stroke="#5a4710" stroke-width="2"/>
+      <defs><linearGradient id="g2"><stop offset="0%" stop-color="#E8C968"/><stop offset="100%" stop-color="#8a6f2a"/></linearGradient></defs>
+      <text x="650" y="68" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">⑤ 確認</text>
+      <text x="650" y="86" text-anchor="middle" font-size="9" fill="#fff" opacity="0.9">cima-scalpink</text>
+      <text x="650" y="100" text-anchor="middle" font-size="9" fill="#fff" opacity="0.9">.com で表示確認</text>
+
+      <line x1="130" y1="80" x2="155" y2="80" stroke="#C9A84C" stroke-width="2"/>
+      <line x1="275" y1="80" x2="300" y2="80" stroke="#C9A84C" stroke-width="2"/>
+      <line x1="420" y1="80" x2="445" y2="80" stroke="#C9A84C" stroke-width="2"/>
+      <line x1="565" y1="80" x2="590" y2="80" stroke="#C9A84C" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <div class="box warn">
+    <div class="box-title"><span class="icon-sq">!</span>困った時の鉄則</div>
+    <p style="font-size:8.5pt;"><strong>「分からないことは、まず Claude に聞く」</strong> — 怖がらず日本語で何でも質問してOK。<br>例: 「これってどうやって直すの？」「○○のボタンが押せない」「今やった操作は正しい？」</p>
+  </div>
+
+  <div class="page-footer"><span>Phase 3: Training / Page 5</span><span>THE SCALP INK by CIMA</span></div>
+</div>
+
+<!-- ===== Page 6: Phase 4 + Daily Operations ===== -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">緊急時準備・日常運用<small>PHASE 4 — 30分 / 安心のための保険</small></div>
+  </div>
+
+  <h2>緊急時マニュアル（A4 1枚・印刷して常備）</h2>
+  <div class="box danger">
+    <div class="box-title"><span class="icon-sq">!</span>困った時の3ステップ</div>
+    <ol style="font-size:9pt;">
+      <li><strong>STEP 1:</strong> Claude.ai のブックマークを開く → SCALP INK アシスタントに状況を説明</li>
+      <li><strong>STEP 2:</strong> 解決しない場合 → Bitwarden の「緊急連絡先」を確認</li>
+      <li><strong>STEP 3:</strong> 重大障害（サイト全停止・予約フォーム動作不能）→ 開発者に連絡</li>
+    </ol>
+  </div>
+
+  <h2>日常運用カレンダー</h2>
+  <table>
+    <tr><th width="14%">頻度</th><th>タスク</th></tr>
+    <tr><td><strong>毎日</strong></td><td>予約管理シートを確認、未対応の予約に24時間以内に返信</td></tr>
+    <tr><td><strong>毎週</strong></td><td>GA4 の流入数を確認 / LINE・Instagram のメッセージ確認 / Search Console 上位クエリを確認</td></tr>
+    <tr><td><strong>毎月</strong></td><td>紹介特典シートの有効期限近付き分を通知 / GA4 前月比トレンド分析 / Before/After 写真追加検討</td></tr>
+    <tr><td><strong>四半期</strong></td><td>料金プランの見直し / FAQ更新 / プライバシーポリシー・特商法の更新日変更</td></tr>
+    <tr><td><strong>年次</strong></td><td>ドメイン更新 (<span class="code">cima-scalpink.com</span>) / Apps Script トークン期限確認 / Cloudflare 課金情報確認</td></tr>
+  </table>
+
+  <h2>段階的離脱スケジュール（開発者→自立）</h2>
+  <div class="phase-grid">
+    <div class="phase-card"><div class="phase-card-num">M1</div><div class="phase-card-lbl">並走期</div><div class="phase-card-time">緊急対応90%サポート</div></div>
+    <div class="phase-card"><div class="phase-card-num">M2-3</div><div class="phase-card-lbl">独立準備</div><div class="phase-card-time">月1回定例(30分)</div></div>
+    <div class="phase-card"><div class="phase-card-num">M4+</div><div class="phase-card-lbl">完全独立</div><div class="phase-card-time">スポット契約</div></div>
+    <div class="phase-card" style="background:linear-gradient(180deg,#1a1a1a,#2a2316);color:#C9A84C;"><div class="phase-card-num" style="color:#C9A84C;">∞</div><div class="phase-card-lbl" style="color:#fff;">AI が常駐</div><div class="phase-card-time" style="color:rgba(255,255,255,.6);">24h相談可能</div></div>
+  </div>
+
+  <h2>運用に必要なツールまとめ</h2>
+  <table>
+    <tr><th width="32%">ツール</th><th width="42%">用途</th><th width="26%">月額</th></tr>
+    <tr><td>Chrome ブラウザ</td><td>すべての操作の入口</td><td>無料</td></tr>
+    <tr><td><strong>Claude.ai Pro</strong></td><td>AI アシスタント（24時間）</td><td><strong>$20 (約¥3,200)</strong></td></tr>
+    <tr><td>Bitwarden Free</td><td>パスワード一元管理</td><td>無料</td></tr>
+    <tr><td>GitHub（Web版）</td><td>サイトコード編集</td><td>無料</td></tr>
+    <tr><td>Google Workspace（既存）</td><td>メール・シート・カレンダー</td><td>既存</td></tr>
+    <tr><td>LINE OAM（既存）</td><td>公式LINE管理</td><td>既存</td></tr>
+    <tr><td>Cloudflare Pages</td><td>サイトホスティング</td><td>無料</td></tr>
+    <tr><td>ドメイン更新</td><td>cima-scalpink.com</td><td>年¥1,500前後</td></tr>
+  </table>
+
+  <div class="box gold">
+    <div class="box-title"><span class="icon-sq">¥</span>運用コスト試算</div>
+    <p style="font-size:9pt;">毎月の固定費は <strong>約¥3,200（Claude Pro）+ 年¥1,500（ドメイン）</strong> のみ。<br>これで AI 24時間サポート + フルサイト運用が可能。</p>
+  </div>
+
+  <div class="page-footer"><span>Phase 4: Operations / Page 6</span><span>THE SCALP INK by CIMA</span></div>
+</div>
+
+<!-- ===== Page 7: Day-of Schedule + Checklist ===== -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">★</div>
+    <div class="section-title">引き継ぎ当日スケジュール<small>RECOMMENDED DAY PLAN — 1日完結プラン</small></div>
+  </div>
+
+  <h2>タイムテーブル（朝9時〜午後3時）</h2>
+  <table>
+    <tr><th width="18%">時間</th><th width="34%">内容</th><th>到達目標</th></tr>
+    <tr><td>09:00 - 10:00</td><td>フェーズ1: アカウント所有権移管</td><td>GitHub / Cloudflare / LINE 移管完了 + Bitwarden 導入</td></tr>
+    <tr><td>10:00 - 10:30</td><td>フェーズ2: Claude.ai セットアップ</td><td>Project 作成 + Knowledge アップロード完了</td></tr>
+    <tr><td>10:30 - 10:45</td><td>休憩</td><td>—</td></tr>
+    <tr><td>10:45 - 12:15</td><td>フェーズ3前半: 基本操作トレーニング</td><td>シナリオ1〜3を本人が完遂</td></tr>
+    <tr><td>12:15 - 13:00</td><td>昼食</td><td>—</td></tr>
+    <tr><td>13:00 - 14:30</td><td>フェーズ3後半: 実践シナリオ</td><td>シナリオ4〜7を本人が完遂</td></tr>
+    <tr><td>14:30 - 15:00</td><td>フェーズ4: 緊急時準備・質疑応答</td><td>マニュアル印刷・運用カレンダー確認</td></tr>
+  </table>
+
+  <h2>必要な事前準備（開発者側）</h2>
+  <ul class="checklist">
+    <li>運用指南書.md（最新版）— 既に完成済</li>
+    <li>引き継ぎ手順書.html（本書）— 既に完成済</li>
+    <li>Bitwarden に全認証情報を集約しエクスポート可能な状態に</li>
+    <li>緊急時マニュアル PDF（A4 1枚）— ラミネート推奨</li>
+    <li>Claude.ai Custom Instructions 文面（本書 P.4 参照）</li>
+    <li>Project Knowledge アップロード用ファイル一式を1フォルダに集約</li>
+    <li>トレーニング用操作シナリオ7パターンの台本</li>
+    <li>引き継ぎ完了確認書（双方サイン用）</li>
+  </ul>
+
+  <h2>引き継ぎ完了チェックリスト（クライアント様側）</h2>
+  <div class="two-col">
+    <ul class="checklist">
+      <li>GitHub アカウント作成 + 招待受諾完了</li>
+      <li>リポジトリ Owner として表示確認</li>
+      <li>Cloudflare ダッシュボードにアクセス可能</li>
+      <li>Bitwarden インストール + 全認証保存</li>
+      <li>2段階認証 Authenticator 設定</li>
+      <li>Claude.ai Pro 契約完了</li>
+      <li>SCALP INK Project 作成済</li>
+      <li>Custom Instructions 設定済</li>
+    </ul>
+    <ul class="checklist">
+      <li>Project Knowledge にファイル一式UP完了</li>
+      <li>ブラウザブックマーク登録</li>
+      <li>スマホで Claude.ai アクセス確認</li>
+      <li>シナリオ1: 料金変更 を完遂</li>
+      <li>シナリオ2: 画像追加 を完遂</li>
+      <li>シナリオ3: FAQ追加 を完遂</li>
+      <li>緊急時マニュアル印刷・保管</li>
+      <li>運用カレンダー受領 + 理解</li>
+    </ul>
+  </div>
+
+  <div class="box tip">
+    <div class="box-title"><span class="icon-sq">i</span>引き継ぎ後の最初の1ヶ月</div>
+    <p style="font-size:8.5pt;">小さな操作（FAQ 1つ追加、価格1箇所変更など）を<strong>週に1回</strong>でも実施してみてください。「自分でできた」という体験を積み重ねることが、AI 活用の習慣化につながります。困った時は遠慮なく Claude に質問を。</p>
+  </div>
+
+  <div class="page-footer"><span>Day Schedule & Checklist / Page 7</span><span>THE SCALP INK by CIMA</span></div>
+</div>
+
+<!-- ===== Page 8: FAQ + Closing ===== -->
+<div class="page">
+  <div class="section-header">
+    <div class="section-num">Q</div>
+    <div class="section-title">よくある不安と回答<small>FAQ — クライアント様の心配ごと</small></div>
+  </div>
+
+  <h2>引き継ぎ前の不安</h2>
+  <h3>Q1. プログラミングの知識がなくても本当に大丈夫ですか？</h3>
+  <p>はい。本構成は<span class="hl">プログラム言語を一切書かずに運用できる</span>よう設計されています。すべて Claude.ai に日本語で依頼すれば、編集箇所と内容を教えてくれます。クライアント様は「コピペ」と「ボタンクリック」だけで完結します。</p>
+
+  <h3>Q2. もし操作を間違えてしまったらどうなりますか？</h3>
+  <p>GitHub は<strong>すべての変更履歴を保存</strong>しています。間違えても1クリックで元に戻せます。Claude.ai に「さっきの操作を取り消したい」と相談すれば手順が表示されます。サイトが完全に壊れることはありません。</p>
+
+  <h3>Q3. Claude Pro の月$20が高く感じます。本当に必要？</h3>
+  <p>無料版でも基本機能は使えますが、Project Knowledge 機能と長文コンテキスト保持が Pro 限定です。月$20 = サロン1施術の<strong>10分の1以下</strong>のコストで、開発者の代わりに24時間サポートが得られます。新規予約1件で回収できる投資額です。</p>
+
+  <h3>Q4. スマホからも操作できますか？</h3>
+  <p>はい。Claude.ai は iPhone/Android のブラウザでフルに動作します。サロン現場や移動中でも相談可能。GitHub もスマホブラウザで編集できます（ただし長文編集はPC推奨）。</p>
+
+  <h2>引き継ぎ後の不安</h2>
+  <h3>Q5. AIの回答が間違っていたら？</h3>
+  <p>Claude.ai は文脈を理解した上で回答しますが、100%正確ではない可能性もあります。<strong>重要な変更を行う前に</strong>「これで本当に大丈夫？」「他にリスクはない？」と再確認する質問を推奨します。Claude も「この場合は注意点があります」と教えてくれます。</p>
+
+  <h3>Q6. パスワードを全部忘れたら？</h3>
+  <p>Bitwarden のマスターパスワードさえ覚えていれば、すべて復元可能。マスターパスワードは<strong>家族や信頼できる人に共有しておく</strong>か、Bitwarden の「緊急アクセス」機能を設定しておくと安心です。</p>
+
+  <h3>Q7. 開発者との連絡を絶っても大丈夫？</h3>
+  <p>はい、技術的には完全自立が可能です。ただし<strong>初期3ヶ月は月1回の定例</strong>を推奨します。「自分では気づかなかった改善点」「最新のWebトレンド」などをアドバイスできます。完全独立後もスポット契約は可能です。</p>
+
+  <h3>Q8. システムを将来的に拡張したくなったら？</h3>
+  <p>たとえば「予約カレンダー連動」「LINE自動応答強化」「決済機能追加」など、Claude.ai で計画を相談すれば、必要な作業内容と費用感を提示します。実装は開発者にスポット依頼するか、Claude の指示通りクライアント様自身で行うか選択できます。</p>
+
+  <div class="box gold" style="margin-top:6mm;">
+    <div class="box-title"><span class="icon-sq">★</span>本書の最後に</div>
+    <p style="font-size:9pt;line-height:1.7;">この引き継ぎの本質は「<span class="hl">ツールの引き継ぎ</span>」ではなく「<span class="hl">自立できる体制づくり</span>」です。<br>
+    Claude.ai という24時間相談できるAIアシスタントが、開発者の代わりに常にクライアント様の隣にいます。<br>
+    最初は不安かもしれませんが、1ヶ月もすれば自然に対話できるようになります。<br>
+    <strong>「分からないことは、まず Claude に聞く」</strong> — この習慣だけで、運用のすべてが回ります。</p>
+  </div>
+
+  <div style="margin-top:6mm;text-align:center;font-size:9pt;color:#888;">
+    <div style="border-top:2px solid #C9A84C;padding-top:3mm;">
+      <strong style="color:#1a1a1a;letter-spacing:.1em;">THE SCALP INK by CIMA — システム引き継ぎ手順書</strong><br>
+      <span style="font-size:8pt;">発行日: 2026年4月23日 / Version 1.0 / 全8ページ</span>
+    </div>
+  </div>
+
+  <div class="page-footer"><span>FAQ & Closing / Page 8</span><span>THE SCALP INK by CIMA</span></div>
+</div>
+
+</body>
+</html>
