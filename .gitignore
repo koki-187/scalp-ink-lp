@@ -17,6 +17,7 @@ desktop.ini
 .claude/worktrees/
 .claude/scheduled_tasks.lock
 .wrangler/
+.codex/
 
 # Node / Next.js
 node_modules/
