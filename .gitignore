@@ -23,3 +23,31 @@ node_modules/
 .next/
 next-env.d.ts
 *.tsbuildinfo
+
+# 内部素材（LP本体には不要、ローカル保管のみ）
+AIシミュレーター/
+CIMAアイコン一式/
+LINE公式アカウント/
+ヒーローセクション挿入用動画/
+ビフォーアフター用写真/
+ロゴ入り扇子/
+安心材料/
+シマスポロゴ/
+test_images/
+成分表.jpg
+施術範囲_男性傷.png
+ChatGPT Image*.png
+スクリーンショット*.png
+kaiinnsyou*.jpg
+料金・特典ルール設計書.pdf
+
+# 内部資料（ビジネス文書・スクリプト）
+business-model.html
+business-model.gdoc
+salon-partnership-deck.html
+status-report.html
+system-architecture.pptx
+make_report.py
+serve.js
+AGENTS.md
+PDF出力_完全運用ガイド.gdoc

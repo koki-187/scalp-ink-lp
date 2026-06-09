@@ -61,20 +61,24 @@ scalp-ink-lp/
 ├── en/index.html               # 英語LP
 ├── privacy-policy.html         # プライバシーポリシー
 ├── tokushoho.html              # 特定商取引法表示
-├── en/tokushoho.html           # 英語版 特商法
-├── assets/                     # 画像・CSS・JS
-├── AIシミュレーター/           # SMPシミュレーター素材
-├── CIMAアイコン一式/           # ロゴ・ファビコン
-├── LINE公式アカウント/         # LINE連携設定
-└── クライアント納品_2026-04-23/  # 引継ぎ資料（下記）
+├── assets/                     # 画像・CSS・JS（LP本体で参照）
+├── docs/
+│   └── handover/               # クライアント引継ぎ資料一式（下記）
+├── CNAME                       # カスタムドメイン設定
+├── manifest.json               # PWAマニフェスト
+├── robots.txt / sitemap.xml    # SEO設定
+└── README.md                   # このファイル
 ```
+
+※ 内部素材（AI生成元データ・LINEバナー素材・ロゴ原型・ビジネス文書等）は
+ローカル保管のみで GitHub には公開していません（`.gitignore` で除外）。
 
 ---
 
 ## 📦 クライアント引継ぎ資料
 
-`クライアント納品_2026-04-23/` フォルダにすべての運用ドキュメントを格納。
-配布用ZIP: `CIMA_SCALP_INK_引継ぎ納品物_2026-04-23.zip`
+`docs/handover/クライアント納品_2026-04-23/` フォルダにすべての運用ドキュメントを格納。
+配布用ZIP: `docs/handover/CIMA_SCALP_INK_引継ぎ納品物_2026-04-23.zip`
 
 | ファイル | 内容 |
 |---|---|
