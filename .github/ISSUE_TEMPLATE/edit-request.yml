@@ -1,0 +1,70 @@
+name: ✏️ LP編集依頼
+description: テキスト・価格・画像など、LPの変更を依頼する時に使います
+title: "[編集依頼] "
+labels: ["編集依頼"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📋 LP編集依頼フォーム
+        変更したい内容を以下に記入してください。**完璧な書き方は不要**です。
+        記入後、ページ下の「Submit new issue」をクリック → 開発者またはAIが対応します。
+  - type: dropdown
+    id: edit_type
+    attributes:
+      label: 何を変更したいですか？
+      options:
+        - テキスト・文言の変更
+        - 価格・料金プランの変更
+        - 営業時間・休日の変更
+        - 電話番号・住所の変更
+        - 画像の差し替え
+        - 新しいセクション・コンテンツ追加
+        - キャンペーン・バナー追加
+        - SEO（タイトル・説明文）変更
+        - その他
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 現在の状態（変更前）
+      description: 現在LPに表示されている内容を、わかる範囲で記入
+      placeholder: |
+        例：トップページに「¥50,000」と表示されている
+    validations:
+      required: false
+  - type: textarea
+    id: desired
+    attributes:
+      label: どう変更したいですか？（変更後）
+      description: 完成イメージを自由に。日本語で大丈夫です
+      placeholder: |
+        例：「¥50,000」を「¥45,000」に変えたい
+    validations:
+      required: true
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: 緊急度
+      options:
+        - すぐ反映したい（24時間以内）
+        - 数日以内に対応してほしい
+        - 急がない・時間のある時で
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 補足・参考情報（任意）
+      description: スクリーンショット、参考URL、特記事項など何でも
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        💡 **送信後のながれ:**
+        1. このIssueにラベル「編集依頼」が自動でつきます
+        2. 開発者またはAIが内容を確認 → コメントで対応開始
+        3. 完了後、本Issueがクローズされ、本番に反映されます

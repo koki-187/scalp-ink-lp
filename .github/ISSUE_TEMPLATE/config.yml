@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 AI（Claude）に相談する
+    url: https://claude.ai/
+    about: 編集方法・コード生成・トラブル相談はまずAIに（90%解決します）
+  - name: 📖 完全運用ガイドを読む
+    url: https://github.com/koki-187/scalp-ink-lp/tree/master/docs/handover
+    about: 引継ぎ資料一式（PDF・HTML）はこちらから閲覧できます

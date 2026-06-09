@@ -104,7 +104,15 @@ scalp-ink-lp/
 3. **Preview で差分確認** → **Commit changes**
 4. **1〜2分で本番反映**（Cloudflare Pages 自動デプロイ）
 
-詳細は `クライアント納品_2026-04-23/無料プランLP編集_超詳細ガイド.pdf` を参照。
+### 📋 ドキュメント参照順序
+
+| 困った時 | 参照先 |
+|---|---|
+| 🎯 まず全体像をつかむ | `docs/handover/クイックリファレンスカード.pdf`（A4×1枚） |
+| 📖 詳細な編集手順 | `docs/handover/無料プランLP編集_超詳細ガイド.pdf`（A4×15p） |
+| 📚 運用ルール全般 | `docs/handover/完全運用ガイド.pdf`（A4×11p） |
+| 🆘 編集を依頼したい | [Issues タブから「✏️ LP編集依頼」を選択](https://github.com/koki-187/scalp-ink-lp/issues/new/choose) |
+| 🐛 不具合を報告したい | [Issues タブから「🐛 不具合報告」を選択](https://github.com/koki-187/scalp-ink-lp/issues/new/choose) |
 
 ---
 

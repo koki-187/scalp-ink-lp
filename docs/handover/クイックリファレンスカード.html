@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>CIMA SCALP INK — クイックリファレンスカード</title>
+<style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Noto Sans JP","Hiragino Sans","Yu Gothic UI",sans-serif;
+  background: #fff;
+}
+.card {
+  width: 210mm;
+  height: 297mm;
+  padding: 10mm 12mm;
+  page-break-after: always;
+  overflow: hidden;
+}
+.header {
+  background: linear-gradient(135deg,#1a73e8,#34a853);
+  color: #fff;
+  padding: 6mm 8mm;
+  border-radius: 3mm;
+  margin-bottom: 6mm;
+  text-align: center;
+}
+.header h1 { font-size: 22pt; font-weight: 800; }
+.header p { font-size: 11pt; opacity: 0.95; margin-top: 2mm; }
+h2 {
+  font-size: 14pt;
+  color: #1a73e8;
+  border-bottom: 2px solid #1a73e8;
+  padding: 2mm 0 1mm;
+  margin: 5mm 0 3mm;
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm;
+  margin: 3mm 0;
+}
+.box {
+  background: #f8f9fa;
+  border-left: 4px solid #1a73e8;
+  padding: 3mm 4mm;
+  border-radius: 0 2mm 2mm 0;
+  font-size: 9pt;
+  line-height: 1.6;
+}
+.box.green { border-left-color: #34a853; background: #e6f4ea; }
+.box.orange { border-left-color: #f9ab00; background: #fef7e0; }
+.box.red { border-left-color: #d93025; background: #fce8e6; }
+.box h3 { font-size: 10.5pt; margin-bottom: 2mm; color: #202124; }
+.flow {
+  display: flex;
+  gap: 2mm;
+  margin: 3mm 0;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.step {
+  flex: 1;
+  min-width: 30mm;
+  background: #1a73e8;
+  color: #fff;
+  padding: 3mm 2mm;
+  border-radius: 2mm;
+  text-align: center;
+  font-size: 8.5pt;
+  font-weight: 700;
+  position: relative;
+}
+.step .num {
+  display: block;
+  font-size: 14pt;
+  margin-bottom: 1mm;
+}
+.arrow { color: #1a73e8; font-size: 12pt; font-weight: 700; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.5pt;
+  margin: 2mm 0;
+}
+th, td {
+  border: 1px solid #dadce0;
+  padding: 2mm 3mm;
+  text-align: left;
+}
+th { background: #1a73e8; color: #fff; font-weight: 700; }
+.kbd {
+  display: inline-block;
+  background: #f1f3f4;
+  border: 1px solid #5f6368;
+  border-bottom-width: 2px;
+  border-radius: 1.5mm;
+  padding: 0.3mm 1.5mm;
+  font-family: monospace;
+  font-size: 8pt;
+  font-weight: 700;
+}
+.url {
+  font-family: monospace;
+  background: #fff;
+  padding: 0.5mm 2mm;
+  border-radius: 1mm;
+  border: 1px solid #dadce0;
+  font-size: 8pt;
+}
+.big-tip {
+  background: linear-gradient(135deg,#fff3cd,#fef7e0);
+  border: 2px solid #f9ab00;
+  border-radius: 3mm;
+  padding: 4mm 5mm;
+  margin: 4mm 0;
+  text-align: center;
+  font-size: 10pt;
+}
+.footer {
+  text-align: center;
+  font-size: 8pt;
+  color: #666;
+  margin-top: auto;
+  padding-top: 3mm;
+  border-top: 1px solid #dadce0;
+}
+.icon { font-size: 14pt; vertical-align: middle; }
+ul { list-style-position: inside; }
+li { margin: 0.5mm 0; }
+@media print { body { background: #fff; } }
+</style>
+</head>
+<body>
+<div class="card">
+
+<div class="header">
+  <h1>🚀 CIMA SCALP INK クイックリファレンス</h1>
+  <p>LP編集の全フローを「A4 1枚」で完結 — 困った時はまずこれを見る</p>
+</div>
+
+<h2><span class="icon">🌐</span> 3つの大切なURL（ブックマーク必須）</h2>
+<div class="grid">
+  <div class="box">
+    <h3>① AI相談</h3>
+    <span class="url">claude.ai</span><br>
+    <small>編集前に必ずここで相談 → コード生成</small>
+  </div>
+  <div class="box green">
+    <h3>② GitHub（編集の場所）</h3>
+    <span class="url">github.com/koki-187/scalp-ink-lp</span><br>
+    <small>ブラウザで直接 ✏️ Edit → Commit</small>
+  </div>
+</div>
+<div class="grid">
+  <div class="box orange">
+    <h3>③ 本番サイト確認</h3>
+    <span class="url">cima-scalpink.com</span><br>
+    <small>編集後 <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">R</span> で強制リロード</small>
+  </div>
+  <div class="box red">
+    <h3>🆘 困った時の相談</h3>
+    <span class="url">github.com → Issues → New</span><br>
+    <small>編集依頼テンプレート or 不具合報告</small>
+  </div>
+</div>
+
+<h2><span class="icon">⚡</span> 編集5ステップ（90秒で覚える）</h2>
+<div class="flow">
+  <div class="step"><span class="num">1</span>AIに相談<br><small>4セット要求</small></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="num">2</span>GitHubで✏️<br><small>Edit ボタン</small></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="num">3</span><span class="kbd" style="background:#fff;color:#1a73e8;">Ctrl</span>+<span class="kbd" style="background:#fff;color:#1a73e8;">F</span>検索<br><small>該当行へ</small></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="num">4</span>選択して貼付<br><small>after コード</small></div>
+  <div class="arrow">→</div>
+  <div class="step"><span class="num">5</span>Commit ✅<br><small>1分で反映</small></div>
+</div>
+
+<h2><span class="icon">💬</span> AIへの「魔法の依頼文」（毎回コピペで使う）</h2>
+<div class="box" style="background:#202124; color:#e8eaed; border-left-color:#34a853; font-family:monospace; font-size:8pt;">
+私はTHE SCALP INK by CIMAのLPを運営しています。<br>
+GitHub: koki-187/scalp-ink-lp の【ファイル名】を編集したいです。<br><br>
+【変更前】◯◯◯ → 【変更後】△△△<br><br>
+1) どのファイル・どのあたりの行か<br>
+2) before/after のHTMLコードブロック<br>
+3) GitHub Web Editor の Ctrl+F で使う検索キーワード<br>
+4) 注意点があれば
+</div>
+
+<h2><span class="icon">📁</span> よく編集するファイル早見表</h2>
+<table>
+  <tr><th>変えたい内容</th><th>ファイル</th><th>備考</th></tr>
+  <tr><td>日本語LPの本文・価格</td><td><code>index.html</code></td><td>メイン・約1500行</td></tr>
+  <tr><td>英語LPの本文・価格</td><td><code>en/index.html</code></td><td>日英セット更新</td></tr>
+  <tr><td>プライバシーポリシー</td><td><code>privacy-policy.html</code></td><td>年1回程度</td></tr>
+  <tr><td>特定商取引法（法的必須）</td><td><code>tokushoho.html</code></td><td>料金変更時は必須</td></tr>
+</table>
+
+<h2><span class="icon">🛟</span> トラブル時の3ステップ復旧</h2>
+<div class="grid">
+  <div class="box green">
+    <h3>① まずAIに相談</h3>
+    claude.aiにスクショ添付 → 「これどうすれば？」<br>
+    <small>90%はここで解決</small>
+  </div>
+  <div class="box orange">
+    <h3>② GitHubで Revert</h3>
+    Commits → 正常コミット → <code>...</code> → Revert<br>
+    <small>1分で元に戻る</small>
+  </div>
+</div>
+<div class="grid">
+  <div class="box red">
+    <h3>③ Issue で報告</h3>
+    GitHub Issues → New → 「🐛 不具合報告」<br>
+    <small>緊急時は Bitwarden の連絡先</small>
+  </div>
+  <div class="box">
+    <h3>📞 開発者直接連絡が必要な時のみ</h3>
+    サイト全停止 / ログイン不能 / Cloudflare Build Failed<br>
+    <small>Bitwardenに記載の連絡先</small>
+  </div>
+</div>
+
+<div class="big-tip">
+  💡 <strong>「分からないことは、まずAIに聞く」</strong> — この習慣だけで運用の9割は回ります<br>
+  <small style="font-size:8pt;">完璧を目指さず、3回やれば手順は身体が覚えます</small>
+</div>
+
+<div class="footer">
+  THE SCALP INK by CIMA / クライアント運用支援ツール / 2026年6月10日版<br>
+  詳細マニュアル: <code>docs/handover/完全運用ガイド.pdf</code> & <code>docs/handover/無料プランLP編集_超詳細ガイド.pdf</code>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+name: 🐛 不具合報告
+description: サイトが表示されない・動かない時に使います
+title: "[不具合] "
+labels: ["不具合"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🚨 不具合報告
+        サイト不具合の状況を教えてください。**緊急の場合はBitwardenから直接連絡先を確認して開発担当者に直接電話してください**。
+  - type: dropdown
+    id: severity
+    attributes:
+      label: どのくらい困っていますか？
+      options:
+        - サイト全体が表示されない（緊急）
+        - 一部のページが表示されない
+        - 表示は出るが何かが壊れている
+        - 軽微な見た目の崩れ
+    validations:
+      required: true
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: 何が起きていますか？
+      placeholder: |
+        例：トップページを開くと「500 Internal Server Error」と表示される
+    validations:
+      required: true
+  - type: input
+    id: when
+    attributes:
+      label: いつから発生していますか？
+      placeholder: 例：今朝10時頃から / commit XXX をした後から
+  - type: dropdown
+    id: device
+    attributes:
+      label: どの環境で確認しましたか？
+      multiple: true
+      options:
+        - PC (Chrome)
+        - PC (Safari)
+        - PC (Edge)
+        - スマホ (iPhone)
+        - スマホ (Android)
+        - タブレット
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: スクリーンショット（任意）
+      description: コメント欄に画像をドラッグ＆ドロップすると添付できます
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ⏱️ **緊急時の対応:**
+        - Claude.aiに「commitを元に戻したい」と相談 → 1分で復旧
+        - GitHub Commits履歴 → 正常だったコミットの `Revert` ボタン
+        - それでもダメな時のみ開発担当者に連絡
