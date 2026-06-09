@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>無料プランLP編集 超詳細ガイド | THE SCALP INK by CIMA</title>
+<style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Noto Sans JP","Hiragino Sans","Yu Gothic UI",sans-serif;
+  color: #1a1a1a;
+  background: #e8eaed;
+  line-height: 1.6;
+  font-size: 10pt;
+}
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  margin: 8mm auto;
+  padding: 14mm 16mm;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  page-break-after: always;
+  position: relative;
+  overflow: hidden;
+}
+.page:last-child { page-break-after: auto; }
+.page-number {
+  position: absolute;
+  bottom: 6mm;
+  right: 16mm;
+  font-size: 8pt;
+  color: #999;
+}
+.page-header {
+  border-bottom: 2px solid #1a73e8;
+  padding-bottom: 4mm;
+  margin-bottom: 6mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.page-header h1 {
+  font-size: 18pt;
+  color: #1a73e8;
+  font-weight: 800;
+}
+.page-header .chapter {
+  font-size: 9pt;
+  color: #666;
+  background: #e8f0fe;
+  padding: 2mm 4mm;
+  border-radius: 3mm;
+}
+h2 {
+  font-size: 13pt;
+  color: #202124;
+  margin: 5mm 0 3mm;
+  padding: 2mm 3mm;
+  background: linear-gradient(90deg,#1a73e8 0%,#1a73e8 4mm,#f1f3f4 4mm);
+  border-radius: 1mm;
+}
+h3 {
+  font-size: 11pt;
+  color: #1a73e8;
+  margin: 4mm 0 2mm;
+  padding-left: 3mm;
+  border-left: 3px solid #1a73e8;
+}
+p { margin: 2mm 0; }
+.step {
+  background: #f8f9fa;
+  border-left: 4px solid #34a853;
+  padding: 4mm 5mm;
+  margin: 3mm 0;
+  border-radius: 0 2mm 2mm 0;
+}
+.step-num {
+  display: inline-block;
+  background: #34a853;
+  color: #fff;
+  width: 7mm;
+  height: 7mm;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 7mm;
+  font-weight: 700;
+  margin-right: 3mm;
+  font-size: 10pt;
+}
+.step-title {
+  font-size: 11pt;
+  font-weight: 700;
+  color: #202124;
+  display: inline-block;
+  vertical-align: middle;
+}
+.warn {
+  background: #fef7e0;
+  border-left: 4px solid #f9ab00;
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  font-size: 9.5pt;
+}
+.warn::before { content: "⚠️ "; font-size: 11pt; }
+.tip {
+  background: #e6f4ea;
+  border-left: 4px solid #34a853;
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  font-size: 9.5pt;
+}
+.tip::before { content: "💡 "; font-size: 11pt; }
+.danger {
+  background: #fce8e6;
+  border-left: 4px solid #d93025;
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  font-size: 9.5pt;
+}
+.danger::before { content: "🚨 "; font-size: 11pt; }
+.screen {
+  border: 2px solid #5f6368;
+  border-radius: 2mm;
+  margin: 3mm 0;
+  background: #fff;
+  overflow: hidden;
+}
+.browser-bar {
+  background: #f1f3f4;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #dadce0;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+  font-size: 8pt;
+}
+.browser-dot { width: 3mm; height: 3mm; border-radius: 50%; }
+.url {
+  background: #fff;
+  padding: 1.5mm 4mm;
+  border-radius: 3mm;
+  border: 1px solid #dadce0;
+  font-family: monospace;
+  font-size: 8pt;
+  flex: 1;
+  margin-left: 2mm;
+  color: #202124;
+}
+.click-here {
+  display: inline-block;
+  background: #d93025;
+  color: #fff;
+  padding: 0.5mm 2mm;
+  border-radius: 1mm;
+  font-size: 8pt;
+  font-weight: 700;
+  margin: 0 1mm;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.code-block {
+  background: #202124;
+  color: #e8eaed;
+  padding: 3mm 4mm;
+  border-radius: 2mm;
+  font-family: "Consolas","Monaco",monospace;
+  font-size: 8.5pt;
+  margin: 2mm 0;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+.code-block.before {
+  background: #fce8e6;
+  color: #5f1f1c;
+  border-left: 4px solid #d93025;
+}
+.code-block.after {
+  background: #e6f4ea;
+  color: #0d3818;
+  border-left: 4px solid #34a853;
+}
+.label {
+  display: inline-block;
+  padding: 0.8mm 2mm;
+  border-radius: 1mm;
+  font-size: 8pt;
+  font-weight: 700;
+  margin-right: 2mm;
+}
+.label.before { background: #d93025; color: #fff; }
+.label.after { background: #34a853; color: #fff; }
+.label.click { background: #ea4335; color: #fff; }
+.label.input { background: #4285f4; color: #fff; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 3mm 0;
+  font-size: 9pt;
+}
+th, td {
+  border: 1px solid #dadce0;
+  padding: 2mm 3mm;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: #1a73e8; color: #fff; font-weight: 700; }
+tr:nth-child(even) td { background: #f8f9fa; }
+.flow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 5mm 0;
+  flex-wrap: wrap;
+  gap: 2mm;
+}
+.flow-box {
+  flex: 1;
+  min-width: 30mm;
+  background: #e8f0fe;
+  border: 2px solid #1a73e8;
+  padding: 3mm;
+  border-radius: 2mm;
+  text-align: center;
+  font-size: 9pt;
+  position: relative;
+}
+.flow-arrow {
+  font-size: 14pt;
+  color: #1a73e8;
+  font-weight: 700;
+}
+.toc {
+  background: #f8f9fa;
+  padding: 5mm 6mm;
+  border-radius: 3mm;
+  margin: 4mm 0;
+}
+.toc ol { padding-left: 6mm; }
+.toc li { margin: 1.5mm 0; font-size: 10pt; }
+.cover {
+  background: linear-gradient(135deg,#1a73e8 0%,#34a853 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30mm;
+}
+.cover h1 { font-size: 28pt; margin-bottom: 8mm; }
+.cover .sub { font-size: 14pt; opacity: 0.95; margin-bottom: 20mm; }
+.cover .meta { font-size: 11pt; opacity: 0.9; }
+.kbd {
+  display: inline-block;
+  background: #f1f3f4;
+  border: 1px solid #5f6368;
+  border-bottom-width: 2px;
+  border-radius: 1.5mm;
+  padding: 0.5mm 2mm;
+  font-family: monospace;
+  font-size: 8.5pt;
+  font-weight: 700;
+  color: #202124;
+  margin: 0 0.5mm;
+}
+.fake-github {
+  background: #0d1117;
+  color: #e6edf3;
+  padding: 3mm 4mm;
+  font-family: monospace;
+  font-size: 8.5pt;
+  border-radius: 1mm;
+  line-height: 1.7;
+}
+.fake-github .ln { color: #6e7681; display: inline-block; width: 8mm; text-align: right; margin-right: 3mm; }
+.fake-github .tag { color: #7ee787; }
+.fake-github .str { color: #a5d6ff; }
+.highlight-row { background: #422c11 !important; }
+.toolbar-github {
+  background: #f6f8fa;
+  border-bottom: 1px solid #d0d7de;
+  padding: 2mm 3mm;
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+  font-size: 8.5pt;
+}
+.gh-btn {
+  background: #1f883d;
+  color: #fff;
+  padding: 1mm 4mm;
+  border-radius: 1.5mm;
+  font-weight: 700;
+}
+.gh-btn-gray { background: #f6f8fa; color: #1f2328; border: 1px solid #d0d7de; padding: 1mm 4mm; border-radius: 1.5mm; }
+ul.checklist {
+  list-style: none;
+  padding-left: 0;
+}
+ul.checklist li {
+  padding: 1.5mm 0 1.5mm 6mm;
+  position: relative;
+  font-size: 10pt;
+}
+ul.checklist li::before {
+  content: "☐";
+  position: absolute;
+  left: 0;
+  font-size: 12pt;
+  color: #1a73e8;
+}
+.pointer {
+  position: relative;
+  display: inline-block;
+}
+.pointer::after {
+  content: "👈";
+  margin-left: 2mm;
+  font-size: 11pt;
+}
+.big-number {
+  font-size: 36pt;
+  font-weight: 800;
+  color: #1a73e8;
+  line-height: 1;
+}
+@media print {
+  body { background: #fff; }
+  .page { box-shadow: none; margin: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PAGE 1: COVER ===== -->
+<div class="page cover">
+  <div style="font-size:11pt; opacity:0.85; margin-bottom:6mm;">THE SCALP INK by CIMA</div>
+  <h1>無料プラン<br>LP編集<br>超詳細ガイド</h1>
+  <div class="sub">AIアシスタント + GitHub だけで<br>サイトを自分で更新できるようになる</div>
+  <div style="background:rgba(255,255,255,0.15); padding:6mm 10mm; border-radius:3mm; margin:10mm 0;">
+    <div style="font-size:10pt; opacity:0.9;">月額コスト</div>
+    <div style="font-size:24pt; font-weight:800;">¥0 / 月</div>
+    <div style="font-size:9pt; opacity:0.85;">（ドメイン代 年¥1,500を除く）</div>
+  </div>
+  <div class="meta">
+    クリックする場所・コピペする場所まで全部図解<br>
+    2026年4月23日 納品版 / 全15ページ
+  </div>
+  <div class="page-number">1 / 15</div>
+</div>
+
+<!-- ===== PAGE 2: TOC + 全体像 ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>📖 このガイドの使い方</h1>
+    <div class="chapter">目次・全体像</div>
+  </div>
+
+  <h2>このガイドが解決すること</h2>
+  <p>「Claude Code やプログラミングは分からない、でも LP のテキスト・価格・営業時間・キャンペーン内容を自分で更新したい」— そんなクライアント様のための、<strong>無料ツールだけで完結する編集手順書</strong>です。</p>
+
+  <div class="tip">必要なのは <strong>ブラウザ（Chrome / Safari / Edge）</strong> と <strong>無料のAIアカウント</strong>、<strong>GitHubアカウント</strong> の3つだけ。インストール作業は一切ありません。</div>
+
+  <h2>📋 全15ページの目次</h2>
+  <div class="toc">
+    <ol>
+      <li><strong>準備編</strong> — 必要なアカウント3つ（P3〜4）</li>
+      <li><strong>STEP 1</strong>: AI（Claude無料版）を開いて相談する（P5）</li>
+      <li><strong>STEP 2</strong>: 修正コードを AI から受け取る（P6）</li>
+      <li><strong>STEP 3</strong>: GitHub にログインしてファイルを開く（P7）</li>
+      <li><strong>STEP 4</strong>: 編集モードに入る（鉛筆アイコン）（P8）</li>
+      <li><strong>STEP 5</strong>: 該当箇所を検索する（Ctrl+F）（P9）</li>
+      <li><strong>STEP 6</strong>: コードを貼り付ける（P10）</li>
+      <li><strong>STEP 7</strong>: プレビューで確認（P11）</li>
+      <li><strong>STEP 8</strong>: Commit changes（保存）（P12）</li>
+      <li><strong>STEP 9</strong>: 本番サイトで反映を確認（P13）</li>
+      <li><strong>困った時</strong>: トラブル対処・前の状態に戻す方法（P14）</li>
+      <li><strong>よくある編集レシピ集</strong>（P15）</li>
+    </ol>
+  </div>
+
+  <h2>🗺️ 全体フロー（90秒で理解）</h2>
+  <div class="flow">
+    <div class="flow-box">① AIに相談<br><small>「価格を変えたい」</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">② AIがコード提示<br><small>before/after</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">③ GitHubで貼付<br><small>該当箇所を上書き</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">④ Commit<br><small>緑のボタン</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">⑤ 1〜2分で反映<br><small>本番サイトに公開</small></div>
+  </div>
+
+  <div class="warn">所要時間の目安：慣れれば <strong>1箇所の修正は5〜10分</strong>。初回は30分くらい見ておくと安心です。</div>
+
+  <div class="page-number">2 / 15</div>
+</div>
+
+<!-- ===== PAGE 3: 準備編 (1/2) ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>🔧 準備編：必要なアカウント3つ</h1>
+    <div class="chapter">準備 1/2</div>
+  </div>
+
+  <h2>① Google アカウント（既にお持ちのものでOK）</h2>
+  <p>店舗の <code>cimascalp.lp@gmail.com</code> をそのまま使います。引継ぎ当日に開発担当者から共有されたパスワードで Bitwarden に保存済みです。</p>
+
+  <h2>② Anthropic（Claude無料版）アカウント</h2>
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">ブラウザで Claude にアクセス</span>
+    <div class="screen">
+      <div class="browser-bar">
+        <span class="browser-dot" style="background:#ff5f57;"></span>
+        <span class="browser-dot" style="background:#febc2e;"></span>
+        <span class="browser-dot" style="background:#28c840;"></span>
+        <span class="url">https://claude.ai/</span>
+      </div>
+      <div style="padding:8mm; text-align:center; background:#fafafa;">
+        <div style="font-size:18pt; font-weight:800; margin-bottom:4mm;">Claude</div>
+        <div style="background:#1a73e8; color:#fff; padding:3mm 8mm; border-radius:3mm; display:inline-block; font-weight:700;">Continue with Google <span class="click-here">ここをクリック</span></div>
+        <div style="font-size:8pt; color:#666; margin-top:3mm;">「Googleで続行」のボタンを押すと、店舗のGmailで簡単にサインアップできます</div>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title">Google アカウントを選択</span>
+    <p>ポップアップで <code>cimascalp.lp@gmail.com</code> を選択 → 「許可」をクリック。これで完了です。</p>
+  </div>
+  <div class="tip">無料版でも「Claude Sonnet 4.5」モデルが <strong>1日30回程度</strong> 使えます。LP編集なら1日2〜3回しか使わないので、無料枠で十分です。</div>
+
+  <h2>③ GitHub アカウント</h2>
+  <p>既に開発担当者がリポジトリ <code>github.com/koki-187/scalp-ink-lp</code> を作成しており、引継ぎ当日にあなたを「Collaborator（共同編集者）」として招待します。招待メールの「Accept invitation」をクリックすればOK。</p>
+
+  <div class="warn">GitHub のパスワードは <strong>絶対に Bitwarden 以外には保存しない</strong> でください。メモ帳・スマホのメモアプリ・LINEノートなどは NG です。</div>
+
+  <div class="page-number">3 / 15</div>
+</div>
+
+<!-- ===== PAGE 4: 準備編 (2/2) ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>🔧 準備編：ブラウザにブックマーク</h1>
+    <div class="chapter">準備 2/2</div>
+  </div>
+
+  <h2>毎回検索しなくていいように、3つブックマーク</h2>
+  <p>Chrome の <kbd>Ctrl</kbd> + <kbd>D</kbd>（Macは <kbd>⌘</kbd> + <kbd>D</kbd>）でブックマーク追加。以下の3つを「LP編集」フォルダにまとめておくと便利です。</p>
+
+  <table>
+    <tr><th>用途</th><th>URL</th><th>使うタイミング</th></tr>
+    <tr><td>① AI相談</td><td><code>claude.ai</code></td><td>修正内容を相談・コードもらう</td></tr>
+    <tr><td>② GitHub編集</td><td><code>github.com/koki-187/scalp-ink-lp</code></td><td>実際にファイルを書き換える</td></tr>
+    <tr><td>③ 本番サイト確認</td><td><code>cima-scalpink.com</code></td><td>反映を目視確認する</td></tr>
+  </table>
+
+  <h2>📂 編集対象ファイルの場所（覚えなくてOK・参考）</h2>
+  <table>
+    <tr><th>編集したい内容</th><th>ファイル名</th></tr>
+    <tr><td>日本語LP（メイン）</td><td><code>index.html</code></td></tr>
+    <tr><td>英語LP</td><td><code>en/index.html</code></td></tr>
+    <tr><td>プライバシーポリシー</td><td><code>privacy-policy.html</code></td></tr>
+  </table>
+
+  <div class="tip">「どのファイルを触ればいい？」も AI に聞けばOK。「トップページの料金を変えたい」と言えば「<code>index.html</code> です」と教えてくれます。</div>
+
+  <h2>🧑‍💻 これから先のページの読み方</h2>
+  <p>STEP 1 から STEP 9 まで、<strong>1ページ1ステップ</strong> で進みます。各ページに「画面イメージ」「クリックする場所（赤いラベル）」「貼り付ける場所」を図解しています。</p>
+
+  <div class="flow">
+    <div class="flow-box" style="background:#fef7e0; border-color:#f9ab00;">📖 画面イメージ<br><small>こんな画面が出る</small></div>
+    <div class="flow-box" style="background:#fce8e6; border-color:#d93025;">👆 クリック箇所<br><small>赤いラベルで明示</small></div>
+    <div class="flow-box" style="background:#e6f4ea; border-color:#34a853;">📋 コピペ箇所<br><small>緑のラベルで明示</small></div>
+  </div>
+
+  <div class="danger">本ガイドの通りに進めれば <strong>サイトを壊すことはありません</strong>。万が一失敗しても、P14「前の状態に戻す方法」で1分で元に戻せます。安心して進めてください。</div>
+
+  <div class="page-number">4 / 15</div>
+</div>
+
+<!-- ===== PAGE 5: STEP 1 AI相談 ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>STEP 1: AIを開いて相談する</h1>
+    <div class="chapter">編集 1/9</div>
+  </div>
+
+  <p>具体例として「<strong>トップページのキャンペーン価格を「¥50,000」から「¥45,000」に変えたい</strong>」を例に進めます。</p>
+
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">ブックマークから claude.ai を開く</span>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title">画面下の入力欄に相談文を入力する</span>
+
+    <div class="screen">
+      <div class="browser-bar">
+        <span class="browser-dot" style="background:#ff5f57;"></span>
+        <span class="browser-dot" style="background:#febc2e;"></span>
+        <span class="browser-dot" style="background:#28c840;"></span>
+        <span class="url">claude.ai</span>
+      </div>
+      <div style="padding:4mm;">
+        <div style="background:#f1f3f4; padding:3mm; border-radius:2mm; margin-bottom:3mm; font-size:9pt; color:#5f6368;">Claude: こんにちは。今日はどんなお手伝いができますか？</div>
+        <div style="background:#fff; border:2px solid #1a73e8; padding:3mm; border-radius:2mm;">
+          <span class="label input">入力</span><br>
+          <span style="font-size:9pt;">私はTHE SCALP INK by CIMAというSMP店舗のLPを運営しています。GitHubリポジトリ koki-187/scalp-ink-lp の index.html を編集したいです。<br><br>
+          現在「¥50,000」と記載されているキャンペーン価格を「¥45,000」に変更したいです。<br><br>
+          1) どの行を変更すべきか<br>
+          2) before/after のコードブロック<br>
+          3) GitHubのWeb Editorで検索すべきキーワード<br>
+          を教えてください。</span>
+        </div>
+        <div style="text-align:right; margin-top:3mm;">
+          <span style="background:#1a73e8; color:#fff; padding:2mm 5mm; border-radius:2mm; font-size:9pt;">送信 ↑</span>
+          <span class="click-here">Enterキーでも送信</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>💬 そのまま使える「魔法の依頼文テンプレート」</h3>
+  <div class="code-block">私はTHE SCALP INK by CIMAのLP（cima-scalpink.com）を運営しています。
+GitHub: koki-187/scalp-ink-lp の【ファイル名】を編集したいです。
+
+【変更したい内容】
+- 変更前: ◯◯◯
+- 変更後: △△△
+
+以下を教えてください：
+1) どのファイル・どのあたりの行か
+2) before/after のHTMLコードブロック
+3) GitHub Web Editorの検索（Ctrl+F）で使うキーワード
+4) 注意点があれば教えてください</div>
+
+  <div class="tip">この4項目を毎回聞くだけで、AIが必要な情報を全部出してくれます。<strong>このテンプレを Bitwarden の「セキュアノート」に保存</strong>しておくと、毎回コピペで使えて便利です。</div>
+
+  <div class="page-number">5 / 15</div>
+</div>
+
+<!-- ===== PAGE 6: STEP 2 AI回答受け取り ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>STEP 2: AIから修正コードを受け取る</h1>
+    <div class="chapter">編集 2/9</div>
+  </div>
+
+  <p>送信すると数秒〜10秒ほどで、Claude が以下のような回答を返してくれます。</p>
+
+  <div class="screen">
+    <div class="browser-bar">
+      <span class="browser-dot" style="background:#ff5f57;"></span>
+      <span class="browser-dot" style="background:#febc2e;"></span>
+      <span class="browser-dot" style="background:#28c840;"></span>
+      <span class="url">claude.ai</span>
+    </div>
+    <div style="padding:4mm; background:#fafafa;">
+      <div style="font-size:9pt; color:#5f6368; margin-bottom:2mm;">Claude の回答:</div>
+      <div style="background:#fff; padding:3mm; border-radius:2mm; font-size:9pt;">
+        承知しました。以下が変更内容です。<br><br>
+        <strong>1) ファイル:</strong> <code>index.html</code><br>
+        <strong>2) 検索キーワード（Ctrl+F）:</strong> <code style="background:#fff3cd; padding:0.5mm 1mm;">¥50,000</code><br><br>
+        <strong>3) 変更コード:</strong>
+        <div class="code-block before">&lt;span class="price"&gt;¥50,000&lt;/span&gt;</div>
+        <div class="code-block after">&lt;span class="price"&gt;¥45,000&lt;/span&gt;</div>
+        <strong>4) 注意点:</strong> 英語版 <code>en/index.html</code> にも同じ価格が記載されている場合は両方変更してください。
+      </div>
+    </div>
+  </div>
+
+  <h2>📥 ここで「コピー」するもの</h2>
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">「after（変更後）」のコードブロック右上の📋アイコンをクリック</span>
+    <p>Claude のコードブロックには右上に小さな「コピー」ボタンがあります。<span class="click-here">📋 Copy</span> をクリックするとクリップボードにコピーされます。</p>
+  </div>
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title">「検索キーワード」もメモしておく</span>
+    <p>この例なら <code>¥50,000</code>。STEP 5 で GitHub内検索に使います。</p>
+  </div>
+
+  <div class="warn"><strong>before（変更前）のコードは絶対に貼り付けないでください。</strong> 必ず「after（緑のブロック）」をコピーすること。混同を防ぐため、AIには毎回「before/afterを分けてください」と頼みましょう。</div>
+
+  <h3>📌 AIに聞き返してOK</h3>
+  <p>「もっと具体的に説明して」「該当箇所のスクリーンショット風に書いて」「英語版も変更が必要？」など、<strong>納得するまで何度でも質問</strong>できます。1往復で完璧な答えが返らなくても全然OK。</p>
+
+  <div class="tip">不安な時は「この変更でサイトが壊れる可能性はありますか？」と聞いてみてください。Claudeがリスクを評価してくれます。</div>
+
+  <div class="page-number">6 / 15</div>
+</div>
+
+<!-- ===== PAGE 7: STEP 3 GitHubでファイル開く ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>STEP 3: GitHubでファイルを開く</h1>
+    <div class="chapter">編集 3/9</div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">ブックマークから GitHub リポジトリを開く</span>
+    <div class="screen">
+      <div class="browser-bar">
+        <span class="browser-dot" style="background:#ff5f57;"></span>
+        <span class="browser-dot" style="background:#febc2e;"></span>
+        <span class="browser-dot" style="background:#28c840;"></span>
+        <span class="url">github.com/koki-187/scalp-ink-lp</span>
+      </div>
+      <div style="background:#0d1117; color:#e6edf3; padding:4mm;">
+        <div style="font-size:11pt; font-weight:700; margin-bottom:3mm;">📁 koki-187 / scalp-ink-lp</div>
+        <div style="background:#161b22; padding:2mm; border-radius:2mm; border:1px solid #30363d; font-size:8.5pt;">
+          <div style="padding:1mm 2mm; border-bottom:1px solid #30363d;">📁 assets</div>
+          <div style="padding:1mm 2mm; border-bottom:1px solid #30363d;">📁 en</div>
+          <div style="padding:1mm 2mm; border-bottom:1px solid #30363d; background:#1f6feb33; color:#79c0ff;">📄 index.html <span class="click-here">これをクリック</span></div>
+          <div style="padding:1mm 2mm; border-bottom:1px solid #30363d;">📄 privacy-policy.html</div>
+          <div style="padding:1mm 2mm;">📄 README.md</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title">「index.html」のファイル名をクリック</span>
+    <p>ファイル一覧から、今回編集したい <code>index.html</code> をクリック。中身が表示されます。</p>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span><span class="step-title">表示モード（読み取り専用）で内容を確認</span>
+    <div class="screen">
+      <div class="toolbar-github">
+        <span style="font-weight:700;">📄 index.html</span>
+        <span style="flex:1;"></span>
+        <span class="gh-btn-gray">Raw</span>
+        <span class="gh-btn-gray">Blame</span>
+        <span class="gh-btn-gray" style="background:#fef7e0;">✏️ Edit <span class="click-here">これをクリック</span></span>
+      </div>
+      <div class="fake-github">
+        <div><span class="ln">1</span><span class="tag">&lt;!DOCTYPE html&gt;</span></div>
+        <div><span class="ln">2</span><span class="tag">&lt;html lang=</span><span class="str">"ja"</span><span class="tag">&gt;</span></div>
+        <div><span class="ln">3</span><span class="tag">&lt;head&gt;</span></div>
+        <div><span class="ln">...</span> （省略：約1500行のHTML）</div>
+      </div>
+    </div>
+  </div>
+
+  <p>画面右上に <strong>鉛筆アイコン ✏️</strong> または <strong>「Edit」ボタン</strong> があります。これをクリックすると編集モードに入ります。</p>
+
+  <div class="tip">スマホ・タブレットでも編集可能ですが、画面が狭く誤操作しやすいので<strong>PCの大画面推奨</strong>です。</div>
+
+  <div class="page-number">7 / 15</div>
+</div>
+
+<!-- ===== PAGE 8: STEP 4 編集モード ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>STEP 4: 編集モードに入る</h1>
+    <div class="chapter">編集 4/9</div>
+  </div>
+
+  <p>鉛筆アイコン ✏️ をクリックすると、画面が「編集モード」に切り替わります。背景がエディタ風になり、テキストが直接変更できる状態になります。</p>
+
+  <div class="screen">
+    <div class="toolbar-github">
+      <span style="font-weight:700;">✏️ Editing index.html in master</span>
+      <span style="flex:1;"></span>
+      <span class="gh-btn-gray">Preview</span>
+      <span class="gh-btn">Commit changes...</span>
+    </div>
+    <div class="fake-github" style="background:#0d1117;">
+      <div><span class="ln">1</span><span class="tag">&lt;!DOCTYPE html&gt;</span></div>
+      <div><span class="ln">2</span><span class="tag">&lt;html lang=</span><span class="str">"ja"</span><span class="tag">&gt;</span></div>
+      <div><span class="ln">3</span><span class="tag">&lt;head&gt;</span></div>
+      <div><span class="ln">4</span>  <span class="tag">&lt;meta charset=</span><span class="str">"UTF-8"</span><span class="tag"> /&gt;</span></div>
+      <div><span class="ln">5</span>  <span class="tag">&lt;title&gt;</span>THE SCALP INK by CIMA<span class="tag">&lt;/title&gt;</span></div>
+      <div><span class="ln">...</span></div>
+      <div><span class="ln">847</span>  <span class="tag">&lt;span class=</span><span class="str">"price"</span><span class="tag">&gt;</span>¥50,000<span class="tag">&lt;/span&gt;</span> <span style="color:#f0883e;">← この行を探す</span></div>
+      <div><span class="ln">...</span></div>
+    </div>
+  </div>
+
+  <h2>👀 編集モードに入ったかの見分け方</h2>
+  <table>
+    <tr><th>状態</th><th>表示</th><th>説明</th></tr>
+    <tr><td>表示モード</td><td>📖 そのまま表示</td><td>クリックしても何も起こらない</td></tr>
+    <tr><td><strong>編集モード</strong></td><td>✏️ カーソルが入る</td><td>文字をクリックすると編集可能</td></tr>
+  </table>
+
+  <div class="warn">編集モードに入った直後に、<strong>うっかりキーボードを押して中身を壊さないように</strong>。手を一旦キーボードから離して、深呼吸してから次のSTEP（検索）に進みましょう。</div>
+
+  <h3>🆘 「Edit」ボタンが見えない・押せない時</h3>
+  <ul>
+    <li><strong>原因A:</strong> GitHubにログインしていない → 右上「Sign in」からログイン</li>
+    <li><strong>原因B:</strong> Collaborator招待を承認していない → 招待メールを確認</li>
+    <li><strong>原因C:</strong> 別のブランチを見ている → URL末尾が <code>/blob/master/...</code> になっているか確認</li>
+  </ul>
+
+  <div class="tip">うまくいかない時は <strong>その状態のスクリーンショットを撮って Claude に貼り付け</strong>てください。「このボタンが見つかりません」と。Claudeが状況を見て次に何をすればいいか教えてくれます。</div>
+
+  <div class="page-number">8 / 15</div>
+</div>
+
+<!-- ===== PAGE 9: STEP 5 検索 ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>STEP 5: 該当箇所を検索する</h1>
+    <div class="chapter">編集 5/9</div>
+  </div>
+
+  <p><code>index.html</code> は約1500行あります。手でスクロールして探すのは大変。<strong>キーボードショートカットで一発検索</strong>します。</p>
+
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">エディタ画面の中で <kbd>Ctrl</kbd> + <kbd>F</kbd>（Macは <kbd>⌘</kbd> + <kbd>F</kbd>）を押す</span>
+    <p>画面右上に検索バーが出現します。</p>
+  </div>
+
+  <div class="screen">
+    <div class="toolbar-github">
+      <span style="font-weight:700;">✏️ Editing index.html</span>
+      <span style="flex:1;"></span>
+      <div style="background:#fff; border:2px solid #1f883d; padding:1mm 2mm; border-radius:1mm; display:flex; align-items:center; gap:2mm;">
+        <span style="font-size:8pt;">🔍</span>
+        <input type="text" value="¥50,000" style="border:none; outline:none; font-family:monospace; width:30mm; font-size:9pt;" readonly>
+        <span style="font-size:7.5pt; color:#666;">1 of 1</span>
+        <span class="click-here">ここに入力</span>
+      </div>
+    </div>
+    <div class="fake-github">
+      <div><span class="ln">845</span>    <span class="tag">&lt;div class=</span><span class="str">"campaign"</span><span class="tag">&gt;</span></div>
+      <div><span class="ln">846</span>      <span class="tag">&lt;h3&gt;</span>限定キャンペーン<span class="tag">&lt;/h3&gt;</span></div>
+      <div class="highlight-row"><span class="ln">847</span>      <span class="tag">&lt;span class=</span><span class="str">"price"</span><span class="tag">&gt;</span><mark style="background:#f0883e; color:#000; padding:0 1mm;">¥50,000</mark><span class="tag">&lt;/span&gt;</span></div>
+      <div><span class="ln">848</span>    <span class="tag">&lt;/div&gt;</span></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title">STEP 2 で AI からもらった検索キーワード（例: <code>¥50,000</code>）を入力</span>
+    <p>該当箇所が <strong>黄色〜オレンジ色のハイライト</strong>で表示されます。複数該当する場合は、検索バーの「1 of 3」のような表示の矢印で次の箇所に移動できます。</p>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span><span class="step-title"><kbd>Esc</kbd> キーで検索バーを閉じる</span>
+    <p>該当行が画面の中央付近に表示された状態になっているはずです。</p>
+  </div>
+
+  <h2>🎯 検索のコツ</h2>
+  <ul class="checklist">
+    <li><strong>長すぎる文字列はNG</strong> → 「キャンペーン価格は¥50,000です」全部より、「¥50,000」だけ</li>
+    <li><strong>記号は省略OK</strong> → 「&lt;span&gt;」より「price」のようなクラス名</li>
+    <li><strong>1件しかヒットしない単語を選ぶ</strong> → 「料金」だと10箇所ヒットしてしまう</li>
+  </ul>
+
+  <div class="warn">複数該当して「どれが正解？」と迷ったら、<strong>編集はせずに Claude にスクショを貼って質問</strong>してください。間違った箇所を編集すると別の場所が壊れます。</div>
+
+  <div class="page-number">9 / 15</div>
+</div>
+
+<!-- ===== PAGE 10: STEP 6 貼り付け ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>STEP 6: コードを貼り付ける</h1>
+    <div class="chapter">編集 6/9</div>
+  </div>
+
+  <p>いよいよ核心。STEP 2 でコピーした「after（変更後）コード」を、検索でハイライトされた行に上書きします。</p>
+
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">置き換える行を選択（マウスでドラッグ）</span>
+    <p>該当行の<strong>左端から右端まで</strong>マウスでドラッグして選択。または、行をトリプルクリック（3回連続クリック）すると、その行全体が選択されます。</p>
+  </div>
+
+  <div class="screen">
+    <div class="fake-github" style="background:#0d1117;">
+      <div><span class="ln">847</span>      <span style="background:#1f6feb55;"><span class="tag">&lt;span class=</span><span class="str">"price"</span><span class="tag">&gt;</span>¥50,000<span class="tag">&lt;/span&gt;</span></span> <span style="color:#f0883e;">← 選択</span></div>
+    </div>
+    <div style="text-align:center; padding:2mm; font-size:9pt; color:#1a73e8;">↓ <kbd>Ctrl</kbd>+<kbd>V</kbd> で貼り付け ↓</div>
+    <div class="fake-github" style="background:#0d1117;">
+      <div><span class="ln">847</span>      <span style="background:#1f883d55;"><span class="tag">&lt;span class=</span><span class="str">"price"</span><span class="tag">&gt;</span>¥45,000<span class="tag">&lt;/span&gt;</span></span> <span style="color:#3fb950;">✓ 上書き完了</span></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title"><kbd>Ctrl</kbd> + <kbd>V</kbd>（Macは <kbd>⌘</kbd> + <kbd>V</kbd>）で貼り付け</span>
+    <p>選択した行が、AIからコピーした「after」のコードで上書きされます。</p>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span><span class="step-title">貼り付け後の見た目を目視確認</span>
+    <p>「¥50,000」だった箇所が「¥45,000」になっていればOK。前後の <code>&lt;span&gt;</code> タグは残っていますか？</p>
+  </div>
+
+  <h2>✅ 貼り付け後のセルフチェック</h2>
+  <table>
+    <tr><th>確認項目</th><th>OK例</th><th>NG例</th></tr>
+    <tr><td>タグの数</td><td><code>&lt;span&gt;〜&lt;/span&gt;</code> が1セット</td><td><code>&lt;span&gt;&lt;span&gt;〜&lt;/span&gt;</code>（二重）</td></tr>
+    <tr><td>記号の対応</td><td>クォート <code>"</code> がペア</td><td>片方だけ消えている</td></tr>
+    <tr><td>インデント</td><td>前後の行とスペース数が揃ってる</td><td>左端にくっついてる</td></tr>
+  </table>
+
+  <div class="danger"><strong>「貼り付けたら大量の行が変わってしまった！」時は要注意。</strong> 何も保存せず、<kbd>Ctrl</kbd>+<kbd>Z</kbd>（取り消し）を連打して元に戻してください。それでもダメなら、ブラウザのタブを「保存せず閉じる」だけで全部リセットされます。</div>
+
+  <div class="tip">この時点ではまだ <strong>本番サイトには何の影響もありません</strong>。STEP 8 の「Commit changes」を押すまでは下書き状態です。安心して試行錯誤してOK。</div>
+
+  <div class="page-number">10 / 15</div>
+</div>
+
+<!-- ===== PAGE 11: STEP 7 プレビュー ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>STEP 7: プレビューで確認</h1>
+    <div class="chapter">編集 7/9</div>
+  </div>
+
+  <p>保存する前に、<strong>「Preview」タブ</strong>で「どこをどう変えたか」を視覚的に確認できます。これ、めちゃくちゃ重要です。</p>
+
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">画面上部の「Preview」タブをクリック</span>
+    <div class="screen">
+      <div class="toolbar-github">
+        <span class="gh-btn-gray">Edit</span>
+        <span class="gh-btn-gray" style="background:#fff; border-bottom:3px solid #fd8c73;">Preview <span class="click-here">これをクリック</span></span>
+        <span style="flex:1;"></span>
+        <span class="gh-btn">Commit changes...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title">「変更前 → 変更後」が緑/赤でハイライトされる</span>
+    <div class="screen">
+      <div class="fake-github" style="background:#0d1117;">
+        <div style="background:#67060c30; padding:1mm 0;"><span class="ln" style="color:#f85149;">847 −</span>      <span class="tag">&lt;span class=</span><span class="str">"price"</span><span class="tag">&gt;</span><span style="background:#67060c80;">¥50,000</span><span class="tag">&lt;/span&gt;</span></div>
+        <div style="background:#0d472a30; padding:1mm 0;"><span class="ln" style="color:#3fb950;">847 +</span>      <span class="tag">&lt;span class=</span><span class="str">"price"</span><span class="tag">&gt;</span><span style="background:#0d472a80;">¥45,000</span><span class="tag">&lt;/span&gt;</span></div>
+      </div>
+    </div>
+    <p style="margin-top:2mm;"><span class="label" style="background:#d93025; color:#fff;">−（赤）</span> 削除される行<br>
+    <span class="label" style="background:#34a853; color:#fff;">＋（緑）</span> 追加される行</p>
+  </div>
+
+  <h2>🎯 プレビューで必ず確認する3点</h2>
+  <ol style="padding-left:6mm;">
+    <li><strong>変更したい箇所だけが赤緑になっているか</strong> — 関係ない箇所が変わっていたら誤編集</li>
+    <li><strong>赤と緑が同じ行数か</strong> — 例: 赤1行・緑1行ならOK。赤1行・緑3行は何かズレてる</li>
+    <li><strong>意図した変更内容になっているか</strong> — 「¥45,000」になっているか目視確認</li>
+  </ol>
+
+  <h2>❌ プレビューでおかしい時の対処</h2>
+  <table>
+    <tr><th>症状</th><th>対処</th></tr>
+    <tr><td>大量の行が赤緑になっている</td><td>「Edit」タブに戻って <kbd>Ctrl</kbd>+<kbd>Z</kbd> を連打 → ブラウザのタブを閉じる</td></tr>
+    <tr><td>意図した箇所と違う</td><td>同上。一度全部リセットして STEP 5（検索）からやり直し</td></tr>
+    <tr><td>HTMLタグが壊れて見える</td><td>同上。Claude にスクショを貼って「これ大丈夫？」と確認</td></tr>
+  </table>
+
+  <div class="tip">プレビューで「これでOK！」と確信できたら、次の STEP 8（Commit）に進みます。<strong>不安なら何度でも Claude に質問</strong>してOK。確信できるまで Commit しないこと。</div>
+
+  <div class="page-number">11 / 15</div>
+</div>
+
+<!-- ===== PAGE 12: STEP 8 Commit ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>STEP 8: Commit changes（保存）</h1>
+    <div class="chapter">編集 8/9</div>
+  </div>
+
+  <p>プレビューで確認できたら、いよいよ <strong>本番サイトへの公開（Commit）</strong>です。</p>
+
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">画面右上の緑のボタン「Commit changes...」をクリック</span>
+    <div class="screen">
+      <div class="toolbar-github">
+        <span style="flex:1;"></span>
+        <span style="background:#1f883d; color:#fff; padding:2mm 6mm; border-radius:2mm; font-weight:700; font-size:10pt;">Commit changes... <span class="click-here">これをクリック</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title">ポップアップが出る → 「コミットメッセージ」を入力</span>
+    <div class="screen">
+      <div style="background:#fff; padding:5mm; border:1px solid #d0d7de;">
+        <div style="font-weight:700; margin-bottom:3mm;">Commit changes</div>
+        <div style="font-size:9pt; color:#656d76; margin-bottom:2mm;">Commit message <span style="color:#cf222e;">*</span></div>
+        <div style="border:1px solid #d0d7de; padding:2mm 3mm; border-radius:1.5mm; font-size:9pt; background:#fff;">キャンペーン価格を¥50,000→¥45,000に変更 <span class="click-here">わかりやすく書く</span></div>
+        <div style="font-size:8pt; color:#656d76; margin-top:1mm;">何を変更したかを日本語で簡潔に</div>
+
+        <div style="font-size:9pt; color:#656d76; margin: 4mm 0 2mm;">Extended description (任意)</div>
+        <div style="border:1px solid #d0d7de; padding:2mm 3mm; border-radius:1.5mm; font-size:9pt; background:#fff; height:10mm; color:#999;">空欄でOK</div>
+
+        <div style="margin-top:4mm;">
+          <label style="font-size:9pt;"><input type="radio" checked> <strong>Commit directly to the master branch</strong></label>
+        </div>
+
+        <div style="text-align:right; margin-top:4mm;">
+          <span class="gh-btn-gray">Cancel</span>
+          <span class="gh-btn">Commit changes <span class="click-here">最後にクリック</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>📝 コミットメッセージの書き方</h2>
+  <table>
+    <tr><th>良い例 ✅</th><th>悪い例 ❌</th></tr>
+    <tr><td>キャンペーン価格を¥45,000に変更</td><td>修正</td></tr>
+    <tr><td>営業時間を10:00-20:00に変更</td><td>aaa</td></tr>
+    <tr><td>新メニュー「リタッチコース」を追加</td><td>（空欄）</td></tr>
+  </table>
+
+  <div class="tip">後で「いつ・何を変えた？」を見返す時に、自分が分かるように書けば十分。完璧を目指さなくてOK。</div>
+
+  <div class="step">
+    <span class="step-num">3</span><span class="step-title">右下の緑「Commit changes」ボタンをクリック → 完了！</span>
+    <p>これで GitHub に保存されました。<strong>1〜2分後に本番サイト cima-scalpink.com に自動反映</strong>されます（Cloudflare Pages の自動デプロイ機能）。</p>
+  </div>
+
+  <div class="warn"><strong>「Commit directly to the master branch」が選ばれていることを必ず確認</strong>してください。「Create a new branch」になっていると本番反映されません。</div>
+
+  <div class="page-number">12 / 15</div>
+</div>
+
+<!-- ===== PAGE 13: STEP 9 本番確認 ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>STEP 9: 本番サイトで反映確認</h1>
+    <div class="chapter">編集 9/9</div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">1〜2分待つ</span>
+    <p>Cloudflare Pages が GitHub の変更を検知して、自動でビルド＆公開してくれます。スマホでお茶を一杯どうぞ。</p>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title">本番サイトを開く</span>
+    <div class="screen">
+      <div class="browser-bar">
+        <span class="browser-dot" style="background:#ff5f57;"></span>
+        <span class="browser-dot" style="background:#febc2e;"></span>
+        <span class="browser-dot" style="background:#28c840;"></span>
+        <span class="url">https://cima-scalpink.com</span>
+      </div>
+      <div style="padding:6mm; text-align:center; background:linear-gradient(135deg,#1a1a1a,#333); color:#fff;">
+        <div style="font-size:14pt; font-weight:800;">THE SCALP INK by CIMA</div>
+        <div style="margin:4mm 0; opacity:0.8; font-size:9pt;">限定キャンペーン</div>
+        <div style="font-size:24pt; font-weight:800; color:#ffd700;">¥45,000</div>
+        <div style="margin-top:3mm; opacity:0.7; font-size:8pt;">↑ 反映確認！</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span><span class="step-title">必ず「強制リロード」する</span>
+    <p>ブラウザがキャッシュ（古い情報）を見せている可能性があります。<strong>必ず</strong>強制リロードしてください。</p>
+    <table>
+      <tr><th>OS / ブラウザ</th><th>キー操作</th></tr>
+      <tr><td>Windows (Chrome/Edge)</td><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></td></tr>
+      <tr><td>Mac (Chrome/Safari)</td><td><kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd></td></tr>
+      <tr><td>スマホ</td><td>ページを下に引っ張る（プル to リフレッシュ）</td></tr>
+    </table>
+  </div>
+
+  <h2>⏰ 反映されない時のチェック</h2>
+  <ul class="checklist">
+    <li>2分以上待ったか？（初回は最大5分かかることも）</li>
+    <li>強制リロードしたか？</li>
+    <li>GitHubの該当ファイルを開き直して、変更が保存されているか？</li>
+    <li>シークレットモード（プライベートブラウジング）で開いて確認したか？</li>
+  </ul>
+
+  <div class="tip">それでも反映されない場合は、<strong>「Cloudflare Pagesのビルドが失敗した」可能性</strong>。Claude に「commit したのに本番に反映されない」と相談 → 開発担当者に連絡、の順で対処してください。</div>
+
+  <h2>🎉 おめでとうございます！</h2>
+  <p>これで <strong>あなた自身でLPを編集して公開する</strong> という一連の流れを完了しました。最初は怖いかもしれませんが、3回もやれば手順は身体が覚えます。</p>
+
+  <div class="page-number">13 / 15</div>
+</div>
+
+<!-- ===== PAGE 14: トラブル対処 ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>🆘 困った時：前の状態に戻す</h1>
+    <div class="chapter">トラブル対処</div>
+  </div>
+
+  <h2>🔄 万が一サイトが壊れた時の「1分で元に戻す」方法</h2>
+
+  <div class="step">
+    <span class="step-num">1</span><span class="step-title">GitHub リポジトリのトップで「Commits」をクリック</span>
+    <p>URL: <code>github.com/koki-187/scalp-ink-lp/commits/master</code></p>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><span class="step-title">「正常だった頃」のコミットを探す</span>
+    <p>過去のコミット履歴が新しい順に並んでいます。「キャンペーン価格を変更」のひとつ前など、正常だった状態を探します。</p>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span><span class="step-title">そのコミットの「&lt;&gt; Browse files」をクリック</span>
+    <p>当時のファイル一覧が表示されます。</p>
+  </div>
+
+  <div class="step">
+    <span class="step-num">4</span><span class="step-title">最新の壊れたコミットを「Revert」する</span>
+    <p>または、AIに「最新のコミットを取り消したい」と相談すると手順を案内してくれます。</p>
+  </div>
+
+  <div class="danger"><strong>慌てない！</strong> GitHubは <strong>すべての変更履歴を永久に保管</strong>しています。「やらかした」と思っても、必ず復元できます。一人で抱え込まず、Claude → 開発者の順で相談してください。</div>
+
+  <h2>📞 連絡先・サポート優先順位</h2>
+  <table>
+    <tr><th>優先順位</th><th>対象</th><th>連絡方法</th></tr>
+    <tr><td>1</td><td>Claude（AI）に相談</td><td>claude.ai でスクショを貼って質問</td></tr>
+    <tr><td>2</td><td>このガイドPDFを再読</td><td>該当ステップを見直す</td></tr>
+    <tr><td>3</td><td>開発担当者（緊急時のみ）</td><td>Bitwardenに記載の連絡先</td></tr>
+  </table>
+
+  <h2>🚨 開発担当者に連絡すべきレベル</h2>
+  <ul class="checklist">
+    <li>サイトが完全に表示されない（404 / 500 エラー）</li>
+    <li>同じエラーが何度もループする</li>
+    <li>GitHubにログインできなくなった</li>
+    <li>Cloudflare Pages から「Build failed」のメールが届いた</li>
+  </ul>
+
+  <p style="margin-top:4mm;">逆に「文字の色をもう少し濃くしたい」「画像を差し替えたい」「新セクションを足したい」レベルは、<strong>すべて Claude と GitHub で完結</strong>します。臆せずチャレンジしてください。</p>
+
+  <div class="page-number">14 / 15</div>
+</div>
+
+<!-- ===== PAGE 15: レシピ集 ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>📚 よくある編集レシピ集</h1>
+    <div class="chapter">付録</div>
+  </div>
+
+  <p>毎回ゼロから AI に説明するのは面倒なので、<strong>「コピペで使える依頼文テンプレ」</strong> を用途別に用意しました。</p>
+
+  <h3>🔧 レシピ1: テキスト・価格の変更</h3>
+  <div class="code-block">index.html の「【変更前のテキスト】」を「【変更後のテキスト】」に変更したい。
+before/after コードと、Ctrl+F検索キーワードを教えて。</div>
+
+  <h3>🔧 レシピ2: 営業時間の変更</h3>
+  <div class="code-block">index.html の営業時間表示を「平日10:00-20:00 / 土日祝9:00-19:00」に変更したい。
+該当箇所のbefore/afterコードを出して。</div>
+
+  <h3>🔧 レシピ3: 電話番号の変更</h3>
+  <div class="code-block">index.html と en/index.html の両方で、電話番号を【新しい番号】に変更したい。
+tel: リンクと表示テキストの両方を更新するコードを教えて。</div>
+
+  <h3>🔧 レシピ4: 画像の差し替え</h3>
+  <div class="code-block">トップヒーロー画像を新しい画像に差し替えたい。
+1) assets フォルダにどうアップロードすればいい？
+2) index.html のどの行を変えればいい？
+手順を教えて。</div>
+
+  <h3>🔧 レシピ5: 新しいセクションを追加</h3>
+  <div class="code-block">index.html の【既存セクション名】の下に、新しく「お客様の声」セクションを追加したい。
+3名分のコメントと写真スペースのHTMLコードを生成して。
+既存デザインに合うCSSクラスを使って。</div>
+
+  <h3>🔧 レシピ6: キャンペーンバナーの追加</h3>
+  <div class="code-block">トップページに「春のキャンペーン 4/1-5/31」のバナーを追加したい。
+ページ上部に固定表示で、クリックすると料金セクションにスクロールするようにして。</div>
+
+  <h3>🔧 レシピ7: SEO（タイトル・説明文）の変更</h3>
+  <div class="code-block">index.html の &lt;title&gt; と &lt;meta name="description"&gt; を以下に変更したい：
+- title: 【新しいタイトル】
+- description: 【新しい説明文・120文字以内】
+before/afterコードを出して。</div>
+
+  <h2>🌟 最後に：完璧を目指さない</h2>
+  <p>最初の数回は時間がかかります。<strong>10分の編集に1時間かかっても全然OK</strong>。慣れれば必ず早くなります。</p>
+  <p>分からないことは、まず Claude に。「素人質問ですみません」と前置きしても構いません。AIは絶対に呆れません。</p>
+
+  <div class="tip" style="text-align:center; font-size:11pt; padding:5mm;"><strong>「AIに相談 → GitHubで貼り付け → Commit → 1分待つ」</strong><br>この4ステップだけ覚えてください。</div>
+
+  <div style="text-align:center; margin-top:8mm; padding:4mm; background:linear-gradient(135deg,#e8f0fe,#e6f4ea); border-radius:3mm;">
+    <div style="font-size:11pt; font-weight:700; color:#1a73e8;">THE SCALP INK by CIMA</div>
+    <div style="font-size:9pt; color:#666;">無料プランLP編集ガイド / 2026年4月23日版</div>
+    <div style="font-size:8pt; color:#999; margin-top:2mm;">© CIMA SCALP INK. All rights reserved.</div>
+  </div>
+
+  <div class="page-number">15 / 15</div>
+</div>
+
+</body>
+</html>
