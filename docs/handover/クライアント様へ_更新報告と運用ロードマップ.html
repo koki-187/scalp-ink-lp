@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>クライアント様へ — 更新報告と運用ロードマップ | THE SCALP INK by CIMA</title>
+<style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Noto Sans JP","Hiragino Sans","Yu Gothic UI",sans-serif;
+  color: #1a1a1a;
+  background: #e8eaed;
+  line-height: 1.65;
+  font-size: 10pt;
+}
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  background: #fff;
+  margin: 8mm auto;
+  padding: 14mm 16mm;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  page-break-after: always;
+  position: relative;
+  overflow: hidden;
+}
+.page:last-child { page-break-after: auto; }
+.page-num {
+  position: absolute;
+  bottom: 6mm;
+  right: 16mm;
+  font-size: 8pt;
+  color: #999;
+}
+.page-header {
+  border-bottom: 3px solid #1a73e8;
+  padding-bottom: 4mm;
+  margin-bottom: 6mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.page-header h1 {
+  font-size: 18pt;
+  color: #1a73e8;
+  font-weight: 800;
+}
+.page-header .chapter {
+  font-size: 9pt;
+  color: #fff;
+  background: #1a73e8;
+  padding: 2mm 4mm;
+  border-radius: 3mm;
+  font-weight: 700;
+}
+h2 {
+  font-size: 13pt;
+  color: #202124;
+  margin: 5mm 0 3mm;
+  padding: 2mm 3mm 2mm 5mm;
+  background: linear-gradient(90deg,#1a73e8 0%,#1a73e8 4mm,#f1f3f4 4mm);
+  border-radius: 1mm;
+  font-weight: 800;
+}
+h3 {
+  font-size: 11pt;
+  color: #1a73e8;
+  margin: 4mm 0 2mm;
+  padding-left: 3mm;
+  border-left: 3px solid #1a73e8;
+}
+p { margin: 2mm 0; }
+.cover {
+  background: linear-gradient(135deg,#1a73e8 0%,#34a853 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30mm 20mm;
+}
+.cover .brand {
+  font-size: 11pt;
+  opacity: 0.9;
+  letter-spacing: 0.2em;
+  margin-bottom: 8mm;
+}
+.cover h1 { font-size: 32pt; line-height: 1.3; margin-bottom: 6mm; }
+.cover .sub {
+  font-size: 14pt;
+  opacity: 0.95;
+  margin-bottom: 15mm;
+  line-height: 1.6;
+}
+.cover .stat-box {
+  background: rgba(255,255,255,0.15);
+  padding: 6mm 10mm;
+  border-radius: 4mm;
+  margin: 5mm 0;
+  min-width: 100mm;
+}
+.cover .stat-box .num {
+  font-size: 28pt;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.cover .stat-box .lbl { font-size: 10pt; opacity: 0.85; }
+.cover .footer-meta {
+  margin-top: 12mm;
+  font-size: 9pt;
+  opacity: 0.85;
+}
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm;
+  margin: 3mm 0;
+}
+.summary-card {
+  background: #f8f9fa;
+  border-left: 4px solid #1a73e8;
+  padding: 4mm 5mm;
+  border-radius: 0 2mm 2mm 0;
+}
+.summary-card.green { border-left-color: #34a853; background: #e6f4ea; }
+.summary-card.orange { border-left-color: #f9ab00; background: #fef7e0; }
+.summary-card.red { border-left-color: #d93025; background: #fce8e6; }
+.summary-card .ttl { font-size: 11pt; font-weight: 700; margin-bottom: 2mm; }
+.summary-card .desc { font-size: 9pt; line-height: 1.5; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 3mm 0;
+  font-size: 9pt;
+}
+th, td {
+  border: 1px solid #dadce0;
+  padding: 2.5mm 3mm;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: #1a73e8; color: #fff; font-weight: 700; }
+tr:nth-child(even) td { background: #f8f9fa; }
+.checkbox-list {
+  list-style: none;
+  padding: 0;
+}
+.checkbox-list li {
+  padding: 2mm 0 2mm 8mm;
+  position: relative;
+  font-size: 10pt;
+  line-height: 1.6;
+  border-bottom: 1px dashed #dadce0;
+}
+.checkbox-list li:before {
+  content: "☐";
+  position: absolute;
+  left: 0;
+  top: 1.5mm;
+  font-size: 14pt;
+  color: #1a73e8;
+}
+.checkbox-list li:last-child { border-bottom: none; }
+.checkbox-list li .lvl {
+  display: inline-block;
+  background: #1a73e8;
+  color: #fff;
+  padding: 0.5mm 2mm;
+  border-radius: 1mm;
+  font-size: 7.5pt;
+  font-weight: 700;
+  margin-right: 2mm;
+  vertical-align: middle;
+}
+.roadmap-week {
+  background: #fff;
+  border: 2px solid #1a73e8;
+  border-radius: 3mm;
+  padding: 4mm 5mm;
+  margin: 4mm 0;
+  position: relative;
+}
+.roadmap-week .label {
+  position: absolute;
+  top: -3mm;
+  left: 5mm;
+  background: #1a73e8;
+  color: #fff;
+  padding: 1mm 4mm;
+  border-radius: 2mm;
+  font-size: 9pt;
+  font-weight: 700;
+}
+.roadmap-week.green { border-color: #34a853; }
+.roadmap-week.green .label { background: #34a853; }
+.roadmap-week.orange { border-color: #f9ab00; }
+.roadmap-week.orange .label { background: #f9ab00; }
+.roadmap-week.red { border-color: #d93025; }
+.roadmap-week.red .label { background: #d93025; }
+.roadmap-week .goal {
+  font-size: 11pt;
+  font-weight: 700;
+  margin: 3mm 0 2mm;
+  color: #1a73e8;
+}
+.roadmap-week.green .goal { color: #34a853; }
+.roadmap-week.orange .goal { color: #f9ab00; }
+.roadmap-week.red .goal { color: #d93025; }
+.roadmap-week ul {
+  padding-left: 5mm;
+  font-size: 9.5pt;
+  margin: 2mm 0;
+}
+.roadmap-week li { margin: 1.5mm 0; }
+.flow-tree {
+  background: #f8f9fa;
+  padding: 5mm 6mm;
+  border-radius: 3mm;
+  margin: 4mm 0;
+  font-family: monospace;
+  font-size: 9pt;
+  line-height: 1.8;
+  white-space: pre;
+  border-left: 4px solid #1a73e8;
+}
+.callout {
+  background: linear-gradient(135deg,#e8f0fe,#e6f4ea);
+  border: 2px solid #1a73e8;
+  border-radius: 3mm;
+  padding: 4mm 5mm;
+  margin: 4mm 0;
+  font-size: 10pt;
+}
+.callout strong { color: #1a73e8; }
+.tip {
+  background: #fef7e0;
+  border-left: 4px solid #f9ab00;
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  font-size: 9.5pt;
+}
+.tip::before { content: "💡 "; font-size: 11pt; }
+.warn {
+  background: #fce8e6;
+  border-left: 4px solid #d93025;
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  font-size: 9.5pt;
+}
+.warn::before { content: "⚠️ "; font-size: 11pt; }
+.success {
+  background: #e6f4ea;
+  border-left: 4px solid #34a853;
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  font-size: 9.5pt;
+}
+.success::before { content: "✅ "; font-size: 11pt; }
+.kbd {
+  display: inline-block;
+  background: #f1f3f4;
+  border: 1px solid #5f6368;
+  border-bottom-width: 2px;
+  border-radius: 1.5mm;
+  padding: 0.3mm 2mm;
+  font-family: monospace;
+  font-size: 8.5pt;
+  font-weight: 700;
+}
+.url {
+  font-family: monospace;
+  background: #f1f3f4;
+  padding: 0.5mm 2mm;
+  border-radius: 1mm;
+  font-size: 8.5pt;
+  border: 1px solid #dadce0;
+}
+.price-table th { background: #34a853; }
+.del { text-decoration: line-through; color: #999; }
+.new { color: #34a853; font-weight: 700; }
+.legend {
+  display: flex;
+  gap: 5mm;
+  margin: 3mm 0;
+  flex-wrap: wrap;
+  font-size: 8.5pt;
+}
+.legend span {
+  background: #1a73e8;
+  color: #fff;
+  padding: 1mm 3mm;
+  border-radius: 1mm;
+}
+.big-number {
+  font-size: 30pt;
+  font-weight: 800;
+  color: #1a73e8;
+  line-height: 1;
+}
+@media print {
+  body { background: #fff; }
+  .page { box-shadow: none; margin: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PAGE 1: COVER ===== -->
+<div class="page cover">
+  <div class="brand">T H E　S C A L P　I N K　b y　C I M A</div>
+  <h1>クライアント様へ<br>更新報告 & 運用ロードマップ</h1>
+  <div class="sub">
+    今回の更新内容のご報告、<br>
+    最初に確認していただきたいこと、<br>
+    そして自立運用までの30日ロードマップ
+  </div>
+  <div class="stat-box">
+    <div class="num">9 件</div>
+    <div class="lbl">の更新を本番反映済み</div>
+  </div>
+  <div class="footer-meta">
+    2026年6月10日 / 全12ページ<br>
+    LP本体・GitHub・運用ツール・引継ぎ資料すべて同期完了
+  </div>
+  <div class="page-num">1 / 12</div>
+</div>
+
+<!-- ===== PAGE 2: EXECUTIVE SUMMARY ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>📊 今回の更新ハイライト</h1>
+    <div class="chapter">Chapter 1</div>
+  </div>
+
+  <p>お世話になっております。LP運用システムの<strong>全体改修と引継ぎ環境整備</strong>を実施しましたのでご報告いたします。</p>
+
+  <h2>🎯 4つの大きな変更</h2>
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="ttl">💰 料金プラン改定</div>
+      <div class="desc">4プランすべてを「〜」表記の幅のある価格に変更。客単価UPとアップセル余地を確保。</div>
+    </div>
+    <div class="summary-card green">
+      <div class="ttl">🎁 紹介プログラム整理</div>
+      <div class="desc">対象を「全頭ライト以上」に限定。¥3,000 OFF割引は廃止し、シンプルなインセンティブに。</div>
+    </div>
+    <div class="summary-card orange">
+      <div class="ttl">📂 GitHubリポジトリ刷新</div>
+      <div class="desc">不要ファイル約340件を整理、TOPページがクリーンに。デフォルトブランチを <code>master</code> に統一。</div>
+    </div>
+    <div class="summary-card red">
+      <div class="ttl">🛠️ 運用支援ツール追加</div>
+      <div class="desc">クイックリファレンス（A4×1）、GitHub Issueテンプレート、AIへの依頼文テンプレを実装。</div>
+    </div>
+  </div>
+
+  <h2>💰 新料金プラン（本番反映済み）</h2>
+  <table class="price-table">
+    <tr><th>プラン</th><th>旧価格</th><th>新価格</th><th>新ドット数</th></tr>
+    <tr><td>Trial 体験施術</td><td class="del">¥3,000</td><td class="new">¥5,000〜</td><td>〜5,000ドット</td></tr>
+    <tr><td>Light 全頭ライト</td><td class="del">¥30,000</td><td class="new">¥30,000〜</td><td>〜30,000ドット</td></tr>
+    <tr><td>Standard 全頭スタンダード</td><td class="del">¥40,000</td><td class="new">¥50,000〜</td><td>〜50,000ドット</td></tr>
+    <tr><td>Heavy 全頭ヘビー</td><td class="del">¥50,000</td><td class="new">¥70,000〜</td><td>〜70,000ドット</td></tr>
+  </table>
+  <p style="font-size:9pt; color:#666;">※「1ドット=1円」の明朗会計コンセプトは維持。価格に上限の幅を持たせることでアップセル余地を確保しました。</p>
+
+  <h2>🎁 紹介プログラム新ルール</h2>
+  <div class="callout">
+    <strong>対象:</strong> 全頭ライト・スタンダード・ヘビーのいずれかをご予約・施術完了<br>
+    <strong>特典:</strong> 紹介者・被紹介者の<strong>両方に5,000ドット（¥5,000相当）</strong>プレゼント<br>
+    <strong>有効期限:</strong> 12ヶ月 / <strong>体験施術は対象外</strong>
+  </div>
+
+  <div class="page-num">2 / 12</div>
+</div>
+
+<!-- ===== PAGE 3: WHAT WAS DONE ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>🛠️ 実施した9つの主な作業</h1>
+    <div class="chapter">Chapter 2</div>
+  </div>
+
+  <table>
+    <tr><th width="6%">#</th><th width="30%">作業内容</th><th>効果</th></tr>
+    <tr><td>1</td><td><strong>料金プラン改定</strong></td><td>4プランすべてを「〜」表記の幅価格に変更。SEO/Schema.org/予約フォーム/特商法も同期。</td></tr>
+    <tr><td>2</td><td><strong>紹介プログラム条件変更</strong></td><td>全頭ライト以上限定に。体験施術を対象外に。ルールを単純化。</td></tr>
+    <tr><td>3</td><td><strong>初回限定¥3,000 OFFの廃止</strong></td><td>価格との整合性確保。「併用不可」など複雑文言を全削除。</td></tr>
+    <tr><td>4</td><td><strong>GitHubリポジトリ整理</strong></td><td>TOPページがクリーン化（17項目）。引継ぎガイド準拠の構成に。</td></tr>
+    <tr><td>5</td><td><strong>README.md新規作成</strong></td><td>サイト概要・料金・運用方法を1ページで把握可能に。</td></tr>
+    <tr><td>6</td><td><strong>GitHub Issueテンプレート3種追加</strong></td><td>編集依頼・不具合報告がフォーム入力で完結可能に。</td></tr>
+    <tr><td>7</td><td><strong>クイックリファレンスカード (A4×1)</strong></td><td>運用フロー全体を1枚で把握。壁貼り・デスク常備推奨。</td></tr>
+    <tr><td>8</td><td><strong>Claudeプロジェクト指示プロンプト追加</strong></td><td>Claude.ai Projectsに登録するだけで、AIが「コピペで完結する4セット形式」で回答するように。</td></tr>
+    <tr><td>9</td><td><strong>不要ファイル削除と整理</strong></td><td>合計約340ファイル整理 / 約20MB削減 / コード品質維持確認済み。</td></tr>
+  </table>
+
+  <h2>🌐 GitHubページがこう変わりました</h2>
+  <table>
+    <tr><th width="50%">Before（散らかっていた状態）</th><th width="50%">After（クリーン構成）</th></tr>
+    <tr><td>AIシミュレーター/、CIMAアイコン一式/、ChatGPT画像、LINE公式アカウント/、引き継ぎ関連HTML/PDF、運用指南書、ビフォーアフター用写真/、ヒーロー動画/...<br><strong>合計40+項目で何が大事かわからない</strong></td><td>📁 .github / assets / docs / en<br>📄 README.md / index.html / privacy-policy.html / tokushoho.html<br>+ 各種設定ファイル<br><strong>合計17項目で構造が一目瞭然</strong></td></tr>
+  </table>
+
+  <div class="success">本番LPの動作には一切影響ありません。料金更新・デザイン・予約フォーム・SEO すべて正常稼働中です。</div>
+
+  <div class="page-num">3 / 12</div>
+</div>
+
+<!-- ===== PAGE 4: WHAT TO CHECK FIRST ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>✅ まず確認していただきたい5項目</h1>
+    <div class="chapter">Chapter 3</div>
+  </div>
+
+  <p>引継ぎ後に<strong>真っ先に</strong>ご自身の目で確認していただきたいことを優先順位で並べました。<strong>所要時間：合計15分</strong>。</p>
+
+  <h2>📋 Day 1 必須チェックリスト</h2>
+  <ul class="checkbox-list">
+    <li><span class="lvl">最優先</span><strong>本番サイトで新料金が表示されているか</strong><br>
+      <small>→ <span class="url">cima-scalpink.com</span> をブラウザで開き、強制リロード（<span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">R</span>）して料金セクションへ。¥5,000〜 / ¥30,000〜 / ¥50,000〜 / ¥70,000〜 の4つが表示されていれば◎</small>
+    </li>
+    <li><span class="lvl">最優先</span><strong>紹介プログラムが新ルール表記になっているか</strong><br>
+      <small>→ 同じLP内で「ご紹介キャンペーン」セクションを探す。「全頭ライト以上のメニューが対象」「体験施術は対象外」が表示されていれば◎</small>
+    </li>
+    <li><span class="lvl">重要</span><strong>GitHubのリポジトリTOPがクリーンになっているか</strong><br>
+      <small>→ <span class="url">github.com/koki-187/scalp-ink-lp</span> を開く。17項目程度の整理された一覧になっていれば◎</small>
+    </li>
+    <li><span class="lvl">重要</span><strong>Bitwarden（パスワード管理）にログインできるか</strong><br>
+      <small>→ <span class="url">vault.bitwarden.com</span>。すべての認証情報がここに集約されています。</small>
+    </li>
+    <li><span class="lvl">推奨</span><strong>クイックリファレンスカード（A4×1）を印刷してデスクに置く</strong><br>
+      <small>→ <code>docs/handover/クイックリファレンスカード.pdf</code> を開いて印刷。困った時の「最初に見るもの」です。</small>
+    </li>
+  </ul>
+
+  <h2>🆘 万が一何かおかしい時</h2>
+  <div class="callout">
+    <strong>慌てなくて大丈夫です。</strong> GitHubは過去のすべての状態を永久保管しているため、必ず元に戻せます。<br><br>
+    1. まず <strong>Claude.ai（無料版）</strong> に状況をスクショ付きで貼って質問<br>
+    2. それでも解決しない場合のみ、開発担当者（Bitwardenに連絡先記載）にご連絡
+  </div>
+
+  <div class="tip">この5項目さえ確認できれば、いつでも本格運用を開始できる状態です。慌てて全部覚えようとせず、まずは「ここに何があるか」を把握するだけでOKです。</div>
+
+  <div class="page-num">4 / 12</div>
+</div>
+
+<!-- ===== PAGE 5: SKILLS PRIORITY ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>🎓 身につけたいスキル優先順位</h1>
+    <div class="chapter">Chapter 4</div>
+  </div>
+
+  <p>「何から覚えればいいか分からない」を防ぐため、<strong>業務的に価値が高い順</strong>で習得スキルを整理しました。</p>
+
+  <h2>🏆 優先順位ランキング</h2>
+  <table>
+    <tr><th>#</th><th>スキル</th><th>頻度</th><th>難易度</th><th>習得期間</th></tr>
+    <tr><td>1</td><td><strong>料金・営業時間・お知らせのテキスト変更</strong></td><td>月2〜3回</td><td>★☆☆☆☆</td><td>3日</td></tr>
+    <tr><td>2</td><td><strong>本番サイトでの反映確認 + 強制リロード</strong></td><td>編集毎</td><td>★☆☆☆☆</td><td>即日</td></tr>
+    <tr><td>3</td><td><strong>Claude.ai に「魔法の依頼文」で相談</strong></td><td>編集毎</td><td>★☆☆☆☆</td><td>初日</td></tr>
+    <tr><td>4</td><td><strong>GitHub Web Editor で Ctrl+F → 貼付 → Commit</strong></td><td>編集毎</td><td>★★☆☆☆</td><td>1週間</td></tr>
+    <tr><td>5</td><td><strong>キャンペーンバナーの追加・削除</strong></td><td>月1回</td><td>★★☆☆☆</td><td>2週間</td></tr>
+    <tr><td>6</td><td><strong>GitHub Issues で編集依頼を出す</strong></td><td>必要時</td><td>★☆☆☆☆</td><td>初日</td></tr>
+    <tr><td>7</td><td><strong>画像の差し替え（ビフォーアフター等）</strong></td><td>月1回</td><td>★★★☆☆</td><td>3週間</td></tr>
+    <tr><td>8</td><td><strong>SEOのtitle/descriptionの変更</strong></td><td>四半期</td><td>★★★☆☆</td><td>1ヶ月</td></tr>
+    <tr><td>9</td><td><strong>新セクション・コーナーの追加</strong></td><td>必要時</td><td>★★★★☆</td><td>1〜2ヶ月</td></tr>
+    <tr><td>10</td><td><strong>GitHub Revert（壊れた時の復旧）</strong></td><td>緊急時</td><td>★★☆☆☆</td><td>習熟が安心</td></tr>
+  </table>
+
+  <h2>🎯 90%は「上位4スキル」だけで運用可能</h2>
+  <div class="callout">
+    実は、スキル1〜4だけ覚えれば<strong>日常運用の90%が対応可能</strong>です。<br>
+    スキル5以降は「必要になった時に Claude に聞きながら覚える」で十分。<br>
+    すべてを一気に覚えようとせず、<strong>「まず4つだけ」</strong>を目標に。
+  </div>
+
+  <h2>💡 学習の心構え</h2>
+  <ul class="checkbox-list">
+    <li><strong>完璧を目指さない</strong> — 最初は10分の編集に1時間かかってもOK</li>
+    <li><strong>「素人質問」を恐れない</strong> — Claudeに「初心者なので簡単に」と前置きすれば優しく答えます</li>
+    <li><strong>必ず3回繰り返す</strong> — 同じ操作を3回やれば手順が体に染み付きます</li>
+    <li><strong>失敗を恐れない</strong> — GitHubは全履歴保存、必ず元に戻せます</li>
+  </ul>
+
+  <div class="page-num">5 / 12</div>
+</div>
+
+<!-- ===== PAGE 6: 30-DAY ROADMAP ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>📅 30日 自立運用ロードマップ</h1>
+    <div class="chapter">Chapter 5</div>
+  </div>
+
+  <p>引継ぎから30日で「自分一人でLP更新できる」状態を目指す、週単位の習得計画です。</p>
+
+  <div class="roadmap-week red">
+    <span class="label">Week 1（Day 1-7）</span>
+    <div class="goal">🎯 目標: 環境を把握し、安心感を持つ</div>
+    <ul>
+      <li>引継ぎ当日のチェックリスト5項目を完了</li>
+      <li>クイックリファレンスカード（A4）を印刷・デスクに常備</li>
+      <li>Claude.ai に Google アカウントでログイン → プロジェクト作成</li>
+      <li>「Claudeプロジェクト指示プロンプト.md」の内容をプロジェクトに設定</li>
+      <li>GitHubリポジトリにアクセスできることを確認</li>
+      <li><strong>触らず眺めるだけ</strong>でOK — まずは「どこに何があるか」を覚える</li>
+    </ul>
+  </div>
+
+  <div class="roadmap-week orange">
+    <span class="label">Week 2（Day 8-14）</span>
+    <div class="goal">🎯 目標: 簡単なテキスト変更を経験する</div>
+    <ul>
+      <li>Claude に「営業時間の表示を確認したい」と相談してみる</li>
+      <li>AIが指示してくれた箇所を GitHub Web Editor で開いて<strong>眺める</strong>（変更はまだしない）</li>
+      <li>1回だけ「お知らせバナーの日付を変える」など極小の編集に挑戦</li>
+      <li>Preview タブで差分を確認 → Commit せず Cancel で戻る練習</li>
+      <li>慣れたら本当に Commit → 1〜2分後に本番反映を確認</li>
+    </ul>
+  </div>
+
+  <div class="roadmap-week orange">
+    <span class="label">Week 3（Day 15-21）</span>
+    <div class="goal">🎯 目標: 月次運用を体験する</div>
+    <ul>
+      <li>「営業時間変更」や「キャンペーン追加」など実務系の編集を1〜2件実施</li>
+      <li>GitHub Issues で「✏️ LP編集依頼」テンプレートを使ってみる（自分宛て or 開発者）</li>
+      <li>編集後の本番確認 → 強制リロード習慣を定着</li>
+      <li>困った時に Claude にすぐ聞く習慣をつける</li>
+    </ul>
+  </div>
+
+  <div class="roadmap-week green">
+    <span class="label">Week 4（Day 22-30）</span>
+    <div class="goal">🎯 目標: 自立運用の確立 ✨</div>
+    <ul>
+      <li>テキスト変更系の編集を Claude + GitHub だけで完結できる状態に</li>
+      <li>「失敗しても Revert で戻せる」感覚を体得</li>
+      <li>月次更新のリズム（例：毎月第1金曜にキャンペーン更新）を設定</li>
+      <li>開発担当者への質問頻度が週0〜1回まで減る</li>
+      <li><strong>🎉 自立運用達成！</strong></li>
+    </ul>
+  </div>
+
+  <div class="page-num">6 / 12</div>
+</div>
+
+<!-- ===== PAGE 7: DAILY/WEEKLY/MONTHLY FLOW ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>🔄 日次・週次・月次の運用フロー</h1>
+    <div class="chapter">Chapter 6</div>
+  </div>
+
+  <p>運用に慣れた後の「定期的にやること」をリズム化した運用フローです。</p>
+
+  <h2>📅 毎日（5分以内・スマホでOK）</h2>
+  <ul class="checkbox-list">
+    <li><strong>本番サイトを軽くチェック</strong> — 表示崩れがないか</li>
+    <li><strong>GitHub通知メールがあれば内容確認</strong></li>
+    <li><strong>LINE・Instagram の予約問い合わせ対応</strong></li>
+  </ul>
+
+  <h2>📆 毎週（30分・水曜or木曜推奨）</h2>
+  <ul class="checkbox-list">
+    <li><strong>サイトのアクセス状況をGA4で確認</strong> — 急な増減がないか</li>
+    <li><strong>Google Search Console で検索順位を確認</strong></li>
+    <li><strong>来週のキャンペーン情報があれば下書き準備</strong></li>
+  </ul>
+
+  <h2>🗓️ 毎月（1時間・第1月曜推奨）</h2>
+  <ul class="checkbox-list">
+    <li><strong>キャンペーンバナーの差し替え</strong> — 月初に新しい訴求へ</li>
+    <li><strong>料金プランや営業時間に変更があれば本番反映</strong></li>
+    <li><strong>ビフォーアフター写真を追加（任意）</strong></li>
+    <li><strong>GitHub Issues の未対応がないか確認</strong></li>
+    <li><strong>クライアント納品物のZIPダウンロードリンクを確認</strong></li>
+  </ul>
+
+  <h2>🎯 四半期（3ヶ月に1回・カレンダー登録推奨）</h2>
+  <ul class="checkbox-list">
+    <li><strong>SEO見直し</strong> — title・description が陳腐化していないか</li>
+    <li><strong>料金プランの見直し</strong> — 市況・コストに合わせて調整</li>
+    <li><strong>プライバシーポリシー・特商法の最新性確認</strong></li>
+    <li><strong>開発担当者と30分定例</strong> — 必要に応じて</li>
+  </ul>
+
+  <div class="tip">これは「理想的なリズム」です。最初から完璧にやろうとせず、できる範囲で始めて徐々に習慣化しましょう。「やらないより少しでもやる」が大事。</div>
+
+  <div class="page-num">7 / 12</div>
+</div>
+
+<!-- ===== PAGE 8: SIMPLE EDIT FLOW ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>⚡ 編集フロー（最短ルート・90秒で全体把握）</h1>
+    <div class="chapter">Chapter 7</div>
+  </div>
+
+  <p>「何か変えたい」と思った瞬間から本番反映までの最短ルートを図解します。</p>
+
+  <div class="flow-tree">
+┌────────────────────────────────────────┐
+│ 🎯 ① 「○○を変えたい」と思う              │
+└──────────────┬─────────────────────────┘
+               ↓
+┌────────────────────────────────────────┐
+│ 💬 ② Claude.ai を開く                    │
+│    https://claude.ai/                   │
+│    プロジェクト「CIMA SCALP INK」を選択   │
+└──────────────┬─────────────────────────┘
+               ↓
+┌────────────────────────────────────────┐
+│ 📝 ③ 魔法の依頼文をコピペして送信         │
+│    「【ファイル名】の【変更前】を         │
+│     【変更後】に変えたい」               │
+└──────────────┬─────────────────────────┘
+               ↓
+┌────────────────────────────────────────┐
+│ 🤖 ④ Claudeが4セットで回答              │
+│    1) ファイル / 2) 検索キーワード        │
+│    3) before / 4) after                 │
+└──────────────┬─────────────────────────┘
+               ↓
+┌────────────────────────────────────────┐
+│ 🌐 ⑤ GitHub Web Editor を開く            │
+│    github.com/koki-187/scalp-ink-lp     │
+│    → 該当ファイル → ✏ Edit              │
+└──────────────┬─────────────────────────┘
+               ↓
+┌────────────────────────────────────────┐
+│ 🔍 ⑥ Ctrl+F で検索キーワード入力          │
+│    → 該当行を発見                        │
+└──────────────┬─────────────────────────┘
+               ↓
+┌────────────────────────────────────────┐
+│ 📋 ⑦ その行を選択 → Ctrl+V で貼付け      │
+│    （Claudeの "after" コード）           │
+└──────────────┬─────────────────────────┘
+               ↓
+┌────────────────────────────────────────┐
+│ 👀 ⑧ Preview タブで差分確認              │
+│    赤緑1行ずつなら OK                    │
+└──────────────┬─────────────────────────┘
+               ↓
+┌────────────────────────────────────────┐
+│ ✅ ⑨ Commit changes 緑のボタンを押す      │
+│    メッセージ「○○を△△に変更」と記入     │
+└──────────────┬─────────────────────────┘
+               ↓
+┌────────────────────────────────────────┐
+│ 🚀 ⑩ 1〜2分後に本番反映                  │
+│    cima-scalpink.com を                 │
+│    Ctrl+Shift+R で確認 → 完了 🎉         │
+└────────────────────────────────────────┘
+  </div>
+
+  <div class="success">この10ステップで <strong>編集の全行程が完結</strong>します。次のページに「困った時の分岐フロー」を用意しています。</div>
+
+  <div class="page-num">8 / 12</div>
+</div>
+
+<!-- ===== PAGE 9: TROUBLE FLOW ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>🆘 困った時の分岐フロー</h1>
+    <div class="chapter">Chapter 8</div>
+  </div>
+
+  <p>「思った通りにいかない」「壊れた気がする」時の判断フロー。</p>
+
+  <div class="flow-tree">
+                  🤔 何か困った！
+                       │
+        ┌──────────────┴──────────────┐
+        ↓                              ↓
+    ⌨ 編集前？                    💥 編集後？
+        │                              │
+        ↓                              ↓
+   📋 STEP 1: Claude.ai に          📋 STEP 1: 本番サイトを
+      質問する                          強制リロード（Ctrl+Shift+R）
+        │                              │
+        ↓                              ↓
+   解決？──Yes──→ 🎉 OK         反映されてる？─Yes─→ 🎉 OK
+        │ No                           │ No
+        ↓                              ↓
+   📋 STEP 2: 完全運用ガイドや       📋 STEP 2: 2分待ってから
+      無料プラン編集ガイドの            もう一度強制リロード
+      該当章を読む                      │
+        │                              ↓
+        ↓                          まだ反映なし？
+   解決？──Yes──→ 🎉 OK             │ Yes
+        │ No                           ↓
+        ↓                          📋 STEP 3: Claudeに
+   📋 STEP 3: GitHub Issues で         「コミットしたのに
+      「✏ LP編集依頼」を作成            反映されない」と相談
+        │                              │
+        ↓                              ↓
+   開発者またはAIが対応              📋 STEP 4: それでも
+                                       ダメなら GitHub
+   💥 サイトが完全に壊れた時            Commits → 正常な
+        ↓                              コミットへ Revert
+   📋 GitHub の Commits 履歴 →         │
+      正常コミット → 「...」→          ↓
+      「Revert」ボタン押すだけ →    📋 STEP 5: 開発担当者
+      1分で元に戻る                     に連絡（Bitwarden参照）
+  </div>
+
+  <h2>📞 連絡先優先順位</h2>
+  <table>
+    <tr><th>状況</th><th>連絡先</th><th>対応時間</th></tr>
+    <tr><td>編集方法を聞きたい</td><td>Claude.ai でAIに質問</td><td>即時</td></tr>
+    <tr><td>編集を依頼したい</td><td>GitHub Issues「✏ LP編集依頼」</td><td>1〜2営業日</td></tr>
+    <tr><td>サイトが見れない（軽度）</td><td>GitHub Issues「🐛 不具合報告」</td><td>1営業日</td></tr>
+    <tr><td>サイト全停止（重大）</td><td>開発担当者に直接電話（Bitwarden）</td><td>即時対応</td></tr>
+  </table>
+
+  <div class="warn"><strong>緊急時の判断基準:</strong> 「サイトが表示されない」「予約フォームが動かない」「Build failed メールが届いた」のいずれかが該当する場合のみ、開発担当者に直接連絡してください。それ以外はまずAIに相談で解決します。</div>
+
+  <div class="page-num">9 / 12</div>
+</div>
+
+<!-- ===== PAGE 10: COMMON SCENARIOS ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>📚 よくある場面別 — そのまま使える依頼文</h1>
+    <div class="chapter">Chapter 9</div>
+  </div>
+
+  <p>「何を頼めばいいかわからない」を解決。<strong>そのままコピペで使える</strong>依頼文集です。</p>
+
+  <h3>🔧 場面1: 料金を変更したい</h3>
+  <div class="flow-tree">index.html の Trial プランの価格を ¥5,000〜 から ¥6,000〜 に変更したい。
+before/after コードと、Ctrl+F の検索キーワードを教えて。
+英語版 en/index.html の同じ箇所も両方更新するコードをください。</div>
+
+  <h3>🔧 場面2: 営業時間を変えたい</h3>
+  <div class="flow-tree">index.html の営業時間を「平日 11:00-20:00 / 土日祝 10:00-19:00」に変更したい。
+該当箇所の before/after コードを出してください。</div>
+
+  <h3>🔧 場面3: お知らせバナーを追加したい</h3>
+  <div class="flow-tree">トップページに「夏季休業のお知らせ 8/13〜8/16」のバナーを追加したい。
+ページ上部に固定表示で、目立つ赤色で。
+既存デザインに合うCSSクラスを使った before/after コードを出して。</div>
+
+  <h3>🔧 場面4: ビフォーアフター写真を追加したい</h3>
+  <div class="flow-tree">新しいビフォーアフター写真を assets/ba/ フォルダにアップロードしたい。
+1) GitHubのWeb Editor で画像をアップする手順
+2) index.html に表示する HTML コード
+を教えてください。画像ファイル名は「hair-3-before.jpg」「hair-3-after.jpg」です。</div>
+
+  <h3>🔧 場面5: SEOのタイトルを変えたい</h3>
+  <div class="flow-tree">index.html の &lt;title&gt; と meta description を変更したい。
+- 新しいtitle: 「【新タイトル】」
+- 新しいdescription: 「【新説明文・120文字以内】」
+before/after コードと、変更後のGoogle表示プレビューを教えて。</div>
+
+  <h3>🔧 場面6: 何かを「元に戻したい」</h3>
+  <div class="flow-tree">最新のコミット（あるいはどの変更）を取り消したい。
+GitHub Web Editorだけで完結する戻し方の手順を、画面操作1ステップずつ教えてください。</div>
+
+  <div class="tip">これらをBitwardenの「セキュアノート」または<strong>クイックリファレンスカード</strong>に保存しておくと、必要な時にすぐコピペできて便利です。</div>
+
+  <div class="page-num">10 / 12</div>
+</div>
+
+<!-- ===== PAGE 11: TOOLBOX ===== -->
+<div class="page">
+  <div class="page-header">
+    <h1>🧰 引継ぎ後の道具箱（すべて準備済み）</h1>
+    <div class="chapter">Chapter 10</div>
+  </div>
+
+  <p>引継ぎの過程で<strong>すでにご提供済み</strong>のツール一覧です。「あれどこ？」と迷った時にこのページを見てください。</p>
+
+  <h2>📚 ドキュメント一式（docs/handover/ 内）</h2>
+  <table>
+    <tr><th>ファイル</th><th>使う場面</th></tr>
+    <tr><td><code>クイックリファレンスカード.pdf</code><br>(A4×1枚)</td><td>困った時に最初に見る。壁貼り推奨。</td></tr>
+    <tr><td><code>無料プランLP編集_超詳細ガイド.pdf</code><br>(A4×15枚)</td><td>初めて編集する時の超詳細手順書。画面付き。</td></tr>
+    <tr><td><code>完全運用ガイド.pdf</code><br>(A4×11枚)</td><td>運用全体の方針・心構え・拠点情報。</td></tr>
+    <tr><td><code>運用指南書.md</code></td><td>AIに読み込ませる詳細マニュアル。</td></tr>
+    <tr><td><code>Claudeプロジェクト指示プロンプト.md</code></td><td>Claude.ai Projectsに登録するカスタム指示文。</td></tr>
+    <tr><td><code>CIMA_SCALP_INK_引継ぎ納品物_2026-04-23.zip</code></td><td>上記すべてを一括ダウンロード用パッケージ。</td></tr>
+    <tr><td><code>クライアント様へ_更新報告と運用ロードマップ.pdf</code><br>(このファイル)</td><td>更新内容の総括 + 段階別習得ロードマップ。</td></tr>
+  </table>
+
+  <h2>🌐 オンラインツール（ブックマーク必須）</h2>
+  <table>
+    <tr><th>用途</th><th>URL</th></tr>
+    <tr><td>AI相談</td><td><span class="url">claude.ai</span></td></tr>
+    <tr><td>LP編集</td><td><span class="url">github.com/koki-187/scalp-ink-lp</span></td></tr>
+    <tr><td>本番サイト</td><td><span class="url">cima-scalpink.com</span></td></tr>
+    <tr><td>パスワード管理</td><td><span class="url">vault.bitwarden.com</span></td></tr>
+    <tr><td>編集依頼・不具合報告</td><td><span class="url">github.com/koki-187/scalp-ink-lp/issues/new/choose</span></td></tr>
+    <tr><td>GA4 アクセス解析</td><td><span class="url">analytics.google.com</span></td></tr>
+    <tr><td>Search Console</td><td><span class="url">search.google.com/search-console</span></td></tr>
+  </table>
+
+  <h2>🤖 GitHub Issue テンプレート（新機能）</h2>
+  <p>GitHubのIssuesタブで「New issue」を押すと、以下から選べます：</p>
+  <ul class="checkbox-list">
+    <li><strong>✏ LP編集依頼</strong> — 日本語フォームで編集内容を構造化して依頼</li>
+    <li><strong>🐛 不具合報告</strong> — 緊急度・環境・スクショ添付ガイド付き</li>
+    <li><strong>💬 AI（Claude）に相談する</strong> — Issueを作らずAIに直接質問するリンク</li>
+    <li><strong>📖 完全運用ガイドを読む</strong> — handover フォルダへの直接リンク</li>
+  </ul>
+
+  <div class="success">これらすべてが <strong>クライアント様の手元に揃っている</strong> 状態です。あとは「使ってみる」だけ。</div>
+
+  <div class="page-num">11 / 12</div>
+</div>
+
+<!-- ===== PAGE 12: CLOSING ===== -->
+<div class="page" style="display:flex; flex-direction:column;">
+  <div class="page-header">
+    <h1>🌟 最後に</h1>
+    <div class="chapter">Chapter 11</div>
+  </div>
+
+  <h2>📌 今日からの3つの約束</h2>
+  <div class="callout" style="font-size:11pt;">
+    <strong>① 完璧を目指さない</strong><br>
+    最初は10分の編集に1時間かかっても全然OK。3回やれば必ず慣れます。<br><br>
+    <strong>② 分からないことは、まずAIに聞く</strong><br>
+    「素人なので簡単に教えて」と前置きするだけで、Claudeは優しく丁寧に答えます。<br><br>
+    <strong>③ 失敗を恐れない</strong><br>
+    GitHubは過去のすべてを永久保管。「やらかした」と思っても、必ず1分で元に戻せます。
+  </div>
+
+  <h2>🎯 30日後のゴールイメージ</h2>
+  <div class="summary-grid">
+    <div class="summary-card green">
+      <div class="ttl">✅ 月次の価格・営業情報更新を自分でできる</div>
+      <div class="desc">Claude + GitHub だけで完結。所要時間10〜15分。</div>
+    </div>
+    <div class="summary-card green">
+      <div class="ttl">✅ キャンペーンバナーを自分で追加・削除できる</div>
+      <div class="desc">月初の更新が習慣化。</div>
+    </div>
+    <div class="summary-card green">
+      <div class="ttl">✅ サイトが壊れた時に1分で復旧できる</div>
+      <div class="desc">GitHub Revert ボタンの使い方を体得。</div>
+    </div>
+    <div class="summary-card green">
+      <div class="ttl">✅ 開発者への質問が週0〜1回まで減る</div>
+      <div class="desc">自立運用が確立した状態。</div>
+    </div>
+  </div>
+
+  <h2>📞 サポート期間中の連絡体制</h2>
+  <table>
+    <tr><th>期間</th><th>サポート内容</th></tr>
+    <tr><td>引継ぎ直後（〜2週間）</td><td>開発者が常時待機。質問即時対応。</td></tr>
+    <tr><td>1ヶ月目</td><td>週1回30分の定例（Google Meet）</td></tr>
+    <tr><td>2〜3ヶ月目</td><td>月1回30分の定例</td></tr>
+    <tr><td>4ヶ月目以降</td><td>完全独立 → スポット契約のみ</td></tr>
+  </table>
+
+  <div style="margin-top:auto; text-align:center; padding-top:8mm; border-top:2px solid #1a73e8;">
+    <div style="font-size:18pt; font-weight:800; color:#1a73e8; margin-bottom:3mm;">THE SCALP INK by CIMA</div>
+    <div style="font-size:11pt; color:#666;">「分からないことは、まずAIに聞く」<br>この習慣だけで運用の9割は回ります。</div>
+    <div style="font-size:9pt; color:#999; margin-top:6mm;">
+      🌐 cima-scalpink.com  ・  📂 github.com/koki-187/scalp-ink-lp<br>
+      2026年6月10日 / クライアント様向け 引継ぎ後アップデート報告書
+    </div>
+  </div>
+
+  <div class="page-num">12 / 12</div>
+</div>
+
+</body>
+</html>
