@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#080808">
+<title>ページが見つかりません | THE SCALP INK by CIMA</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bk: #080808;
+  --gd: #c9a84c;
+  --w:  #f5f5f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  background: var(--bk);
+  color: var(--w);
+  font-family: "Noto Sans JP", "Hiragino Sans", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+/* 装飾的な背景ドット（SMPブランドらしさ） */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(201, 168, 76, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+.wrap {
+  text-align: center;
+  max-width: 560px;
+  position: relative;
+  z-index: 1;
+  padding: 40px 32px;
+  background: linear-gradient(180deg, rgba(15, 13, 8, 0.85), rgba(8, 8, 8, 0.92));
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.brand {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.32em;
+  color: var(--gd);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+.code {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 7.5rem;
+  line-height: 1;
+  color: var(--gd);
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.3);
+  margin-bottom: 8px;
+}
+.divider {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gd), transparent);
+  margin: 16px auto 24px;
+}
+h1 {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+}
+h1 .en {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(245, 245, 240, 0.45);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 6px;
+  font-family: "Noto Sans JP", sans-serif;
+  font-weight: 400;
+}
+.msg {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: rgba(245, 245, 240, 0.7);
+  margin: 24px 0 32px;
+}
+.msg .en-msg {
+  display: block;
+  font-size: 0.78rem;
+  color: rgba(245, 245, 240, 0.4);
+  margin-top: 10px;
+  letter-spacing: 0.02em;
+}
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+.btn {
+  display: inline-block;
+  padding: 14px 36px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  min-width: 240px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.btn-p {
+  background: var(--gd);
+  color: var(--bk);
+  border: 1px solid var(--gd);
+}
+.btn-p:hover {
+  background: transparent;
+  color: var(--gd);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201, 168, 76, 0.25);
+}
+.btn-o {
+  background: transparent;
+  color: rgba(245, 245, 240, 0.85);
+  border: 1px solid rgba(245, 245, 240, 0.25);
+}
+.btn-o:hover {
+  border-color: var(--gd);
+  color: var(--gd);
+}
+.countdown {
+  font-size: 0.7rem;
+  color: rgba(245, 245, 240, 0.35);
+  margin-top: 24px;
+  letter-spacing: 0.08em;
+}
+.countdown .num {
+  color: var(--gd);
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.2rem;
+}
+@media (max-width: 480px) {
+  .wrap { padding: 32px 20px; }
+  .code { font-size: 5.5rem; }
+  h1 { font-size: 1.3rem; }
+  .btn { min-width: 200px; padding: 12px 24px; font-size: 0.78rem; }
+}
+</style>
+</head>
+<body>
+<main class="wrap" role="main">
+  <div class="brand">THE SCALP INK by CIMA</div>
+
+  <div class="code" aria-label="404">404</div>
+  <div class="divider"></div>
+
+  <h1>
+    お探しのページは見つかりませんでした
+    <span class="en">Page Not Found</span>
+  </h1>
+
+  <p class="msg">
+    URLが間違っているか、ページが移動・削除された可能性があります。<br>
+    トップページに戻って、もう一度お探しください。
+    <span class="en-msg">The page you're looking for may have been moved or deleted.</span>
+  </p>
+
+  <div class="actions">
+    <a href="/" class="btn btn-p" id="homeBtn">トップへ戻る / Back to Home</a>
+    <a href="/#booking" class="btn btn-o">無料カウンセリングを予約 / Book Free Consultation</a>
+  </div>
+
+  <p class="countdown" id="countdown" aria-live="polite">
+    <span class="num" id="sec">10</span> 秒後に自動でトップページへ移動します
+  </p>
+</main>
+
+<script>
+(function() {
+  // 言語自動判定（URLパス /en/ または ブラウザ言語）
+  var path = window.location.pathname || '';
+  var lang = (navigator.language || navigator.userLanguage || 'ja').toLowerCase();
+  var isEn = /^\/en\//.test(path) || /^en/.test(lang);
+  if (isEn) {
+    document.documentElement.lang = 'en';
+    document.title = 'Page Not Found | THE SCALP INK by CIMA';
+    document.getElementById('homeBtn').href = '/en/';
+    var cdEl = document.getElementById('countdown');
+    if (cdEl) cdEl.innerHTML = '<span class="num" id="sec">10</span> Redirecting to homepage';
+  }
+  // カウントダウン → 自動遷移
+  var sec = 10;
+  var secEl = document.getElementById('sec');
+  var redirectTo = isEn ? '/en/' : '/';
+  var timer = setInterval(function() {
+    sec--;
+    if (secEl) secEl.textContent = sec;
+    if (sec <= 0) {
+      clearInterval(timer);
+      window.location.href = redirectTo;
+    }
+  }, 1000);
+  // ユーザー操作時はカウントダウン停止（戻る操作の妨げ防止）
+  ['click', 'keydown', 'touchstart'].forEach(function(ev) {
+    document.addEventListener(ev, function() {
+      clearInterval(timer);
+      var cd = document.getElementById('countdown');
+      if (cd) cd.style.display = 'none';
+    }, { once: true, passive: true });
+  });
+})();
+</script>
+</body>
+</html>
