@@ -29,6 +29,22 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="ja_JP">
 <meta property="og:site_name" content="THE SCALP INK by CIMA">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SMP / Scalp Micropigmentation | THE SCALP INK by CIMA (Tokyo & Okinawa)">
+<meta name="twitter:description" content="Korean-origin SMP specialist. Hair loss, hairline, scar coverage. 1 dot = ¥1 transparent pricing. Trial from ¥5,000. Free consultation.">
+<meta name="twitter:image" content="https://cima-scalpink.com/assets/ogp.png">
+<meta name="twitter:image:alt" content="THE SCALP INK by CIMA — SMP before/after results">
+<!-- Local SEO (geo) -->
+<meta name="geo.region" content="JP-47">
+<meta name="geo.placename" content="Ginowan, Okinawa">
+<meta name="geo.position" content="26.275933;127.778808">
+<meta name="ICBM" content="26.275933, 127.778808">
+<!-- Supplementary -->
+<meta name="author" content="THE SCALP INK by CIMA">
+<meta name="format-detection" content="telephone=yes">
+<meta name="rating" content="general">
+<meta http-equiv="content-language" content="en">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://cima-scalpink.com/assets/ogp.png">
 <link rel="canonical" href="https://cima-scalpink.com/en/">
@@ -587,18 +603,64 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
     },
     {
       "@type": "FAQPage",
+      "speakable":{"@type":"SpeakableSpecification","cssSelector":[".faq-q",".faq-a"]},
       "mainEntity": [
+        {"@type":"Question","name":"What is SMP (Scalp Micropigmentation)?","acceptedAnswer":{"@type":"Answer","text":"SMP is a non-surgical scalp tattooing technique that uses medical-grade pigment injected dot by dot to recreate the look of hair follicles. It camouflages thinning hair, receding hairlines, scars, and alopecia, producing a fresh shaved-head or denser-hair illusion that lasts 3-5 years."}},
+        {"@type":"Question","name":"Who is eligible for SMP treatment?","acceptedAnswer":{"@type":"Answer","text":"Anyone 18 or older. SMP works for all ages and genders, from young men experiencing early hair loss to older clients with advanced thinning."}},
+        {"@type":"Question","name":"How long do SMP results last?","acceptedAnswer":{"@type":"Answer","text":"Results typically last 3-5 years. A touch-up session every few years keeps the look natural as pigment naturally fades over time."}},
+        {"@type":"Question","name":"How is SMP different from hair transplant surgery?","acceptedAnswer":{"@type":"Answer","text":"Hair transplant is surgical and moves real follicles; SMP is non-surgical and adds pigment to the skin surface. SMP has minimal downtime (shower allowed within 48h), costs roughly one-tenth of a transplant, and provides immediate visual density."}},
         {"@type":"Question","name":"Is it painful?","acceptedAnswer":{"@type":"Answer","text":"Individual experiences vary, but most clients feel only a mild prickling sensation. Please feel free to discuss any concerns during your consultation."}},
         {"@type":"Question","name":"How many sessions are needed?","acceptedAnswer":{"@type":"Answer","text":"It varies based on your skin's retention rate, but we typically recommend 2-3 sessions for optimal results."}},
         {"@type":"Question","name":"What about pricing plans?","acceptedAnswer":{"@type":"Answer","text":"We offer 4 plans starting from the trial ¥5,000~ (up to 5,000 dots) to Full-Head Light ¥30,000~, Standard ¥50,000~, and Heavy ¥70,000~. Transparent pricing at 1 dot = ¥1, counted automatically by our machine."}},
-        {"@type":"Question","name":"Can you cover scars?","acceptedAnswer":{"@type":"Answer","text":"Yes, scar coverage is one of our specialties. Please consult with us first."}}
+        {"@type":"Question","name":"Can you cover scars?","acceptedAnswer":{"@type":"Answer","text":"Yes, scar coverage is one of our specialties — burn scars, surgical scars, and self-shaving mistakes are all covered. Please consult with us first."}},
+        {"@type":"Question","name":"What is the aftercare?","acceptedAnswer":{"@type":"Answer","text":"Avoid heavy exercise, saunas, and direct sunlight for the first week. Shampooing is allowed after 48 hours."}},
+        {"@type":"Question","name":"Do you accept clients from outside Tokyo / Okinawa?","acceptedAnswer":{"@type":"Answer","text":"We welcome clients from all over Japan and abroad. Since 2-3 sessions are needed (spaced 1-2 weeks apart), out-of-town clients can plan their visits accordingly."}},
+        {"@type":"Question","name":"Is the consultation really free?","acceptedAnswer":{"@type":"Answer","text":"Yes, the consultation is completely free. We provide the treatment scope, dot count, and full pricing estimate so you can decide with full information. No obligation to book on the spot."}}
+      ]
+    },
+    {
+      "@type": "HowTo",
+      "name": "SMP (Scalp Micropigmentation) Treatment Process",
+      "description": "Complete SMP process to cover thinning hair, receding hairlines, and scars at THE SCALP INK by CIMA.",
+      "totalTime": "PT3H",
+      "estimatedCost":{"@type":"MonetaryAmount","currency":"JPY","value":"30000"},
+      "step": [
+        {"@type":"HowToStep","position":1,"name":"Free Consultation","text":"30-minute diagnosis to confirm scalp condition, treatment scope, dot count and full price estimate.","url":"https://cima-scalpink.com/en/#booking"},
+        {"@type":"HowToStep","position":2,"name":"Design Confirmation","text":"Hairline, density and shading are simulated to the millimeter. Use the on-site AI Simulator to preview the post-treatment look.","url":"https://cima-scalpink.com/en/#simulator"},
+        {"@type":"HowToStep","position":3,"name":"First Session","text":"Medical pigment is injected dot-by-dot. The machine auto-counts dots; 1 dot = ¥1, transparent billing. Duration 2-3 hours."},
+        {"@type":"HowToStep","position":4,"name":"Aftercare","text":"Avoid heavy exercise, saunas, and direct sunlight for one week. Shampooing allowed after 48 hours."},
+        {"@type":"HowToStep","position":5,"name":"Sessions 2 & 3","text":"2-3 sessions spaced 1-2 weeks apart finalize the look based on individual retention rate."}
+      ]
+    },
+    {
+      "@type": "VideoObject",
+      "name": "THE SCALP INK by CIMA — SMP Treatment Highlights",
+      "description": "Highlights from Korean-origin SMP (Scalp Micropigmentation) specialist THE SCALP INK by CIMA.",
+      "thumbnailUrl": "https://cima-scalpink.com/assets/hero-fallback.jpg",
+      "uploadDate": "2026-04-10",
+      "contentUrl": "https://cima-scalpink.com/assets/hero.mp4",
+      "duration": "PT54S",
+      "publisher": {"@id":"https://cima-scalpink.com/en/#business"}
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://cima-scalpink.com/en/"},
+        {"@type":"ListItem","position":2,"name":"SMP Treatment","item":"https://cima-scalpink.com/en/#pricing"},
+        {"@type":"ListItem","position":3,"name":"Free Consultation","item":"https://cima-scalpink.com/en/#booking"}
       ]
     }
   ]
 }
 </script>
+<style>
+/* Skip link for keyboard navigation (WCAG 2.4.1) */
+.skip-link{position:absolute;left:-9999px;top:0;background:#c9a84c;color:#080808;padding:10px 18px;z-index:9999;font-weight:700;letter-spacing:.05em;text-decoration:none;border-radius:0 0 4px 4px;}
+.skip-link:focus{left:0;outline:2px solid #f5f5f0;}
+</style>
 </head>
 <body>
+<a href="#mainContent" class="skip-link">Skip to main content</a>
 
 <!-- NAV -->
 <nav id="mainNav">
@@ -621,7 +683,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 <svg style="display:none"><symbol id="cam-ic" viewBox="0 0 36 36" fill="none"><rect x="4" y="8" width="28" height="20" rx="2" stroke="rgba(201,168,76,.3)" stroke-width="1.2"/><circle cx="18" cy="18" r="5" stroke="rgba(201,168,76,.25)" stroke-width="1.2"/><circle cx="27" cy="12" r="2" fill="rgba(201,168,76,.2)"/></symbol></svg>
 
 <!-- HERO（動画対応・フォールバック画像あり）-->
-<section id="hero">
+<main id="mainContent"><section id="hero">
   <div class="hero-bg">
     <!-- 動画なし時 / ロード中のフォールバック画像（常に背面に表示） -->
     <div class="hero-bg-img"></div>
@@ -1320,6 +1382,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
 </section>
 
 <!-- FOOTER -->
+</main><!-- /#mainContent -->
 <footer>
   <div class="ft-logo">THE SCALP INK</div>
   <div class="ft-copy">&copy; 2026 THE SCALP INK by CIMA. All rights reserved.</div>
@@ -1865,7 +1928,6 @@ function onDensitySlider(val) {
   clearTimeout(_sliderTimer);
   _sliderTimer = setTimeout(function() {
     if (!_smpCache || !_smpCache.beforeDataURL) {
-      console.debug('[SMP] Slider: cache missing, skipping redraw');
       return;
     }
     try {
@@ -2352,7 +2414,6 @@ function drawSMPSimulation(beforeDataURL, conditionType, structured, densityMult
       if (regionMask[ii] > 0.5) treatArea++;
     }
     if (treatArea <= 0) {
-      console.debug('[SMP] No treatment region detected. Using fallback area.');
       treatArea = Math.max(1, Math.round(headW_px * headW_px * 0.05));
     }
     treatArea = Math.max(1, Math.min(w * h, treatArea));
@@ -2572,7 +2633,6 @@ function extractStructuredData(responseText) {
     else if (/patch|areata|alopecia|circle/.test(ct)) data.condition_type = 'patch';
     else if (/combined|mixed|multiple/.test(ct)) data.condition_type = 'combined';
     else data.condition_type = 'thinning';
-    console.debug('[SMP] condition_type auto-mapped to:', data.condition_type);
   }
 
   // Polygon coordinate validation & sanitization
@@ -2582,9 +2642,9 @@ function extractStructuredData(responseText) {
       const valid = r.polygon.every(function(p) {
         return Array.isArray(p) && p.length >= 2 && p[0] >= 0 && p[0] <= 1 && p[1] >= 0 && p[1] <= 1;
       });
-      if (!valid) { console.debug('[SMP Sim] Invalid polygon filtered:', r.label); return false; }
+      if (!valid) { return false; }
       const area = _polyArea(r.polygon);
-      if (area < 0.001 || area > 0.95) { console.debug('[SMP Sim] Polygon area out of range:', r.label, area); return false; }
+      if (area < 0.001 || area > 0.95) { return false; }
       r.density_hint = Math.max(0, Math.min(1, r.density_hint || 0.5));
       return true;
     });
