@@ -3243,6 +3243,28 @@ function analyze() {
     showToast('インターネット接続を確認してください。オフラインではシミュレーションできません。', 'error');
     return;
   }
+  // ローカル開発・プレビュー環境チェック（プロキシは本番ドメインのみ許可）
+  const _host = window.location.hostname || '';
+  const _isLocal = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/.test(_host)
+                || window.location.protocol === 'file:'
+                || /\.(local|test|invalid)$/.test(_host);
+  if (_isLocal) {
+    const advBox = document.getElementById('adviceBox');
+    const claudeEl = document.getElementById('claudeAdvice');
+    if (claudeEl) {
+      claudeEl.innerHTML = '<span style="color:#ffa500;line-height:1.7;">' +
+        '⚠ AIシミュレーターはセキュリティの都合上、<strong>本番サイト</strong>でのみ動作します。<br><br>' +
+        '👉 <a href="https://cima-scalpink.com/#simulator" target="_blank" rel="noopener" ' +
+        'style="color:#d4af37;text-decoration:underline;font-weight:700;">' +
+        'cima-scalpink.com でお試しください</a><br><br>' +
+        '<small style="color:rgba(245,245,240,.5);">（ローカル/プレビュー環境からは Gemini API プロキシへのアクセスが ' +
+        'CORS で制限されています。これは仕様です。）</small></span>';
+    }
+    if (advBox) advBox.style.display = 'block';
+    const frame = document.getElementById('baResultFrame');
+    if (frame) { frame.style.display = 'block'; setTimeout(function(){ frame.scrollIntoView({ behavior:'smooth', block:'start' }); }, 100); }
+    return;
+  }
   _userAborted = false; // 新しい解析開始時にリセット
   if (navigator.vibrate) navigator.vibrate(10); // 触覚フィードバック（モバイル）
 

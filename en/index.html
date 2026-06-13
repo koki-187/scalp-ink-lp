@@ -3113,6 +3113,28 @@ function analyze() {
     showToast('Please check your internet connection. Simulation requires an active connection.', 'error');
     return;
   }
+  // Local/preview environment check (proxy only allows production domain)
+  const _host = window.location.hostname || '';
+  const _isLocal = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/.test(_host)
+                || window.location.protocol === 'file:'
+                || /\.(local|test|invalid)$/.test(_host);
+  if (_isLocal) {
+    const advBox = document.getElementById('adviceBox');
+    const claudeEl = document.getElementById('claudeAdvice');
+    if (claudeEl) {
+      claudeEl.innerHTML = '<span style="color:#ffa500;line-height:1.7;">' +
+        '⚠ The AI Simulator only works on the <strong>production site</strong> for security reasons.<br><br>' +
+        '👉 <a href="https://cima-scalpink.com/en/#simulator" target="_blank" rel="noopener" ' +
+        'style="color:#d4af37;text-decoration:underline;font-weight:700;">' +
+        'Please try it on cima-scalpink.com/en/</a><br><br>' +
+        '<small style="color:rgba(245,245,240,.5);">(Access to the Gemini API proxy from local/preview environments ' +
+        'is restricted by CORS. This is by design.)</small></span>';
+    }
+    if (advBox) advBox.style.display = 'block';
+    const frame = document.getElementById('baResultFrame');
+    if (frame) { frame.style.display = 'block'; setTimeout(function(){ frame.scrollIntoView({ behavior:'smooth', block:'start' }); }, 100); }
+    return;
+  }
   _userAborted = false; // Reset for new analysis
   if (navigator.vibrate) navigator.vibrate(10); // Haptic feedback (mobile)
 
