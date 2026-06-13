@@ -3458,19 +3458,23 @@ function analyze() {
     generationConfig: { maxOutputTokens: 6144, temperature: 0.2, topP: 0.85, topK: 40 }
   };
 
-  // AI処理中の経過タイマー（モジュールスコープ ref で resetSim からも停止可能）
+  // AI処理中の段階別進捗メッセージ（ユーザーに今何をしているかを明示）
   let _ldSeconds = 0;
   const _ldTimerEl = document.querySelector('#ldDots .ld-msg');
+  // 段階別フェーズメッセージ（経過秒数に応じて変化）
+  const _ldPhases = [
+    { until: 5,  icon: '📸', msg: '撮影画像を準備中' },
+    { until: 15, icon: '🔍', msg: 'AIが頭皮の状態を解析中' },
+    { until: 30, icon: '🧬', msg: '薄毛パターンを判定中' },
+    { until: 45, icon: '✨', msg: '施術後イメージを生成中' },
+    { until: 60, icon: '🎯', msg: '最終調整中・もう少しお待ちください' },
+    { until: 999, icon: '⏳', msg: '通常より少し時間がかかっています' }
+  ];
   _ldTimerIntervalRef = setInterval(function() {
     _ldSeconds++;
     if (_ldTimerEl) {
-      if (_ldSeconds < 30) {
-        _ldTimerEl.textContent = '施術シミュレーション中... ' + _ldSeconds + '秒経過';
-      } else if (_ldSeconds < 60) {
-        _ldTimerEl.textContent = 'AIが詳細解析中... ' + _ldSeconds + '秒（もう少しお待ちください）';
-      } else {
-        _ldTimerEl.textContent = '解析に時間がかかっています... ' + _ldSeconds + '秒（通常60秒以内に完了します）';
-      }
+      const phase = _ldPhases.find(function(p){ return _ldSeconds < p.until; }) || _ldPhases[_ldPhases.length - 1];
+      _ldTimerEl.textContent = phase.icon + ' ' + phase.msg + '... ' + _ldSeconds + '秒経過';
     }
   }, 1000);
 

@@ -3332,19 +3332,22 @@ function analyze() {
     generationConfig: { maxOutputTokens: 6144, temperature: 0.2, topP: 0.85, topK: 40 }
   }; // end requestBodyObj
 
-  // Loading timer (elapsed seconds counter — module-scope ref so resetSim can clear)
+  // Phased progress messages — show users what's happening at each stage
   let _ldSeconds = 0;
   const _ldTimerEl = document.querySelector('#ldDots .ld-msg');
+  const _ldPhases = [
+    { until: 5,  icon: '📸', msg: 'Preparing your photo' },
+    { until: 15, icon: '🔍', msg: 'AI analyzing scalp condition' },
+    { until: 30, icon: '🧬', msg: 'Identifying thinning pattern' },
+    { until: 45, icon: '✨', msg: 'Generating post-treatment image' },
+    { until: 60, icon: '🎯', msg: 'Final adjustments, almost done' },
+    { until: 999, icon: '⏳', msg: 'Taking a bit longer than usual' }
+  ];
   _ldTimerIntervalRef = setInterval(function() {
     _ldSeconds++;
     if (_ldTimerEl) {
-      if (_ldSeconds < 30) {
-        _ldTimerEl.textContent = 'Simulation in progress... ' + _ldSeconds + 's elapsed';
-      } else if (_ldSeconds < 60) {
-        _ldTimerEl.textContent = 'AI analyzing in detail... ' + _ldSeconds + 's (almost there)';
-      } else {
-        _ldTimerEl.textContent = 'Taking longer than usual... ' + _ldSeconds + 's (usually under 60s)';
-      }
+      const phase = _ldPhases.find(function(p){ return _ldSeconds < p.until; }) || _ldPhases[_ldPhases.length - 1];
+      _ldTimerEl.textContent = phase.icon + ' ' + phase.msg + '... ' + _ldSeconds + 's elapsed';
     }
   }, 1000);
 
