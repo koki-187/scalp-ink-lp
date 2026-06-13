@@ -833,7 +833,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
     </div><!-- /.ba-cat-wrap -->
 
         <div style="text-align:center;margin-top:22px;" class="rv">
-      <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="btn-o">
+      <a href="https://www.instagram.com/cima88_inkwork" target="_blank" rel="noopener noreferrer" class="btn-o">
         See more on Instagram @cima88_inkwork
       </a>
     </div>
@@ -973,7 +973,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
             <button class="btn-o" id="camBtn" style="font-size:.72rem;padding:9px 18px;" onclick="openCamera();event.stopPropagation();">&#128247; Camera</button>
             <label class="btn-o" style="cursor:pointer;font-size:.72rem;padding:9px 18px;" onclick="event.stopPropagation()">
               Choose File
-              <input type="file" accept="image/*" id="imgUp" style="display:none;" onchange="handleUp(event)">
+              <input type="file" accept="image/*" id="imgUp" aria-label="Select a photo file" style="display:none;" onchange="handleUp(event)">
             </label>
           </div>
           <div class="drop-hint">Supports JPG &#183; PNG &#183; HEIC &#183; WebP</div>
@@ -985,7 +985,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         <!-- Yellow pen drawing overlay -->
         <canvas id="drawingCanvas" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;z-index:5;cursor:crosshair;touch-action:none;"></canvas>
         <!-- iOS/Android native camera capture (hidden) -->
-        <input type="file" accept="image/*" capture="environment" id="camCapture" style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;" onchange="handleUp(event)">
+        <input type="file" accept="image/*" capture="environment" id="camCapture" aria-label="Take a photo with camera" style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;" onchange="handleUp(event)">
       </div>
       <div class="sim-ctrls">
         <!-- Desktop camera controls (shown only during getUserMedia) -->
@@ -1044,6 +1044,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           <div style="display:flex;align-items:center;gap:10px;justify-content:center;">
             <span style="font-size:.72rem;color:#666;">-30k</span>
             <input type="range" id="densitySlider" min="-30000" max="30000" value="0" step="5000"
+              aria-label="Dot density adjustment (from -30,000 to +30,000)"
               style="width:180px;accent-color:#d4af37;cursor:pointer;"
               oninput="onDensitySlider(this.value)">
             <span style="font-size:.72rem;color:#666;">+30k</span>
@@ -1256,7 +1257,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
           </div>
         </div>
         <div class="art-sns">
-          <a href="https://www.instagram.com/cima88_inkwork" target="_blank" class="sns-btn">Instagram @cima88_inkwork</a>
+          <a href="https://www.instagram.com/cima88_inkwork" target="_blank" rel="noopener noreferrer" class="sns-btn">Instagram @cima88_inkwork</a>
           <a href="#booking" class="sns-btn">Book Now</a>
         </div>
       </div>
@@ -1295,12 +1296,12 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
       </div>
       <div class="rv d2">
         <form class="bk-form" id="bkForm" onsubmit="return submitBooking(event)">
-          <div class="fg"><label class="flbl">Name</label><input type="text" name="name" class="finp" placeholder="John Smith" required></div>
-          <div class="fg"><label class="flbl">Phone Number</label><input type="tel" name="phone" class="finp" placeholder="090-0000-0000" required></div>
-          <div class="fg"><label class="flbl">Email</label><input type="email" name="email" class="finp" placeholder="your@email.com"></div>
-          <div class="fg"><label class="flbl">Preferred Date</label><input type="date" name="date" class="finp"></div>
-          <div class="fg"><label class="flbl">Consultation Topic</label>
-            <select name="menu" class="finp">
+          <div class="fg"><label class="flbl" for="bk-name">Name</label><input id="bk-name" type="text" name="name" class="finp" placeholder="John Smith" aria-label="Your name" autocomplete="name" required></div>
+          <div class="fg"><label class="flbl" for="bk-phone">Phone Number</label><input id="bk-phone" type="tel" name="phone" class="finp" placeholder="090-0000-0000" aria-label="Phone number" autocomplete="tel" required></div>
+          <div class="fg"><label class="flbl" for="bk-email">Email</label><input id="bk-email" type="email" name="email" class="finp" placeholder="your@email.com" aria-label="Email address" autocomplete="email"></div>
+          <div class="fg"><label class="flbl" for="bk-date">Preferred Date</label><input id="bk-date" type="date" name="date" class="finp" aria-label="Preferred date"></div>
+          <div class="fg"><label class="flbl" for="bk-menu">Consultation Topic</label>
+            <select id="bk-menu" name="menu" class="finp" aria-label="Consultation topic">
               <option value="">Please select</option>
               <option>Trial (¥5,000~ / ~5,000 dots)</option>
               <option>Light (¥30,000~ / ~30,000 dots)</option>
@@ -1310,7 +1311,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
               <option>Other / General Inquiry</option>
             </select>
           </div>
-          <div class="fg"><label class="flbl">Message (optional)</label><textarea name="message" class="finp" placeholder="Please enter any questions or requests"></textarea></div>
+          <div class="fg"><label class="flbl" for="bk-message">Message (optional)</label><textarea id="bk-message" name="message" class="finp" placeholder="Please enter any questions or requests" aria-label="Your message"></textarea></div>
           <button type="submit" class="btn-p" style="width:100%;padding:14px;">Send</button>
         </form>
       </div>
@@ -1325,7 +1326,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
   <div class="ft-links">
     <a href="privacy-policy.html">Privacy Policy</a>
     <a href="tokushoho.html">Tokushoho Act</a>
-    <a href="https://www.instagram.com/cima88_inkwork" target="_blank">Instagram</a>
+    <a href="https://www.instagram.com/cima88_inkwork" target="_blank" rel="noopener noreferrer">Instagram</a>
   </div>
 </footer>
 
