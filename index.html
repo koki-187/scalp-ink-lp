@@ -40,6 +40,10 @@
    7. tokushoho.html（特定商取引法表示）
    8. en/index.html（英語版）も同期
 
+  ▼ 拠点
+   Studio 東京 / Studio 沖縄 / Studio 奄美 の3拠点
+   予約フォームで拠点選択必須（radio button）
+
   リポジトリ: https://github.com/koki-187/scalp-ink-lp
   本番URL:    https://cima-scalpink.com
 ════════════════════════════════════════════════════════════════════════════
@@ -61,11 +65,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#080808">
 <meta name="format-detection" content="telephone=no">
-<title>SMP・頭皮アートメイク｜薄毛/生え際/傷跡カバー｜THE SCALP INK by CIMA（東京・沖縄）</title>
-<meta name="description" content="韓国発SMP（スカルプマイクロピグメンテーション）専門店。薄毛・生え際後退・傷跡・円形脱毛に1ドット1円の明朗会計で対応。東京・沖縄2拠点、体験施術¥10,000〜。無料カウンセリング受付中。">
-<meta name="keywords" content="SMP,スカルプマイクロピグメンテーション,薄毛,生え際,M字,頭皮アートメイク,傷跡カバー,円形脱毛,沖縄,東京,体験施術">
-<meta property="og:title" content="SMP・頭皮アートメイク｜THE SCALP INK by CIMA（東京・沖縄）">
-<meta property="og:description" content="韓国発SMP専門。薄毛・生え際・傷跡に1ドット1円の明朗会計。東京/沖縄2拠点、体験¥10,000〜。">
+<title>SMP・頭皮アートメイク｜薄毛/生え際/傷跡カバー｜THE SCALP INK by CIMA（東京・沖縄・奄美）</title>
+<meta name="description" content="韓国発SMP（スカルプマイクロピグメンテーション）専門店。薄毛・生え際後退・傷跡・円形脱毛に1ドット1円の明朗会計で対応。東京・沖縄・奄美3拠点、体験施術¥10,000〜。無料カウンセリング受付中。">
+<meta name="keywords" content="SMP,スカルプマイクロピグメンテーション,薄毛,生え際,M字,頭皮アートメイク,傷跡カバー,円形脱毛,沖縄,東京,奄美,体験施術">
+<meta property="og:title" content="SMP・頭皮アートメイク｜THE SCALP INK by CIMA（東京・沖縄・奄美）">
+<meta property="og:description" content="韓国発SMP専門。薄毛・生え際・傷跡に1ドット1円の明朗会計。東京/沖縄/奄美3拠点、体験¥10,000〜。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cima-scalpink.com/">
 <meta property="og:image" content="https://cima-scalpink.com/assets/ogp.png">
@@ -76,7 +80,7 @@
 <meta property="og:site_name" content="THE SCALP INK by CIMA">
 <!-- Twitter Card (X/SNS シェア最適化) -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="SMP・頭皮アートメイク｜THE SCALP INK by CIMA（東京・沖縄）">
+<meta name="twitter:title" content="SMP・頭皮アートメイク｜THE SCALP INK by CIMA（東京・沖縄・奄美）">
 <meta name="twitter:description" content="韓国発SMP専門。薄毛・生え際・傷跡に1ドット1円の明朗会計。体験¥10,000〜。無料カウンセリング受付中。">
 <meta name="twitter:image" content="https://cima-scalpink.com/assets/ogp.png">
 <meta name="twitter:image:alt" content="THE SCALP INK by CIMA — SMP施術ビフォーアフター">
@@ -573,6 +577,47 @@ section{position:relative;z-index:1;}
 .finp::placeholder{color:rgba(255,255,255,.17);}
 textarea.finp{resize:vertical;min-height:82px;}
 
+/* Studio選択カード（3拠点：奄美 / 沖縄 / 東京） */
+.studio-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;}
+.studio-picker input[type="radio"]{position:absolute;opacity:0;pointer-events:none;}
+.studio-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 8px 13px;background:linear-gradient(180deg,rgba(20,17,10,.9),rgba(13,13,13,.75));
+  border:1px solid rgba(201,168,76,.18);border-radius:6px;cursor:pointer;
+  transition:all .25s ease;text-align:center;overflow:hidden;}
+.studio-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0,rgba(201,168,76,.16),transparent 65%);
+  opacity:0;transition:opacity .3s;pointer-events:none;}
+.studio-card:hover{border-color:rgba(201,168,76,.55);transform:translateY(-2px);
+  box-shadow:0 8px 18px -8px rgba(201,168,76,.25);}
+.studio-card:hover::before{opacity:1;}
+.studio-picker input[type="radio"]:checked + .studio-card,
+.studio-picker .studio-card.is-selected{
+  border:1px solid #C9A84C !important;
+  background:linear-gradient(180deg,rgba(201,168,76,.14),rgba(13,13,13,.9)) !important;
+  box-shadow:0 0 0 1px #C9A84C,0 10px 24px -10px rgba(201,168,76,0.45) !important;
+  transform:translateY(-1px) !important;}
+.studio-picker input[type="radio"]:checked + .studio-card::before,
+.studio-picker .studio-card.is-selected::before{opacity:1;}
+.studio-picker input[type="radio"]:focus-visible + .studio-card{outline:2px solid var(--gdl);outline-offset:2px;}
+.studio-card .st-pin{font-size:1.15rem;color:var(--gd);margin-bottom:5px;line-height:1;
+  filter:drop-shadow(0 0 6px rgba(201,168,76,.35));}
+.studio-card .st-lbl{font-family:"Cormorant Garamond",serif;font-style:italic;
+  font-size:.58rem;letter-spacing:.22em;color:rgba(201,168,76,.75);text-transform:uppercase;margin-bottom:2px;}
+.studio-card .st-name{font-family:"Bebas Neue",sans-serif;font-size:1.15rem;letter-spacing:.14em;
+  color:var(--wh);line-height:1.1;margin-bottom:4px;}
+.studio-card .st-area{font-size:.55rem;letter-spacing:.14em;color:rgba(245,245,240,.42);}
+.studio-picker input[type="radio"]:checked + .studio-card .st-name,
+.studio-picker .studio-card.is-selected .st-name{color:var(--gdl);}
+.studio-picker input[type="radio"]:checked + .studio-card .st-area,
+.studio-picker .studio-card.is-selected .st-area{color:rgba(245,245,240,.72);}
+.studio-note{font-size:.6rem;color:rgba(245,245,240,.34);margin-top:6px;letter-spacing:.04em;text-align:center;}
+@media (max-width:480px){
+  .studio-picker{gap:6px;}
+  .studio-card{padding:11px 4px 10px;}
+  .studio-card .st-name{font-size:1rem;letter-spacing:.1em;}
+  .studio-card .st-lbl{font-size:.52rem;letter-spacing:.16em;}
+  .studio-card .st-area{font-size:.5rem;}
+}
+
 /* FOOTER */
 footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
   padding:44px 52px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
@@ -623,7 +668,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
       "priceRange": "¥10,000〜",
       "areaServed": [
         {"@type":"City","name":"東京都"},
-        {"@type":"City","name":"沖縄県宜野湾市"}
+        {"@type":"City","name":"沖縄県宜野湾市"},
+        {"@type":"City","name":"鹿児島県奄美市"}
       ],
       "address": {"@type":"PostalAddress","addressCountry":"JP"},
       "openingHoursSpecification": {
@@ -648,7 +694,7 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
       "@type": "Service",
       "serviceType": "スカルプマイクロピグメンテーション（SMP）",
       "provider": {"@id":"https://cima-scalpink.com/#business"},
-      "areaServed": ["東京都","沖縄県"],
+      "areaServed": ["東京都","沖縄県","鹿児島県奄美市"],
       "description": "薄毛・生え際後退・傷跡・円形脱毛に対応するSMP施術。韓国発の最新技術。"
     },
     {
@@ -665,7 +711,8 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
         {"@type":"Question","name":"傷跡にも対応できますか？","acceptedAnswer":{"@type":"Answer","text":"はい、傷跡のカバーも得意施術の一つです。火傷跡・手術跡・自己処理ミスなど、頭皮全般の傷跡に対応可能です。まずはカウンセリングでご相談ください。"}},
         {"@type":"Question","name":"施術後のケアは？","acceptedAnswer":{"@type":"Answer","text":"施術後1週間は激しい運動・サウナ・直射日光を避けていただくことをお勧めします。シャンプーは48時間後から可能です。"}},
         {"@type":"Question","name":"紹介制度について教えてください","acceptedAnswer":{"@type":"Answer","text":"Light（一部施術）以上のメニュー（Light・スタンダード・ヘビー）をご予約・施術完了いただいた場合、紹介者様・被紹介者様の双方に5,000ドット（5,000円分）をプレゼントいたします（有効期限12ヶ月、体験施術は対象外）。"}},
-        {"@type":"Question","name":"沖縄や東京以外の地域からも通えますか？","acceptedAnswer":{"@type":"Answer","text":"全国からご来店いただいております。完成までは2〜3回の通院が必要ですが、1回あたりの間隔は1〜2週間あけることが推奨されるため、遠方の方も計画的にご予約いただけます。"}},
+        {"@type":"Question","name":"どの拠点で施術を受けられますか？","acceptedAnswer":{"@type":"Answer","text":"Studio 東京・Studio 沖縄・Studio 奄美の3拠点で施術を受けていただけます。ご予約時にご希望のStudioを選択いただき、詳細な住所とアクセス方法は予約確定後にご案内いたします。"}},
+        {"@type":"Question","name":"3拠点以外の地域からも通えますか？","acceptedAnswer":{"@type":"Answer","text":"全国からご来店いただいております。完成までは2〜3回の通院が必要ですが、1回あたりの間隔は1〜2週間あけることが推奨されるため、遠方の方も計画的にご予約いただけます。"}},
         {"@type":"Question","name":"カウンセリングは本当に無料ですか？","acceptedAnswer":{"@type":"Answer","text":"はい、カウンセリングは完全無料です。施術範囲・ドット数・料金見積もりまですべて提示しますので、納得いただいた上で施術を進められます。当日の施術義務もありません。"}}
       ]
     },
@@ -1412,6 +1459,39 @@ footer{background:#040404;border-top:1px solid rgba(201,168,76,.1);
       </div>
       <div class="rv d2">
         <form class="bk-form" id="bkForm" onsubmit="return submitBooking(event)">
+          <div class="fg">
+            <label class="flbl">Studio 選択</label>
+            <div class="studio-picker" role="radiogroup" aria-label="ご希望のStudioを選択">
+              <label>
+                <input type="radio" name="studio" value="奄美" required onchange="if(window.gtag)gtag('event','select_studio',{studio:'amami'})">
+                <div class="studio-card">
+                  <div class="st-pin" aria-hidden="true">◆</div>
+                  <div class="st-lbl">Studio</div>
+                  <div class="st-name">AMAMI</div>
+                  <div class="st-area">奄美</div>
+                </div>
+              </label>
+              <label>
+                <input type="radio" name="studio" value="沖縄" required onchange="if(window.gtag)gtag('event','select_studio',{studio:'okinawa'})">
+                <div class="studio-card">
+                  <div class="st-pin" aria-hidden="true">◆</div>
+                  <div class="st-lbl">Studio</div>
+                  <div class="st-name">OKINAWA</div>
+                  <div class="st-area">沖縄</div>
+                </div>
+              </label>
+              <label>
+                <input type="radio" name="studio" value="東京" required onchange="if(window.gtag)gtag('event','select_studio',{studio:'tokyo'})">
+                <div class="studio-card">
+                  <div class="st-pin" aria-hidden="true">◆</div>
+                  <div class="st-lbl">Studio</div>
+                  <div class="st-name">TOKYO</div>
+                  <div class="st-area">東京</div>
+                </div>
+              </label>
+            </div>
+            <div class="studio-note">※ 各Studioは完全予約制。詳細な住所・アクセス方法は予約確定後にご案内します</div>
+          </div>
           <div class="fg"><label class="flbl" for="bk-name">お名前</label><input id="bk-name" type="text" name="name" class="finp" placeholder="山田 太郎" aria-label="お名前" autocomplete="name" required></div>
           <div class="fg"><label class="flbl" for="bk-phone">電話番号</label><input id="bk-phone" type="tel" name="phone" class="finp" placeholder="090-0000-0000" aria-label="電話番号" autocomplete="tel" required></div>
           <div class="fg"><label class="flbl" for="bk-email">メール</label><input id="bk-email" type="email" name="email" class="finp" placeholder="your@email.com" aria-label="メールアドレス" autocomplete="email"></div>
@@ -1594,6 +1674,20 @@ function _startPgAuto() {
 }
 window.addEventListener('DOMContentLoaded', function() {
   _startPgAuto();
+  // Studio選択の視覚フィードバック（`:checked +`セレクタのフォールバック）
+  var studioRadios = document.querySelectorAll('input[name="studio"]');
+  function syncStudioSelected() {
+    studioRadios.forEach(function(r) {
+      var card = r.nextElementSibling;
+      if (!card) return;
+      if (r.checked) card.classList.add('is-selected');
+      else card.classList.remove('is-selected');
+    });
+  }
+  studioRadios.forEach(function(r) {
+    r.addEventListener('change', syncStudioSelected);
+  });
+  syncStudioSelected();
 });
 
 // ===== RESULTS TAB =====
