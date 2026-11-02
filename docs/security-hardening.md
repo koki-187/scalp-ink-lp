@@ -55,8 +55,11 @@ SPF / DMARC も Cloudflare 側に入れる（お名前.com 側に入れても効
 
 ### 4. ヘッダーを設定する（Active になってから）
 
-1. **SSL/TLS → Overview** → 暗号化モード **Full**
-   （GitHub Pages の証明書は Cloudflare 経由では更新が不安定になることがあるため、まず Full。Full (strict) は証明書を検証するので、エラー 526 が出たら Full に戻す）
+1. **SSL/TLS → Overview** → 暗号化モード **Full (strict)**
+   - GitHub Pages はカスタムドメインの有効な証明書を持っているので、証明書とホスト名を検証する Full (strict) にする。
+     Full は証明書を検証しないため、Cloudflare → GitHub Pages 間の接続先のなりすましを検出できない
+   - エラー 526 が出たら、GitHub Pages 側の証明書の更新に失敗している。GitHub のリポジトリ Settings → Pages で
+     証明書の状態を確認し、更新されるまでの一時的な回避としてだけ Full にする（直ったら Full (strict) に戻す）
 2. **SSL/TLS → Edge Certificates** → **Always Use HTTPS** をオン
 3. 同じ画面の **HTTP Strict Transport Security (HSTS)** → Enable HSTS
    - Max Age Header: **6 months**（安定を確認したら 12 months）
